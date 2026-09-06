@@ -81,9 +81,9 @@
 | 2 | NOTICE 文件 | Apache 归属声明（仓库根目录） | FlowModus 已落地 |
 | 3 | docs/prior-art.md | 防御性公开：核心创新点清单 + commit 证据路径 | FlowModus 已落地（10 代码级 + 2 协议级） |
 | 4 | README 许可段 | 顶部/底部标注许可证 + prior-art 链接（可发现性） | FlowModus 已落地 |
-| 5 | CONTRIBUTING.md 声明 | "贡献者确认提交内容不侵犯第三方知识产权"（Google Protobuf 同款） | 待各仓库落地 |
+| 5 | CONTRIBUTING.md 声明 | "贡献者确认提交内容不侵犯第三方知识产权"（Google Protobuf 同款） | ✅ CommonIntents 七仓库（代码→Apache 2.0 §5 专利授权；spec/文档→CC BY-ND 4.0）；生态仓库随贡献者出现 |
 | 6 | SECURITY.md | 负责任披露流程 + 联系邮箱 | 按需启用 |
-| 7 | 文档头部版权行 | spec/VISION 等关键文档头部 © 行 | FlowModus VISION 已落地 |
+| 7 | 文档头部版权行 | spec/VISION 等关键文档头部 © 行 | ✅ FlowModus VISION + CI-144 全部 spec（EN + zh-CN，© 2026 CommonIntents CC BY-ND 4.0） |
 
 **明确不做的（按需驱动）**：
 - ❌ IP.com 等付费第三方发布（GitHub 公开已构成先有技术）
@@ -113,6 +113,6 @@ FlowModus `docs/prior-art.md` 为本规范的首个参考实现（2026-09-06 公
 |---|---|---|
 | FlowModus | ✅ 全套落地（LICENSE/NOTICE/prior-art/README/VISION 头部） | CONTRIBUTING 声明（随贡献者出现） |
 | Helix-Mind 等生态仓库 | LICENSE 已 Apache 2.0 | prior-art 文档（按仓库创新点补充） |
-| CommonIntents（CI-144 家族） | 协议仓库公开 | 协议级 prior-art（四层创新点，用户拍板后按同规范写） |
+| CommonIntents（CI-144 家族） | ✅ 协议仓库公开 + 协议级 prior-art（prior-art-ci144.md，12 项创新点）+ spec 版权行 + CONTRIBUTING IP 声明 | — |
 
 **原则**：保护不等待——每个仓库在首个公开里程碑即落零成本清单；创新点随代码生长即时补记 prior-art（与 GROWTH 记录同节奏）。
