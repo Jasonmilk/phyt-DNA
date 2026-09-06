@@ -1,287 +1,286 @@
-# phyt-DNA — 项目自生长方法论体系
+# phyt-DNA — Self-Growing Project Methodology
 
-> **版本**：v1.0
-> **日期**：2026-08-29
-> **状态**：定稿生效（方法论锚点项目）
-> **性质**：通用项目自生长方法论模板与权威来源。所有采用本方法论的项目以此为锚点，避免版本撕裂与歧义漂移。
-> **哲学**：植物不是被设计出来的，它是从一个种子开始，根据环境条件和内在基因，自发地、持续地、缓慢地生长出来的。
-
----
-
-## 一粒种子的自白
-
-**植物不是被建造的，是生长出来的。**
-
-传统的软件工程方法论把项目当作机器——先画蓝图，再组装零件，最后调试运行。但真正有生命力的项目不是这样的。它们更像植物：从一个种子（核心愿景）开始，根据环境（用户需求、技术约束、生态变化）和内在基因（不可变原则），自发地、持续地、缓慢地生长。
-
-**phyt-DNA 借用植物来描述这套方法论，但我们不是在做植物学。** DNA、RNA 是比喻，不是生物课。DNA 是不可变的基因（原则与流程），RNA 是加载协议（如何读取基因并指导生长），SPEC 是知识本体（完整叙事），PLAN 是当前生长阶段，GROWTH 是生长记录，DEPRECATE 是死亡退役，archive 是历史归档。
-
-**phyt-DNA 让项目像植物一样生长，而不是像机器一样被建造。**
+> **Version**: v1.0
+> **Date**: 2026-08-29
+> **Status**: Finalized (methodology anchor project)
+> **Nature**: Generic self-growing project methodology template and authoritative source. All projects adopting this methodology anchor to it, avoiding version drift and ambiguity.
+> **Philosophy**: A plant is not designed — it grows from a seed, spontaneously, continuously, slowly, according to environmental conditions and intrinsic genes.
+>
+> **中文版 (Chinese Version)**: [README.zh-CN.md](./README.zh-CN.md)
 
 ---
 
-## 方法论核心组件（10 件套）
+## A Seed's Confession
 
-| # | 组件 | 角色 | 类比 | 大小约束 |
+**Plants are not built; they grow.**
+
+Traditional software methodology treats a project as a machine — draw a blueprint, assemble parts, debug, run. But living projects are not like that. They are more like plants: from a seed (core vision), driven by environment (user needs, technical constraints, ecosystem change) and intrinsic genes (immutable principles), they grow spontaneously, continuously, slowly.
+
+**phyt-DNA borrows plant metaphors to describe this methodology — we are not doing botany.** DNA, RNA are metaphors, not biology class. DNA is the immutable gene (principles and processes), RNA is the loading protocol (how to read the gene and guide growth), SPEC is the knowledge ontology (complete narrative), PLAN is the current growth stage, GROWTH is the growth record, DEPRECATE is death and retirement, archive is historical sediment.
+
+**phyt-DNA makes projects grow like plants, not get built like machines.**
+
+---
+
+## Methodology Core Components (10-piece set)
+
+| # | Component | Role | Analogy | Size constraint |
 |---|---|---|---|---|
-| 1 | **VISION.md** | 根索引：项目"是什么"与"为什么"，原子原则，生态位 | 种子的胚芽 | ~100 行 |
-| 2 | **DNA.md** | 宪法：不可变原则 + 自生长流程 + 防腐化铁律 | 基因 | ~80 行 |
-| 3 | **RNA.md** | 加载协议：三层加载 + AI 协作铁律 + 大版本更新 SOP | 基因表达机制 | ~100 行 |
-| 4 | **SPEC.md** | 完整叙事："一粒种子的自白"，知识本体 | 植物的完整形态 | 不限 |
-| 5 | **spec/** | 规格分卷：哲学/架构/契约/安全/定位等分卷 | 各器官的详细结构 | 按需 |
-| 6 | **PLAN.md** | 导航牌：当前阶段 + 下一阶段预览 + 阶段总览 | 当前生长季节 | ≤150 行 |
-| 7 | **GROWTH.md** | 生长记录：最近 3 次健康快照 | 年轮 | ≤3 条 |
-| 8 | **DEPRECATE.md** | 退役记录：正在死亡的功能 | 枯叶 | ≤30 行 |
-| 9 | **decisions/** | ADR：架构决策记录（为什么选 A，放弃了什么） | 生长痕迹 | 按需 |
-| 10 | **archive/** | 历史归档：growth/ + deprecated/，永不删除 | 土壤中的有机质 | 不限 |
+| 1 | **VISION.md** | Root index: what the project "is" and "why", atomic principles, ecological niche | Seed's embryo | ~100 lines |
+| 2 | **DNA.md** | Constitution: immutable principles + self-growing process + anti-rot ironclad rules | Gene | ~80 lines |
+| 3 | **RNA.md** | Loading protocol: three-layer loading + AI collaboration ironclad rules + major-version update SOP | Gene expression mechanism | ~100 lines |
+| 4 | **SPEC.md** | Complete narrative: "A Seed's Confession", knowledge ontology | Plant's full form | unlimited |
+| 5 | **spec/** | Spec volumes: philosophy/architecture/contract/safety/position | Detailed structure of each organ | on demand |
+| 6 | **PLAN.md** | Navigation board: current stage + next-stage preview + stage overview | Current growing season | ≤150 lines |
+| 7 | **GROWTH.md** | Growth record: last 3 health snapshots | Tree rings | ≤3 entries |
+| 8 | **DEPRECATE.md** | Retirement record: features that are dying | Dead leaves | ≤30 lines |
+| 9 | **decisions/** | ADR: architecture decision records (why A was chosen, what was given up) | Growth traces | on demand |
+| 10 | **archive/** | Historical archive: growth/ + deprecated/, never deleted | Organic matter in soil | unlimited |
 
 ---
 
-## 保护章节（生长的护栏）
+## Protection Chapter (the railing of growth)
 
-保护是生长的护栏，不是围墙。方法论保护规范见 [docs/PROTECTION.md](docs/PROTECTION.md)：
+Protection is the railing of growth, not a wall. Methodology protection spec: [docs/PROTECTION.md](docs/PROTECTION.md)
 
-- **大厂实践提炼**（Google/Apple 公开可验证）：开源即防御性公开、Apache 2.0 专利条款、
-  规范公开+服务专有、商标是长期资产、按威胁排序
-- **五条保护原则**（哲学裁剪）：按需驱动 / 物理事实优先 / 极致节能 / 确定性优先 / 极致解耦
-- **零成本清单**：LICENSE(Apache 2.0) / NOTICE / prior-art.md / README 许可段 /
-  CONTRIBUTING 声明 / SECURITY.md（按需）
-- **Prior Art as Code 规范**：同库同 commit、可实施、证据路径、可发现、模块化
-- **明确不做**：IP.com 付费发布 / 正式专利申请 / OIN 联盟 / 商标注册（均挂议程，
-  有真实商业需要再动）
+- **Big-tech practices distilled** (Google/Apple, publicly verifiable): open source = automatic defensive publication, Apache 2.0 patent terms, specs public + services proprietary, trademark is a long-term asset, rank by threat
+- **Five protection principles** (philosophy-trimmed): on-demand / physical facts first / extreme efficiency / determinism / decoupling
+- **Zero-cost checklist**: LICENSE (Apache 2.0) / NOTICE / prior-art.md / README license section / CONTRIBUTING declaration / SECURITY.md (on demand)
+- **Prior Art as Code spec**: same-repo same-commit, enabling, evidence path, discoverable, modular
+- **Explicit non-actions**: IP.com paid publication / formal patent filing / OIN alliance / trademark registration (all agenda-gated, only when real commercial need arises)
 
-采用本方法论的每个项目，在首个公开里程碑即落零成本清单。
+Every project adopting this methodology lands the zero-cost checklist at its first public milestone.
 
-## 逻辑闭环（生长代谢）
+## Logical Closed Loop (Growth Metabolism)
 
 ```
-DNA（宪法，不可变）
-  ↓ 加载
-SPEC + spec/（知识本体，完整叙事）
-  ↓ 指导
-PLAN（当前生长阶段导航牌）
-  ↓ 执行
-代码实现 + 测试验证
-  ↓ 阶段完成
-GROWTH（生长记录，最近3条）
-  ↓ 功能退役
-DEPRECATE（死亡退役）
-  ↓ 归档
-archive/（历史归档，永不删除）
-  ↓ 回溯
-DNA 自检（原则是否违背？是否需要进化？）
+DNA (constitution, immutable)
+  ↓ load
+SPEC + spec/ (knowledge ontology, complete narrative)
+  ↓ guide
+PLAN (current growth stage navigation board)
+  ↓ execute
+Code implementation + test verification
+  ↓ stage complete
+GROWTH (growth record, last 3)
+  ↓ feature retirement
+DEPRECATE (death and retirement)
+  ↓ archive
+archive/ (historical archive, never deleted)
+  ↓ trace back
+DNA self-check (principles violated? need evolution?)
 ```
 
-**闭环关键节点：**
+**Closed-loop key nodes:**
 
-1. **PLAN → GROWTH 流转**：阶段完成后，详细内容从 PLAN 移除，摘要写入 GROWTH。PLAN 只含当前阶段 + 下一阶段预览 + 阶段总览。
-2. **GROWTH → archive 流转**：GROWTH 超过 3 条，最旧的移入 `archive/growth/`。
-3. **DEPRECATE → archive 流转**：功能完成退役后，移入 `archive/deprecated/`。
-4. **决策先于代码**：架构/接口变更必须先创建 ADR（D 层冻结），再改代码，再同步门面文档。
-5. **DNA 不可修改**：DNA.md 是宪法，AI 不得修改（可提议，人类拥有最终决策权）。修改 DNA 等于修改身份，旧身份的信用不会转移。
-
----
-
-## RNA 三层加载协议
-
-### 第一层：活跃档案（新会话必读，按顺序加载）
-
-| 顺序 | 文件 | 职责 |
-|---|---|---|
-| 1 | `docs/DNA.md` | 宪法：不可变原则 |
-| 2 | `docs/RNA.md` | 导航：本文件 |
-| 3 | `docs/PLAN.md` | **导航牌：当前阶段（必读）** |
-| 4 | `docs/GROWTH.md` | 生长：最近 3 次健康快照 |
-| 5 | `docs/DEPRECATE.md` | 临终：正在退役的功能 |
-
-**总加载量**：≤280 行，≤4500 tokens。PLAN.md 为必读——新会话必须先加载 PLAN 确认当前阶段，避免在已完成阶段上浪费精力。
-
-### 第二层：白皮书分卷（按任务加载）
-
-根据任务关键词匹配对应分卷。只加载与当前任务相关的卷，禁止一次性加载全部。
-
-| 卷名 | 路径 | 锚定原则 |
-|---|---|---|
-| 生态定位 | `docs/spec/position.md` | 独立通用 + 生态原生优先 |
-| 哲学公理 | `docs/spec/philosophy.md` | 全部公理 |
-| 核心架构 | `docs/spec/architecture.md` | 解耦 / 声明与执行分离 |
-| 传输与契约 | `docs/spec/contract.md` | 多传输层平等 / 凭证标签流转 |
-| 安全设计 | `docs/spec/safety.md` | 沙箱即契约 / 完整性校验 / 脱敏 |
-
-### 第三层：历史考古（人类主动请求时加载）
-
-| 档案 | 路径 | 加载触发 |
-|---|---|---|
-| 生长历史 | `docs/archive/growth/` | 回顾演化时 |
-| 死亡历史 | `docs/archive/deprecated/` | 考古旧接口时 |
-| 决策历史 | `docs/decisions/` | 追溯"为什么选 A"时 |
-| 设计文档 | `docs/design/` | 追溯降级链/安全设计时 |
+1. **PLAN → GROWTH flow**: after a stage completes, detailed content is removed from PLAN, summary written into GROWTH. PLAN holds only current stage + next preview + stage overview.
+2. **GROWTH → archive flow**: when GROWTH exceeds 3 entries, oldest moves into `archive/growth/`.
+3. **DEPRECATE → archive flow**: after a feature fully retires, it moves into `archive/deprecated/`.
+4. **Decision precedes code**: architecture/interface changes must create an ADR first (D-layer frozen), then change code, then sync facade documents.
+5. **DNA is immutable**: DNA.md is the constitution; AI must not modify it (may propose; humans hold final authority). Modifying DNA changes identity, and the old identity's trust does not transfer.
 
 ---
 
-## AI 协作铁律（9 条通用 + N 条项目特有）
+## RNA Three-Layer Loading Protocol
 
-### 通用铁律（所有项目适用）
+### Layer 1: Active files (new session must-read, load in order)
 
-| # | 铁律 | 说明 |
+| Order | File | Duty |
 |---|---|---|
-| 1 | **注意力锚定** | 加载 DNA.md 后，根据当前任务判断最相关的 1-2 条原则，将主要注意力放在它们上 |
-| 2 | **质疑者** | 检查方案是否违背 DNA 原则，违规时告警。特别关注：是否引入了明文凭证？是否硬编码了阈值？是否破坏了核心层的纯净性？ |
-| 3 | **禁止修宪** | 不得修改 DNA.md（可提议，人类拥有最终决策权） |
-| 4 | **权限检查** | 架构/接口变更前，确认当前自治级别是否允许该操作。核心层变更需额外审查 |
-| 5 | **决策拦截** | 架构/接口变更时，提示创建 `docs/decisions/ADR-<4位编号>-<标题>.md`。引用时使用 `ADR-<编号>`，文件名与引用名必须一致 |
-| 6 | **原子重构** | 修改函数签名时，列出所有调用方；≤5 处本轮修复，>5 处生成脚本 |
-| 7 | **消灭魔法** | 禁止硬编码阈值，全部走配置 |
-| 8 | **认识论螺旋** | 理解"只追加不修改"不是简单堆积，而是通过 `CORRECTS` / `REFINES` / `DOUBTS` 辩证边实现时间轴上的螺旋上升 |
-| 9 | **项目特有铁律** | 每个项目在 DNA.md 中定义自己的特有铁律（如凭证红线、沙箱边界等） |
+| 1 | `docs/DNA.md` | Constitution: immutable principles |
+| 2 | `docs/RNA.md` | Navigation: this file |
+| 3 | `docs/PLAN.md` | **Navigation board: current stage (must-read)** |
+| 4 | `docs/GROWTH.md` | Growth: last 3 health snapshots |
+| 5 | `docs/DEPRECATE.md` | Dying: features being retired |
 
-### ADR 命名规范
+**Total load**: ≤280 lines, ≤4500 tokens. PLAN.md is must-read — a new session must load PLAN first to confirm the current stage, avoiding wasted effort on completed stages.
 
-- 文件名：`ADR-<4位编号>-<标题>.md`（如 `ADR-0001-rust-rebuild.md`）
-- 引用：`ADR-<编号>`（如 `ADR-0001`）
-- 编号：4 位数字，按顺序递增
-- 状态：两态（Draft / Active），Active 后不可覆写，仅可 Superseded
-- 提交信息关联：`(ADR-NNNN §Tx)`
+### Layer 2: Whitepaper volumes (load by task)
 
----
+Match volumes by task keywords. Load only volumes relevant to the current task; never load everything at once.
 
-## 大版本更新 SOP
-
-### 更新前
-- [ ] 确认目标：改哪几卷？（见 spec/ 分卷表）
-- [ ] 确认边界：触碰 DNA 哪条原则？
-- [ ] 确认遗产：`DEPRECATE.md` 有待安葬项？
-- [ ] 切分支：`git checkout -b feature/vX.X-简述`
-
-### 更新中
-- [ ] 修改对应 `docs/spec/` 分卷（只改相关卷）
-- [ ] 代码实现
-- [ ] DNA 原则自检（核心原则是否违背？特有铁律是否守住？）
-- [ ] 项目特有验收检查
-
-### 更新后
-- [ ] 测试通过（全绿 + 0 warning）
-- [ ] 写 `GROWTH.md`（记录本次生长健康度）
-- [ ] 写 ADR（`docs/decisions/`，如有艰难决策）
-- [ ] 写 `DEPRECATE.md`（如有退役功能）
-- [ ] **更新 `PLAN.md`（阶段流转：已完成阶段详细内容移除，切换到下一阶段；保持当前阶段 + 下一阶段预览 + 阶段总览三段式；≤150 行）**
-- [ ] 归档：`GROWTH` 超 3 条？移入 `docs/archive/growth/`
-- [ ] 归档：`DEPRECATE` 已安葬？移入 `docs/archive/deprecated/`
-- [ ] 提交信息包含 ADR 关联：`(ADR-NNNN §Tx)`
-- [ ] 合并分支 + 删除 feature 分支
-
----
-
-## 防腐化铁律（5 条）
-
-| # | 铁律 | 说明 |
+| Volume | Path | Anchored principles |
 |---|---|---|
-| 1 | **版本以 spec/代码为源真相** | README/门面标注必须对齐，防版本漂移 |
-| 2 | **契约冻结不可静默修改** | 扩展走 Append-Only / reserved 预留 |
-| 3 | **变更先 ADR（D 层冻结）→ 改代码 → 同步门面** | 决策先于代码 |
-| 4 | **生长记录保留近 3 条，超则归档** | 历史永不删除，按需加载 |
-| 5 | **提交前必须人工确认** | 无自动提交 |
+| Ecosystem positioning | `docs/spec/position.md` | independent + ecosystem-native first |
+| Philosophy axioms | `docs/spec/philosophy.md` | all axioms |
+| Core architecture | `docs/spec/architecture.md` | decoupling / declaration-execution separation |
+| Transport & contract | `docs/spec/contract.md` | multi-transport equality / credential label flow |
+| Safety design | `docs/spec/safety.md` | sandbox-as-contract / integrity verification / redaction |
+
+### Layer 3: Historical archaeology (load only on human request)
+
+| Archive | Path | Load trigger |
+|---|---|---|
+| Growth history | `docs/archive/growth/` | reviewing evolution |
+| Death history | `docs/archive/deprecated/` | archaeology of old interfaces |
+| Decision history | `docs/decisions/` | tracing "why A was chosen" |
+| Design docs | `docs/design/` | tracing degradation chains / safety design |
 
 ---
 
-## 快速开始：在新项目中使用 phyt-DNA
+## AI Collaboration Ironclad Rules (9 general + N project-specific)
 
-### 1. 复制模板
+### General rules (apply to all projects)
+
+| # | Rule | Description |
+|---|---|---|
+| 1 | **Attention anchoring** | After loading DNA.md, judge the 1-2 most relevant principles for the current task and focus primary attention on them |
+| 2 | **Doubter** | Check whether the solution violates DNA principles; alarm when it does. Especially watch: plaintext credentials introduced? hardcoded thresholds? core-layer purity broken? |
+| 3 | **No constitutional amendment** | Must not modify DNA.md (may propose; humans hold final authority) |
+| 4 | **Permission check** | Before architecture/interface changes, confirm whether the current autonomy level permits it. Core-layer changes need extra review |
+| 5 | **Decision interception** | On architecture/interface changes, prompt creating `docs/decisions/ADR-<4-digit>-<title>.md`. Reference as `ADR-<number>`; filename and reference must match |
+| 6 | **Atomic refactor** | When changing function signatures, list all call sites; fix ≤5 in this round, generate a script for >5 |
+| 7 | **Kill magic** | No hardcoded thresholds; everything goes through config |
+| 8 | **Epistemological spiral** | Understand "append-only, no modification" is not simple accumulation — via `CORRECTS` / `REFINES` / `DOUBTS` dialectics, spiral upward on the timeline |
+| 9 | **Project-specific rules** | Each project defines its own ironclad rules in DNA.md (e.g., credential red lines, sandbox boundaries) |
+
+### ADR naming convention
+
+- Filename: `ADR-<4-digit>-<title>.md` (e.g., `ADR-0001-rust-rebuild.md`)
+- Reference: `ADR-<number>` (e.g., `ADR-0001`)
+- Numbering: 4 digits, sequential ascending
+- Status: two states (Draft / Active); once Active cannot be overwritten, only Superseded
+- Commit message association: `(ADR-NNNN §Tx)`
+
+---
+
+## Major-Version Update SOP
+
+### Before update
+- [ ] Confirm targets: which volumes to change? (see spec/ volume table)
+- [ ] Confirm boundary: which DNA principle is touched?
+- [ ] Confirm legacy: does `DEPRECATE.md` have items to bury?
+- [ ] Branch: `git checkout -b feature/vX.X-<summary>`
+
+### During update
+- [ ] Modify corresponding `docs/spec/` volumes (only relevant volumes)
+- [ ] Code implementation
+- [ ] DNA principle self-check (core principles violated? project-specific rules held?)
+- [ ] Project-specific acceptance checks
+
+### After update
+- [ ] Tests pass (all green + 0 warnings)
+- [ ] Write `GROWTH.md` (record this growth health)
+- [ ] Write ADR (`docs/decisions/`, if a hard decision was made)
+- [ ] Write `DEPRECATE.md` (if features retired)
+- [ ] **Update `PLAN.md` (stage flow: remove completed-stage details, switch to next stage; keep three-part form: current stage + next preview + stage overview; ≤150 lines)**
+- [ ] Archive: GROWTH > 3 entries? move into `docs/archive/growth/`
+- [ ] Archive: DEPRECATE buried? move into `docs/archive/deprecated/`
+- [ ] Commit message includes ADR association: `(ADR-NNNN §Tx)`
+- [ ] Merge branch + delete feature branch
+
+---
+
+## Anti-Rot Ironclad Rules (5)
+
+| # | Rule | Description |
+|---|---|---|
+| 1 | **Version source of truth is spec/code** | README/facade annotations must align; prevent version drift |
+| 2 | **Frozen contracts not silently modified** | Extensions go through Append-Only / reserved regions |
+| 3 | **Change order: ADR first (D-layer frozen) → code → facade sync** | Decision precedes code |
+| 4 | **Growth records keep last 3, archive beyond** | History never deleted, loaded on demand |
+| 5 | **Human confirmation before commit** | No auto-commits |
+
+---
+
+## Quick Start: Using phyt-DNA in a New Project
+
+### 1. Copy the template
 
 ```bash
-# 克隆方法论仓库
+# clone the methodology repository
 git clone https://github.com/Jasonmilk/phyt-DNA.git
 
-# 复制模板到你的项目
+# copy the template into your project
 cp -r phyt-DNA/template/* /path/to/your-project/docs/
 cp -r phyt-DNA/template/.gitkeep /path/to/your-project/docs/decisions/
 cp -r phyt-DNA/template/.gitkeep /path/to/your-project/docs/archive/growth/
 cp -r phyt-DNA/template/.gitkeep /path/to/your-project/docs/archive/deprecated/
 ```
 
-### 2. 初始化核心文档
+### 2. Initialize core documents
 
-按以下顺序填写（每个文件顶部的元信息替换为你的项目信息）：
+Fill in this order (replace metadata at each file's top with your project info):
 
-1. **VISION.md** — 写清楚项目"是什么"与"为什么"，定义原子原则（5-10条）
-2. **DNA.md** — 从 VISION 提炼不可变原则，定义项目特有铁律，确认防腐化铁律
-3. **RNA.md** — 确认三层加载协议，确认 AI 协作铁律（通用9条 + 项目特有），确认大版本更新 SOP
-4. **SPEC.md** — 写完整叙事（"一粒种子的自白"）
-5. **spec/** — 根据项目需要创建分卷（philosophy/architecture/contract/safety/position）
-6. **PLAN.md** — 定义 P0/P1/P2... 阶段，当前阶段设为 P0
-7. **GROWTH.md** — 空模板，等待第一次生长记录
-8. **DEPRECATE.md** — 空模板，等待第一次退役记录
+1. **VISION.md** — write clearly what the project "is" and "why"; define atomic principles (5-10)
+2. **DNA.md** — distill immutable principles from VISION, define project-specific ironclad rules, confirm anti-rot rules
+3. **RNA.md** — confirm three-layer loading protocol, confirm AI collaboration rules (9 general + project-specific), confirm major-version update SOP
+4. **SPEC.md** — write the complete narrative ("A Seed's Confession")
+5. **spec/** — create volumes as the project needs (philosophy/architecture/contract/safety/position)
+6. **PLAN.md** — define P0/P1/P2... stages, set current stage to P0
+7. **GROWTH.md** — empty template, waiting for the first growth record
+8. **DEPRECATE.md** — empty template, waiting for the first retirement record
 
-### 3. 开始生长
+### 3. Start growing
 
-- 每个阶段完成后，按"大版本更新 SOP"执行更新后检查清单
-- PLAN.md 阶段流转是闭环的关键——已完成阶段详细内容必须移除，摘要写入 GROWTH
-- 架构/接口变更必须先创建 ADR
+- After each stage completes, run the post-update checklist per the Major-Version Update SOP
+- PLAN.md stage flow is the key to the closed loop — completed-stage details must be removed, summaries written into GROWTH
+- Architecture/interface changes must create an ADR first
 
 ---
 
-## 模板目录结构
+## Template Directory Structure
 
 ```
 template/
-├── VISION.md              # 根索引：愿景 + 原子原则 + 生态位
-├── DNA.md                 # 宪法：不可变原则 + 流程 + 防腐化铁律
-├── RNA.md                 # 加载协议：三层加载 + AI协作铁律 + 大版本SOP
-├── SPEC.md                # 完整叙事：知识本体
-├── PLAN.md                # 导航牌：当前阶段 + 下一阶段预览 + 阶段总览
-├── GROWTH.md              # 生长记录：最近3次健康快照
-├── DEPRECATE.md           # 退役记录：正在死亡的功能
-├── spec/                  # 规格分卷
-│   ├── philosophy.md      # 哲学公理
-│   ├── architecture.md    # 核心架构
-│   ├── contract.md        # 传输与契约
-│   ├── safety.md          # 安全设计
-│   └── position.md        # 生态定位
-├── decisions/             # ADR 架构决策记录
+├── VISION.md              # root index: vision + atomic principles + ecological niche
+├── DNA.md                 # constitution: immutable principles + processes + anti-rot rules
+├── RNA.md                 # loading protocol: three-layer loading + AI rules + major-version SOP
+├── SPEC.md                # complete narrative: knowledge ontology
+├── PLAN.md                # navigation board: current stage + next preview + stage overview
+├── GROWTH.md              # growth record: last 3 health snapshots
+├── DEPRECATE.md           # retirement record: features that are dying
+├── spec/                  # spec volumes
+│   ├── philosophy.md      # philosophy axioms
+│   ├── architecture.md    # core architecture
+│   ├── contract.md        # transport & contract
+│   ├── safety.md          # safety design
+│   └── position.md        # ecosystem positioning
+├── decisions/             # ADR architecture decision records
 │   └── ADR-0001-template.md
-└── archive/               # 历史归档（永不删除）
-    ├── growth/            # 生长历史
-    └── deprecated/        # 死亡历史
+└── archive/               # historical archive (never deleted)
+    ├── growth/            # growth history
+    └── deprecated/        # death history
 ```
 
 ---
 
-## 方法论来源与演进
+## Methodology Origins and Evolution
 
-phyt-DNA 方法论从以下项目的实践中提炼、验证、闭环：
+phyt-DNA methodology was distilled, verified and closed-looped from the practice of the following projects:
 
-| 项目 | 角色 | 方法论状态 |
+| Project | Role | Methodology status |
 |---|---|---|
-| **Helix-Mind** | 发源地（记忆/认知中枢） | 方法论起源，Python 阶段实践 |
-| **Anaphase-Helix** | 迁移参考（执行躯体） | 完整迁移，Rust 重构验证 |
-| **Helix-Tentacle** | 最新迁移（信息触手/武器工坊） | 完整迁移 + 闭环补全（PLAN 阶段流转 SOP、ADR 命名规范） |
-| **CI-144 / BIND-19** | 协议家族实践 | "一个权威，多种呈现"架构验证 |
+| **Helix-Mind** | birthplace (memory/cognition core) | methodology origin, Python-stage practice |
+| **Anaphase-Helix** | migration reference (execution body) | full migration, Rust rebuild verification |
+| **Helix-Tentacle** | latest migration (information tentacle/weapon forge) | full migration + closed-loop completion (PLAN stage flow SOP, ADR naming convention) |
+| **CI-144 / BIND-19** | protocol family practice | "one authority, many presentations" architecture verification |
 
-**关键闭环补全历史：**
-- v1.0 (2026-08-29): 从 Helix-Mind/Anaphase-Helix/Helix-Tentacle 三项目实践中提炼，整合为独立方法论锚点项目。补全 PLAN.md 阶段流转 SOP（此前 SOP 只要求写 GROWTH/ADR/DEPRECATE，未明确要求 PLAN 阶段流转，导致知识腐化风险）。补全 ADR 命名规范（文件名与引用名必须一致）。
+**Key closed-loop completion history:**
+- v1.0 (2026-08-29): distilled from the practice of Helix-Mind/Anaphase-Helix/Helix-Tentacle, consolidated as an independent methodology anchor project. Completed the PLAN.md stage-flow SOP (the previous SOP only required GROWTH/ADR/DEPRECATE, not PLAN stage flow, creating knowledge-rot risk). Completed the ADR naming convention (filename and reference must match).
 
 ---
 
-## 设计灵感（Inspired by）
+## Design Inspiration
 
-phyt-DNA 是独立的方法论体系，但其设计哲学受以下成熟实践启发：
+phyt-DNA is an independent methodology, but its design philosophy is inspired by the following mature practices:
 
-| 成熟实践 | 启发点 |
+| Mature practice | Inspiration |
 |---|---|
-| **植物生长生物学** | 种子→基因表达→环境适应→生长→死亡→有机质回归土壤的完整生命周期 |
-| **RFC 系列文档** | 规范文档的版本化、冻结、演进机制 |
-| **OpenSSL 文档策略** | 代码与文档同 PR 审查，永不分离 |
-| **ADR（Architecture Decision Records）** | 架构决策的"为什么"与"放弃了什么"的记录方法 |
-| **Monorepo 文档治理** | 文档生命周期管理（活跃/归档/退役） |
+| **Plant growth biology** | seed → gene expression → environmental adaptation → growth → death → organic matter returning to soil, the full lifecycle |
+| **RFC document series** | versioning, freezing, evolution of spec documents |
+| **OpenSSL documentation policy** | code and docs reviewed in the same PR, never separated |
+| **ADR (Architecture Decision Records)** | recording the "why" and "what was given up" of architecture decisions |
+| **Monorepo documentation governance** | document lifecycle management (active/archived/retired) |
 
 > "Inspired by" means: we learned the design ideas, implemented independently. Ideas are not copyrightable; this is open-source etiquette, not a legal obligation.
 
 ---
 
-## 一句话总结
+## One-Sentence Summary
 
-> **phyt-DNA 让项目像植物一样生长：从种子（VISION）出发，由基因（DNA）指导，通过加载协议（RNA）表达，在知识本体（SPEC）中展开，按阶段导航（PLAN）生长，留下年轮（GROWTH），枯叶退役（DEPRECATE），有机质回归土壤（archive），决策痕迹可追溯（ADR）。防腐化铁律确保知识不腐化，逻辑闭环确保生长不漂移。**
+> **phyt-DNA makes projects grow like plants: from the seed (VISION), guided by the gene (DNA), expressed through the loading protocol (RNA), unfolded in the knowledge ontology (SPEC), growing by stage navigation (PLAN), leaving tree rings (GROWTH), retiring dead leaves (DEPRECATE), organic matter returning to soil (archive), decision traces traceable (ADR). Anti-rot ironclad rules keep knowledge from decaying; the logical closed loop keeps growth from drifting.**
 
 ---
 
-*《phyt-DNA 方法论体系》v1.0 完。*
+*End of "phyt-DNA Methodology" v1.0.*
