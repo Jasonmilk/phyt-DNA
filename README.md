@@ -180,6 +180,7 @@ Match volumes by task keywords. Load only volumes relevant to the current task; 
 | 3 | **Change order: ADR first (D-layer frozen) → code → facade sync** | Decision precedes code |
 | 4 | **Growth records keep last 3, archive beyond** | History never deleted, loaded on demand |
 | 5 | **Human confirmation before commit** | No auto-commits |
+| 6 | **400-line decoupling red line** | Any single file > 400 lines (tests excluded) must be decoupled — module split / asset-ization / component extraction. Code bloats past 400 lines; both carbon and silicon maintainers cannot digest it. Human-approved 2026-09-09. |
 
 ---
 
