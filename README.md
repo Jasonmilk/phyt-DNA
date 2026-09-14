@@ -220,6 +220,29 @@ Fill in this order (replace metadata at each file's top with your project info):
 
 ---
 
+## Contributing & Scope
+
+phyt-DNA is a **generic** methodology. The scope boundary is what keeps it reusable:
+
+- **In scope** — mechanisms any project can adopt: document shapes, stage-flow SOP, ADR
+  conventions, loading protocols, anti-rot rules, protection principles.
+- **Out of scope** — anything specific to one project or one ecosystem: project names,
+  repository paths, landing status, roadmaps, issue registers, cross-repo ledgers.
+
+Two consequences, both deliberate:
+
+1. **Examples are written by role, not by name.** "A memory-core project" is in scope; naming it
+   is not. The reader needs to know *what kind* of project validated a rule, not *which* one.
+2. **An ecosystem’s own state lives in that ecosystem’s repository.** One fact, one source. If a
+   methodology document has to be edited whenever some project finishes a migration, the coupling
+   already exists — the edit is the symptom, not the fix.
+
+A change that only makes sense for one specific project belongs in that project, even when it is
+a good change.
+
+
+---
+
 ## Template Directory Structure
 
 ```
@@ -248,17 +271,19 @@ template/
 
 ## Methodology Origins and Evolution
 
-phyt-DNA methodology was distilled, verified and closed-looped from the practice of the following projects:
+phyt-DNA methodology was distilled, verified and closed-looped from real project practice.
+Adopting projects are referenced **by role, never by name** — this repository stays generic on
+purpose (see [Contributing & Scope](#contributing--scope)):
 
-| Project | Role | Methodology status |
-|---|---|---|
-| **Helix-Mind** | birthplace (memory/cognition core) | methodology origin, Python-stage practice |
-| **Anaphase-Helix** | migration reference (execution body) | full migration, Rust rebuild verification |
-| **Helix-Tentacle** | latest migration (information tentacle/weapon forge) | full migration + closed-loop completion (PLAN stage flow SOP, ADR naming convention) |
-| **CI-144 / BIND-19** | protocol family practice | "one authority, many presentations" architecture verification |
+| Project role | Contribution to the methodology |
+|---|---|
+| A memory / cognition core project | birthplace — methodology origin, early-stage practice |
+| An execution-body project | migration reference — full migration, language-rebuild verification |
+| An information-collection project | latest migration — full migration + closed-loop completion |
+| A protocol-family practice | "one authority, many presentations" architecture verification |
 
 **Key closed-loop completion history:**
-- v1.0 (2026-08-29): distilled from the practice of Helix-Mind/Anaphase-Helix/Helix-Tentacle, consolidated as an independent methodology anchor project. Completed the PLAN.md stage-flow SOP (the previous SOP only required GROWTH/ADR/DEPRECATE, not PLAN stage flow, creating knowledge-rot risk). Completed the ADR naming convention (filename and reference must match).
+- v1.0 (2026-08-29): distilled from the practice of three early adopting projects, consolidated as an independent methodology anchor project. Completed the PLAN.md stage-flow SOP (the previous SOP only required GROWTH/ADR/DEPRECATE, not PLAN stage flow, creating knowledge-rot risk). Completed the ADR naming convention (filename and reference must match).
 
 ---
 
