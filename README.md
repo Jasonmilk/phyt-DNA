@@ -220,6 +220,22 @@ Fill in this order (replace metadata at each file's top with your project info):
 
 ---
 
+## Verification discipline
+
+**Tests passing is not done.** After `npm test`-equivalents, `typecheck` and
+`build`, run the affected real flow yourself, by hand.
+
+This is the other half of "reverse evidence". A mutation test proves an
+assertion can fail; it does not prove the feature works. Both are needed:
+
+| Question | Evidence |
+|---|---|
+| Can this assertion fail? | mutation — break the code, the assertion must go red |
+| Does the feature work? | walk the real flow — open it, use it, look at it |
+
+An implementation once passed four green suites while nobody had ever opened
+the interface it changed. The tests were correct and the feature was unverified.
+
 ## Contributing & Scope
 
 phyt-DNA is a **generic** methodology. The scope boundary is what keeps it reusable:
