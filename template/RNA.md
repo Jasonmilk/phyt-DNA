@@ -1,4 +1,5 @@
 # <项目名> RNA — 加载协议
+> © 2026 Jason Milk · Apache 2.0
 
 > **版本**：v1.0
 > **日期**：<YYYY-MM-DD>
