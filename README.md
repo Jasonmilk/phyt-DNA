@@ -118,7 +118,7 @@ Match volumes by task keywords. Load only volumes relevant to the current task; 
 
 ---
 
-## AI Collaboration Ironclad Rules (9 general + N project-specific)
+## AI Collaboration Ironclad Rules (9 general + project-specific)
 
 ### General rules (apply to all projects)
 
@@ -132,7 +132,9 @@ Match volumes by task keywords. Load only volumes relevant to the current task; 
 | 6 | **Atomic refactor** | When changing function signatures, list all call sites; fix ≤5 in this round, generate a script for >5 |
 | 7 | **Kill magic** | No hardcoded thresholds; everything goes through config |
 | 8 | **Epistemological spiral** | Understand "append-only, no modification" is not simple accumulation — via `CORRECTS` / `REFINES` / `DOUBTS` dialectics, spiral upward on the timeline |
-| 9 | **Project-specific rules** | Each project defines its own ironclad rules in DNA.md (e.g., credential red lines, sandbox boundaries) |
+| 9 | **Non-vacuity, proven** | An assertion, gate or checker is worth nothing for existing — its value is that it **can go red**. When you write or change one, prove it catches what it claims: **mutation injection** (break the subject ⇒ must go red; restore ⇒ must go green), or a **two-sided structural self-check** (synthetic bad input must be reported, synthetic good input must not), and **count how many states an invariant actually covers**. Triage by cost: assertions guarding safety or irreversible actions **must** be proven |
+
+> **Project-specific rules do not take a general number** — each project defines its own in `DNA.md` section five (credential red lines, sandbox boundaries, …).
 
 ### ADR naming convention
 
