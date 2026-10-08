@@ -11,7 +11,7 @@
 
 | 波 | 内容 | 状态 |
 |---|---|---|
-| **W0** | 判据地基：模板落盘 + 建账本 + **手工转一圈真实任务** | ✅ 完成（26 生产任务 / 23 次真实拦截 / CI 红测通过） |
+| **W0** | 判据地基：模板落盘 + 建账本 + **手工转一圈真实任务** | ✅ 完成（真实数据见 GROWTH 年轮 · 2026-W41） |
 | **W1** | adopt 到真实项目，挂上 decisions/ledger/tools | ⏳ **当前** |
 | W2 | 注入接入（UserPromptSubmit + additionalContext） | 待办 |
 | W3 | 任务系统（task-gen / claim / verify / board-gen） | 待办 |
