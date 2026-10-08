@@ -13,7 +13,7 @@
 引擎 bug   2 个红测暴露并修复：decisions/README 被误当闸门（gates 精确匹配）·
            spec-lint 文档示例误伤（gate7 只扫 *.sh）
 CI         首红（缺基线）→ 补基线 → GREEN；红测注入违规 → RED → revert → GREEN
-真实拦截   2 次（hook 实测：Edit DNA.md exit 2 / 非法 JSON fail-closed exit 2，ledger 可核）
+自检拦截   2 次（payload 级实测：Edit DNA.md exit 2 / 非法 JSON fail-closed exit 2，ledger 可核）
 override   0（无真实 override；缺口：破坏性 Bash 命令无闸门覆盖，见债务列）
 hits/任务  0/0（本期全部 kind: selftest，无 kind:task 生产任务）
 ```

@@ -1,3 +1,10 @@
+---
+id: DOC-README-v2
+owner: "@jasonmilk"
+revisit-on: 2027-04-09
+effective-from: 2026-10-09
+---
+
 # phyt-DNA
 
 > Generic self-growing project methodology template and authoritative source.
@@ -81,6 +88,20 @@ cp examples/.claude-settings.json <your-project>/.claude/settings.json
 
 **W0 rule: zero scripts at first.** Do one real task by hand and log it.
 Writing scripts before you have real data = guessing which gates deserve to exist.
+
+---
+
+## Status · 当前真实状态（诚实边界）
+
+| 项 | 状态 |
+|---|---|
+| 闸门机制 | ✅ 6 条 `hard: true`，心跳 6/6 RED，CI 全绿 |
+| **内圈转速** | ⚠️ **0/0 —— phyt-DNA 自身尚无 `kind: task` 生产任务** |
+| 物理拦截 | ⚠️ 仅 payload 级实测，**未在真实 agent 任务中发生** |
+| `--cull` | ✅ 法官已到位，但**尚无被告**（无闸门经历过 20 个生产任务） |
+
+> 机制完备 ≠ 已被生产验证。这套系统在自检中全绿，
+> **在生产中一次没转过**。第一个真实项目才会给出真数据。
 
 ---
 
