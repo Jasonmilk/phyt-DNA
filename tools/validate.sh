@@ -7,6 +7,7 @@ case "${1:-}" in
   --timing) only_timing="$2";;
   --override) printf '{"ts":"%s","gate_id":"%s","verdict":"block","override":true,"source":"cli","event_id":"manual","note":"%s"}\n' "$(TZ=CST-8 date +%Y-%m-%dT%H:%M:%S%z)" "$2" "${4:-无理由}" >> ledger/hits-2026.jsonl; echo "override 已留痕"; exit 0;;
   --appeal) printf '{"ts":"%s","gate_id":"%s","verdict":"appeal","override":false,"source":"user-appeal","event_id":"manual","note":"%s"}\n' "$(TZ=CST-8 date +%Y-%m-%dT%H:%M:%S%z)" "$2" "${4:-无理由}" >> ledger/appeals-2026.jsonl; echo "申诉已独立留痕"; exit 0;;
+  --cull) mode=cull;;
 esac
 
 gates(){ for f in decisions/*.md; do [ -e "$f" ] || continue
@@ -36,6 +37,29 @@ if [ "$mode" = probe ]; then
   cp /tmp/inj.bak "$F" 2>/dev/null; rm -f /tmp/inj.bak
   if [ -n "$out" ]; then echo "  心跳 RED — 检出: $out"; exit 0
   else echo "  心跳 NOT RED — 闸门已腐化" >&2; exit 2; fi
+fi
+
+if [ "$mode" = cull ]; then
+  # 法官（T7）：只报告不删。法来自 ADR（无名规则不可引用，N 不写死在引擎）
+  N=$(grep '^cull-after:' decisions/*.md 2>/dev/null | head -1 | awk '{print $2}')
+  if [ -z "$N" ]; then echo "  [法未立] 无 cull-after ADR —— 用默认 N=20（请结晶成 ADR）" >&2; N=20; fi
+  ldir="${PHYT_LEDGER:-ledger}"
+  taskhits=$(grep -h '"kind"[[:space:]]*:[[:space:]]*"task"' "$ldir"/hits-*.jsonl 2>/dev/null | tail -n "$N")
+  cnt=$(printf '%s\n' "$taskhits" | grep -c . || true)
+  if [ "${cnt:-0}" -lt "$N" ]; then
+    echo "  cull: ledger 仅 ${cnt:-0}/$N 条 kind:task —— 样本不足，不判定"; exit 0
+  fi
+  found=0
+  for id in $(gates); do
+    grep -q '^risk: high' "decisions/$id.md" && continue
+    grep -q '^expires-on: [^n]' "decisions/$id.md" && continue
+    if ! printf '%s\n' "$taskhits" | grep -q "\"gate_id\"[[:space:]]*:[[:space:]]*\"$id\""; then
+      echo "  冷存候选: ${id}（最近 $N 个 kind:task 未命中 ∧ 心跳仍红）—— 报告制，需人批准"
+      found=1
+    fi
+  done
+  [ "$found" = 0 ] && echo "  cull: 无冷存候选"
+  exit 0
 fi
 
 input=$(cat)
