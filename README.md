@@ -55,17 +55,24 @@ CI red-test passed · 5 engine bugs found and fixed · 1 hypothesis killed by ex
 ## Quick start
 
 ```bash
-# 1. Copy the template into your project
-cp -r template/* <your-project>/
+# 1. Copy the methodology skeleton into your project
+#    v2: 仓库根即模板（原 template/ 已并入根）
+git clone git@github.com:Jasonmilk/phyt-DNA.git /tmp/phyt-dna
+cp -r /tmp/phyt-dna/{DNA.md,RNA.md,SPEC.md,PLAN.md,GROWTH.md,VISION.md,DEPRECATE.md,decisions,ledger,fixtures,tools} <your-project>/
 
 # 2. Write your first gate as an ADR (no code changes needed)
-#    see examples/ADR-EXAMPLE.md
+#    see examples/ADR-EXAMPLE.md, then copy it and fill in your own check:
+cp examples/ADR-EXAMPLE.md <your-project>/decisions/ADR-<date>-<your-first-gate>.md
 
 # 3. Turn on CI (the only real gate — pre-commit can be skipped with --no-verify)
 cp examples/phyt.yml <your-project>/.github/workflows/
+#    first run will be RED until the asset baseline lands:
+cd <your-project> && ./tools/check-baseline.sh --update && git add tools/baseline.sha256 && git commit
 
 # 4. Optional: hook for real-time interception
-cp examples/pretooluse-gate.sh <your-project>/tools/hooks/
+#    ⚠ 未声称已验证：物理拦截仅 payload 级实测（Edit DNA.md → exit 2），
+#    尚未在真实 agent 任务中发生。装上后请先跑一次真实任务自行验证。
+cp examples/pretooluse-gate.sh <your-project>/.claude/hooks/pretooluse-gate.sh
 cp examples/.claude-settings.json <your-project>/.claude/settings.json
 ```
 
@@ -74,10 +81,25 @@ Writing scripts before you have real data = guessing which gates deserve to exis
 
 ---
 
+## Adoption · 三步把 V2 落地到你的项目
+
+README 承诺：*"Every project adopting this methodology lands the zero-cost checklist at its first public milestone."*
+V2 让这句话**第一次可执行**——以前是手工打勾，现在是 `cp -r` + CI 自动检查：
+
+1. **拷贝骨架**（Quick start 第 1 步）：6 个根文档 + `decisions/ ledger/ fixtures/ tools/` 全部进项目
+2. **写第一条 ADR**（第 2 步）：把第一条散文约束结晶成可执行闸门——有 `id`、有 `check:`、有心跳、会死
+3. **开 CI**（第 3 步）：`.github/workflows/phyt.yml` 五步门禁，push 即检查
+   - 首次运行**必然 RED**（缺资产基线）——按第 3 步补基线即复绿，不要绕开
+   - 之后每次 push：资产完整性 / spec-lint / 心跳 / 全仓扫描 / 防装饰，5 步全过才算绿
+
+hook（第 4 步）保持 **optional**：组装已验证，物理拦截未在真实 agent 任务中发生——不要声称已验证。
+
+---
+
 ## Directory
 
 ```
-template/
+根目录（v2：仓库根即模板，原 template/ 已并入根）
   DNA.md          immutable gene (10 native + 6 derived laws)
   RNA.md          loading protocol (3-layer attention budget)
   SPEC.md         knowledge ontology
