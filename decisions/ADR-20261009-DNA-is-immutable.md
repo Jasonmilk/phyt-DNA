@@ -1,0 +1,35 @@
+---
+id: ADR-20261009-DNA-is-immutable
+seq: 0006
+status: accepted
+hard: true
+applies-to: ["DNA.md"]
+effective-from: 2026-10-09
+timing: pre
+redtest: "validate --probe ADR-20261009-DNA-is-immutable"
+revisit-on: 2027-04-09
+expires-on: null
+owner: "@jason"
+origin: "README 硬约束：DNA 不可直接编辑（改基因 = 修宪 = 走 ADR + 人批准）"
+risk: normal
+check: |
+  [ "$F" = "DNA.md" ] && echo "DNA 不可变: 禁止写入 $F（改基因 = 修宪，走 ADR + 人批准）"
+last-hit: null
+hit-count: 0
+supersedes: null
+---
+
+# DNA 不可变（路径黑名单）
+
+## 出处
+
+README 硬约束 + DNA.md 头注："本文件不可直接编辑。改基因 = 修宪 = 走 ADR + 人批准。"
+
+## timing: pre 的原因
+
+PreToolUse 时**读不到未来内容**，只能判路径 —— 所以本闸门是路径黑名单
+（`applies-to: ["DNA.md"]`），不是内容判定。事后全仓扫描（CI）只跑 post 型，本闸门天然豁免。
+
+## 红测
+
+`fixtures/<id>/inject.sh` 写入任意内容（pre 型不看内容）⇒ 路径命中 ⇒ 心跳报 RED
