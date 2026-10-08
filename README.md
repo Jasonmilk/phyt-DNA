@@ -29,17 +29,19 @@ Methodology protection spec: [`docs/PROTECTION.md`](docs/PROTECTION.md)
 ## What's new in V2
 
 V1 was a document template. **V2 adds the parts that were proven by actually running it:**
+演进走 **diff，不走 rewrite**——下表即演进记录，债务列不许藏。
 
-| | V1 | V2 |
-|---|---|---|
-| Gates | concept in docs | **`hard: true` field on an ADR** — not a separate layer |
-| Check logic | hardcoded in engine | **ADR carries its own `check:` field** |
-| Timing | not distinguished | **`timing: pre\|post`** — path before, content after |
-| Time boundary | none | **`effective-from`** (prevents retroactive false positives) |
-| Verification | none | **3-layer stack** + self-reference boundary |
-| CI | written but never run | **Running + red-test verified** |
-| Cull threshold N | only in conversation | **Landed as an ADR** (unnamed rules can't be cited) |
-| Total load | unknown | **278 lines ≤ 280** ✅ |
+| 项 | v1 | v2 | 债务（未完成，不许藏） |
+|---|---|---|---|
+| 闸门 | README 散文（无 id、无 check、不会死） | **`hard: true` 字段的 ADR**（有 id、有 `check:`、有心跳、会死） | — |
+| 判定 | 引擎硬编码 | **ADR 自带 `check:`**（引擎零硬编码闸门） | — |
+| 时机 | 未区分 | **`timing: pre｜post`**（路径先于内容） | — |
+| 验证 | 无 | 三层栈 + 自指边界 | — |
+| CI | 无 | 5 步 + 红测（首红 → 补基线 → 绿；注入违规 → RED → revert → 绿） | — |
+| hook 物理拦截 | 无 | `.claude/` hook 组装完成，payload 级实测（Edit DNA.md → exit 2） | **未在真实 agent 任务中发生**（T2 缺口，不声称已验证） |
+| `--cull` | 法只在对话里 | 法官入位（`validate.sh --cull`，只报告不删） | **执法未落地**：冷存要人批准，尚无真实冷存发生 |
+| 年轮格式 | 只有四个总数 | 三数 + 三分类（hits/任务 · override_rate · 心跳红率） | **趋势/分布/override 按原因分类字段**（T8） |
+| 60 分钟参数 | 硬编码 | 可校准字段 | **跨年后校准**（revisit-on 2027-04-09） |
 
 ### Evidence-based
 
@@ -47,8 +49,9 @@ Every conclusion in [`docs/PROTECTION.md`](docs/PROTECTION.md) is tagged
 **已实测 (measured) / 研究背书 (research-backed) / 待验证 (unverified)**.
 Unverified items must not be written into DNA.
 
-Measured in a real repo: **26 production tasks · 23 real interceptions · 5/5 heartbeats ·
-CI red-test passed · 5 engine bugs found and fixed · 1 hypothesis killed by experiment.**
+Measured in this repo (v2.1, 2026-10-09): **6 hard:true gates · 6/6 heartbeats RED ·
+5 ADR crystallized + 1 governance rule · 2 engine bugs found & fixed by probing ·
+CI: first run RED (no baseline) → GREEN → red-test RED → GREEN · 2 real hook interceptions (payload-level).**
 
 ---
 
