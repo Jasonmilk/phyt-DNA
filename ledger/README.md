@@ -13,3 +13,6 @@
 
 ## 独立申诉账
 `appeals-<年>.jsonl` —— 破解"运营者自己分类自己"的自证陷阱。
+运营者对拦截的申诉**独立记入本账**（`source: user-appeal`），与 override 分账：
+`tools/validate.sh --appeal <id> --note "<原因>"` 追加写入。
+override 是"运营者放行"，appeal 是"运营者不服"——两者在年轮里分开统计。
