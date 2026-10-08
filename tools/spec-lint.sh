@@ -59,7 +59,8 @@ else
 fi
 
 # 闸门7：测试基础设施不得含全量还原（ADR-0009，五次同族现身）
-BAD=$(grep -rlE 'git checkout -- \.|git clean -fd|git stash' tools/ fixtures/ 2>/dev/null | grep -v 'spec-lint.sh')
+# 只扫 *.sh 脚本：fixtures/README.md 等文档示例文字会合法地提及禁令本身（T0 顺带修复）
+BAD=$(grep -rlE --include='*.sh' 'git checkout -- \.|git clean -fd|git stash' tools/ fixtures/ 2>/dev/null | grep -v 'spec-lint.sh')
 if [ -n "$BAD" ]; then
   red "测试脚本含全量还原命令（会破坏被测物）: $(echo $BAD | tr '\n' ' ')"
 else

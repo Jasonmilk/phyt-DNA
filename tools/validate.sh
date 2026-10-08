@@ -39,7 +39,16 @@ if [ "$mode" = probe ]; then
 fi
 
 input=$(cat)
-paths=$(printf '%s' "$input" | grep -o '"paths":\[[^]]*\]' | grep -o '"[^"]*"' | tr -d '"')
+# T0-1：路径提取改 python3 JSON 解析（grep 正则会在含引号/转义命令上截断漏报）
+paths=$(printf '%s' "$input" | python3 -c '
+import sys, json
+try:
+    d = json.load(sys.stdin)
+    p = d.get("paths") or []
+    print("\n".join(str(x) for x in p if isinstance(x, str)))
+except Exception:
+    pass
+')
 [ -z "$paths" ] && { printf '{"verdict":"pass","scanned":0,"hits":0}\n'; exit 0; }
 scanned=0; hits=""
 while read -r id; do
@@ -72,11 +81,3 @@ if [ -z "$hits" ]; then printf '{"verdict":"pass","scanned":%d,"hits":0}\n' "$sc
 printf '{"verdict":"block","scanned":%d,"hits":%d,"rule_id":"%s"}\n' "$scanned" "$(echo "$hits"|tr '|' '\n'|grep -c .)" "$(echo "$hits"|sed 's/^|//'|cut -d: -f1)"
 echo "违规: $hits" >&2
 exit 2
-  [ -n "${INJ_BACKUP:-}" ] && cp "$INJ_BACKUP" "$F" 2>&1
-  [ -n "${INJ_BACKUP:-}" ] && cp "$INJ_BACKUP" "$F" 2>&1
-
-[ -n "${INJ_BACKUP:-}" ] && cp "$INJ_BACKUP" "$F" 2>&1
-
-
-
-

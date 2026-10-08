@@ -28,16 +28,18 @@ jobs:
 
       - name: 4 · 全仓库违规扫描（只跑 timing:post 闸门）
         # timing:pre 是路径黑名单，事后全仓扫描必然误报 ⇒ 只扫 post 型
+        # 含 *.yml：lesson ADR（ADR-20261009-lesson-must-land-in-artifact）判定对象是 CI 工件
         run: |
           fail=0
-          for f in $(git ls-files '*.md' '*.py' '*.sh'); do
+          for f in $(git ls-files '*.md' '*.py' '*.sh' '*.yml'); do
             printf '{"tool":"Write","paths":["%s"]}\n' "$f" \
               | ./tools/validate.sh --timing post >/dev/null 2>&1
             [ $? = 2 ] && { echo "违规: $f"; fail=1; }
           done
           [ "$fail" = 0 ] || exit 1
 
-      - name: 5 · hook 配置未被就地篡改
-        run: |
-          git diff --exit-code HEAD -- .claude/ || {
-            echo "hook 配置漂移"; exit 1; }
+      - name: 5 · 规范自检（spec-lint）· 必须真实可红
+        # ⚠️ 永绿装饰 = 伪证（T0-2）。本步曾被「git diff --exit-code 检查 .claude/」占据
+        # —— 该检查在 CI checkout 下恒绿。换成 spec-lint，让"规范自身未过闸门"能真实
+        # 变红；与 step2 双保险，防止装饰性检查被重写回去（ADR-…-lesson-must-land-in-artifact）。
+        run: ./tools/spec-lint.sh docs/PROTECTION.md
