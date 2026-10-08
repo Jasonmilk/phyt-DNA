@@ -19,7 +19,7 @@ jobs:
         run: |
           fail=0
           for id in $(ls decisions/*.md | xargs -n1 basename | sed 's/.md$//'); do
-            grep -q '^hard: true' "decisions/$id.md" || continue
+            grep -q '^hard: true$' "decisions/$id.md" || continue
             grep -q '^status: deprecated' "decisions/$id.md" && continue
             echo "probe: $id"
             ./tools/validate.sh --probe "$id" || fail=1

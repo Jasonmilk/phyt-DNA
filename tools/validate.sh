@@ -10,7 +10,7 @@ case "${1:-}" in
 esac
 
 gates(){ for f in decisions/*.md; do [ -e "$f" ] || continue
-  grep -q '^hard: true' "$f" || continue
+  grep -q '^hard: true$' "$f" || continue
   grep -q '^status: deprecated' "$f" && continue
   basename "$f" .md; done; }
 glob_first(){ local id="$1" g p
