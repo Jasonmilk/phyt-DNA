@@ -1,0 +1,3 @@
+# decisions/ —— 闸门池（唯一真源）
+# adopt 后把你的第一条闸门写成 ADR 放在这里，引擎自动发现，无需改代码。
+# 格式见 template/decisions/README.md 与仓库 examples/ADR-EXAMPLE.md

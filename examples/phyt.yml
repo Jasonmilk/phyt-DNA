@@ -1,0 +1,43 @@
+name: phyt-DNA Gate
+
+on: [push, pull_request]
+
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+
+      - name: 1 · 闸门资产完整性（ADR-0004 检测器）
+        run: ./tools/check-baseline.sh
+
+      - name: 2 · 规范自检（spec-lint）
+        run: ./tools/spec-lint.sh docs/PROTECTION.md
+
+      - name: 3 · 全部闸门能力心跳
+        run: |
+          fail=0
+          for id in $(ls decisions/*.md | xargs -n1 basename | sed 's/.md$//'); do
+            grep -q '^hard: true' "decisions/$id.md" || continue
+            grep -q '^status: deprecated' "decisions/$id.md" && continue
+            echo "probe: $id"
+            ./tools/validate.sh --probe "$id" || fail=1
+          done
+          [ "$fail" = 0 ] || { echo "心跳失败"; exit 1; }
+
+      - name: 4 · 全仓库违规扫描（只跑 timing:post 闸门）
+        # timing:pre 是路径黑名单，事后全仓扫描必然误报 ⇒ 只扫 post 型
+        run: |
+          fail=0
+          for f in $(git ls-files '*.md' '*.py' '*.sh'); do
+            printf '{"tool":"Write","paths":["%s"]}\n' "$f" \
+              | ./tools/validate.sh --timing post >/dev/null 2>&1
+            [ $? = 2 ] && { echo "违规: $f"; fail=1; }
+          done
+          [ "$fail" = 0 ] || exit 1
+
+      - name: 5 · hook 配置未被就地篡改
+        run: |
+          git diff --exit-code HEAD -- .claude/ || {
+            echo "hook 配置漂移"; exit 1; }
