@@ -10,10 +10,14 @@
 #
 # Usage: bash tools/ci-local.sh
 set -uo pipefail
-# ★ 复现【不应改动仓库】：探针会写 kind:probe 账本 ⇒ 让它写进临时目录，
-# 否则每跑一次 ci-local 都弄脏 ledger/hits-2026.jsonl（实测过）。
-export PHYT_LEDGER="$(mktemp -d)"
-trap 'rm -rf "$PHYT_LEDGER"' EXIT
+# ★ 复现【不应改动仓库】：探针会写 kind:probe 账本。
+# ⚠️ 第一版我改成 PHYT_LEDGER=<临时目录> —— 那是错的：**判据读临时账本，而夹具仍写 $F（真实账本）**
+# ⇒ **注入目标 ≠ 检测目标**（第 29 条 / P5 —— 我一直在拿这条管别人）。实测它让 replay 闸门假红。
+# ⇒ 正确做法与本仓夹具的惯例一致：**备份 + 还原**，不改读取路径。
+LED="ledger/hits-2026.jsonl"
+LED_BAK="$(mktemp)"
+cp "$LED" "$LED_BAK" 2>/dev/null || true
+trap 'cp "$LED_BAK" "$LED" 2>/dev/null; rm -f "$LED_BAK"' EXIT
 fail=0
 step(){ printf '  %-42s ' "$1"; }
 
