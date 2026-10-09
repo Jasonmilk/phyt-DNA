@@ -10,6 +10,7 @@ FIX_DIR="${PHYT_FIXTURES:-fixtures}"
 LED_DIR="${PHYT_LEDGER:-ledger}"
 mode=check; target=""; only_timing=""
 case "${1:-}" in
+  --index) mode=index;;
   --probe-all) mode=probe; target="";;
   --probe) mode=probe; target="$2";;
   --timing) only_timing="$2";;
@@ -35,6 +36,25 @@ glob_first(){ local id="$1" g p
   done < <(grep '^applies-to:' "$DEC_DIR/$id.md" | sed 's/.*\[//;s/\]//' | tr -d '"' | tr ',' '\n')
 }
 check_of(){ awk '/^check: \|/{f=1;next} f&&/^[^ ]/{f=0} f&&NF{print}' "$DEC_DIR/$1.md" | sed 's/^  //'; }
+
+
+# ── --index：生成 RNA.md §三 所规定的 INDEX（一行一条闸门）──────────────────────
+# 复用【引擎自己的】gates()（不重写发现逻辑）+ 夹具存在性（不 grep 目录）。
+# 只写【结构】（id / applies-to / 正例 / 反例 / timing），不写【状态】——
+# 状态每次运行都变，写进去 INDEX 就会每次脏；结构是稳定的（确定性优先）。
+if [ "$mode" = index ]; then
+  printf '| 闸门 id | applies-to | 正例 inject.sh | 反例 counter.sh | timing |\n'
+  printf '|---|---|---|---|---|\n'
+  while read -r g; do
+    [ -n "$g" ] || continue
+    at=$(grep '^applies-to:' "$DEC_DIR/$g.md" | sed 's/^applies-to: *//')
+    tm=$(grep -m1 '^timing:' "$DEC_DIR/$g.md" | awk '{print $2}')
+    inj=$([ -f "$FIX_DIR/$g/inject.sh" ] && echo yes || echo NO)
+    cnt=$([ -f "$FIX_DIR/$g/counter.sh" ] && echo yes || echo NO)
+    printf '| `%s` | `%s` | %s | %s | %s |\n' "$g" "$at" "$inj" "$cnt" "${tm:-未声明}"
+  done < <(gates)
+  exit 0
+fi
 
 # ── P3 · 零闸门具名（BACKFLOW 2026-10-09）──────────────────────────────────────
 # 空集合上的"全部通过"是伪证：没有任何断言被执行过。
