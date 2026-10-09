@@ -127,6 +127,16 @@ if [ "$mode" = probe ]; then
   if [ -n "$target" ]; then probe_one "$target"; exit $?; fi
   rc=0; ran=0; skipped=""
   while read -r g; do [ -n "$g" ] || continue
+    # ★ `probe: none` = 具名的"本闸门不可 probe"（它的回归判据在别处）。
+    # 为什么要这个档：有些判据的对象是【任意输入字符串】而不是文件（例：危险动作的形状），
+    # 或者它的 applies-to 正是它要禁的路径（例：权威卷）⇒ probe 的"路径模型"表达不了它，
+    # 强行 probe 只会得到恒红。⇒ 与 NOT_DRAWN 同思想：**可以不被 probe，但必须具名并给理由**。
+    if [ "$(grep -m1 '^probe:' "$DEC_DIR/$g.md" | awk '{print $2}')" = "none" ]; then
+      why=$(grep -m1 '^probe-why:' "$DEC_DIR/$g.md" | sed 's/^probe-why: *//')
+      echo "  [具名·不可 probe] $g —— ${why:-未给理由}" >&2
+      [ -z "$why" ] && rc=2   # 不给理由 ⇒ 不算具名 ⇒ 失败
+      continue
+    fi
     if [ -f "$FIX_DIR/$g/inject.sh" ]; then ran=$((ran+1)); probe_one "$g" || rc=2
     else skipped="$skipped $g"; fi
   done < <(gates)
@@ -138,7 +148,7 @@ if [ "$mode" = probe ]; then
     echo "           ⇒ 各补一个 fixtures/<id>/counter.sh 与 inject.sh；证据不足时不得算通过" >&2
     rc=2
   fi
-  echo "  probe-all: 跑了 $ran 个闸门$( [ -n "$skipped" ] && echo "，无夹具 $(echo $skipped | wc -w | tr -d ' ')" )"
+  echo "  probe-all: 跑了 $ran 个闸门$( [ -n "$skipped" ] && echo "，无夹具 $(echo $skipped | wc -w | tr -d ' ')" )$(grep -l '^probe: none' "$DEC_DIR"/ADR-*.md 2>/dev/null | wc -l | tr -d ' ' | sed 's/^/，具名不可probe /')"
   exit $rc
 fi
 

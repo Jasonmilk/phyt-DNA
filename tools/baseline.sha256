@@ -8,7 +8,7 @@ a43fdb802ad75491b66e086b147a0f49a80e1f2f51e8c6b77c46fbf94cb8a6c8  decisions/ADR-
 2b0cdae7ca41c80491d1bb8a8ddf39632032d0868eec961e2bdf077ba42e4e93  decisions/ADR-20261009-VISION-must-exist-and-be-a-seed.md
 31436b07e3f41c3d7ebe30174ef94f988a8d568b1c605ef3010e85df6e9e04c2  decisions/ADR-20261009-claim-needs-redtest.md
 2aa2843fe7062f605a1b6d0212bd9eb9fc771943eb6da011173c1efd0f1f946c  decisions/ADR-20261009-cull-after-20-misses.md
-bcacb4dbc3ee27b086cc55cd03f3f4a2b9ddf485df2697af62672e5107e1f7ee  decisions/ADR-20261009-dangerous-action-shapes-must-be-blocked.md
+884a3850621e2f3ba0eef8c74e2b875f9fcf3092290a5f177b6bfe50a420ffec  decisions/ADR-20261009-dangerous-action-shapes-must-be-blocked.md
 fee43d4d5a84ac4438c2d80ca89ee32d2e2bd820e4686572d1074824160b7152  decisions/ADR-20261009-docs-must-be-indexed.md
 b010774f1301c63c24778d33ec9a59f9f0a3ffab37e1c3e947612bcb4d67c4d8  decisions/ADR-20261009-index-must-be-regenerated.md
 38e5af83ffee5c6a814ec41af494bb8f6d27968ddee168015b8af7792589a705  decisions/ADR-20261009-layer1-total-under-280-lines.md
@@ -22,4 +22,4 @@ fe45b942465413cc5d7a903bf6de0c3fb07d709df5d7b52ac12804dbbd4c895b  decisions/ADR-
 74f630969da6f328345d498862916dd86372c6b2ea3f00476da81ec515772cfe  tools/ci-local.sh
 48e2b2765ff85bf9470ca1938708f3f7296ef948210515716a0f599ccf415b8d  tools/claim-check.sh
 1a0a2a1fa13d26613276f125bee80716a5b6e849b53ebcc615c3e3254760fc5a  tools/spec-lint.sh
-94b80f366bca153ae27c99099f9a1f3ef28c47bc6ec8971de886d18ad6f4d8e1  tools/validate.sh
+ca36df7ca80d4db531ddfa25dce919f682b343498850c7f6fa89374a70e42369  tools/validate.sh

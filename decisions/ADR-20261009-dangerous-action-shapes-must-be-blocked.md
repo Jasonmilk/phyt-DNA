@@ -14,6 +14,8 @@ expires-on: null
 owner: "@jason"
 origin: "真实经历（2026-10-09，x 光 K22）：PreToolUse 执行闸自述'三层 fail-closed'，实测对【解析/依赖错误】确实如此，但对【真危险动作】是 fail-open —— `rm -rf` 形状的命令 ⇒ exit 0 · 写 DNA.md ⇒ exit 0。根因：本仓闸门【全是内容型】（PLAN 行数 / DNA 在基线里……），没有一条管【命令形状】；而 hook 把 Bash 的 command 当作 path 送进引擎，'rm -rf /tmp/x' 字符串【不匹配任何 applies-to glob】⇒ 闸门根本不运行。"
 risk: high
+probe: none
+probe-why: "它的对象是【任意输入字符串】（命令形状）与【它要禁的那些路径本身】；probe 的路径模型表达不了它（强行 probe 只会恒红）。回归判据是 examples/claude-code/hooks/hook_test.sh（9 例，已接入 ci-local 第 5a 步）"
 check: |
   # ★ 只判【权威卷路径】。（第一版曾用 applies-to=["**"] 想连命令形状一起管 —— **那是错的**：
   #   引擎有一条既有且正确的规则"路径不存在 ⇒ fail-closed"，而 `**` 匹配一切 ⇒
