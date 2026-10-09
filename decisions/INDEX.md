@@ -7,6 +7,7 @@
 | `ADR-20261009-GROWTH-max-3-entries` | `["GROWTH.md"]` | yes | yes | post |
 | `ADR-20261009-PLAN-must-exist` | `["PLAN.md"]` | yes | yes | post |
 | `ADR-20261009-PLAN-must-stay-under-150-lines` | `["PLAN.md"]` | yes | yes | post |
+| `ADR-20261009-VISION-must-exist-and-be-a-seed` | `["VISION.md"]` | yes | yes | post |
 | `ADR-20261009-index-must-be-regenerated` | `["decisions/INDEX.md"]` | yes | yes | post |
 | `ADR-20261009-layer1-total-under-280-lines` | `["DNA.md", "RNA.md", "SPEC.md"]` | yes | yes | post |
 | `ADR-20261009-lesson-must-be-replayed` | `["ledger/hits-2026.jsonl"]` | yes | yes | post |

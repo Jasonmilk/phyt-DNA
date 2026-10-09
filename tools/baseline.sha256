@@ -3,6 +3,7 @@
 e260f056a5cea117cea79e6e5875f729db0c74c770a177ea73ed2629aa5c1f9a  decisions/ADR-20261009-GROWTH-max-3-entries.md
 cc96db7f01fc5adddf739210b99798c9a33cc341307164c545e79220cff3f78c  decisions/ADR-20261009-PLAN-must-exist.md
 a43fdb802ad75491b66e086b147a0f49a80e1f2f51e8c6b77c46fbf94cb8a6c8  decisions/ADR-20261009-PLAN-must-stay-under-150-lines.md
+2b0cdae7ca41c80491d1bb8a8ddf39632032d0868eec961e2bdf077ba42e4e93  decisions/ADR-20261009-VISION-must-exist-and-be-a-seed.md
 31436b07e3f41c3d7ebe30174ef94f988a8d568b1c605ef3010e85df6e9e04c2  decisions/ADR-20261009-claim-needs-redtest.md
 2aa2843fe7062f605a1b6d0212bd9eb9fc771943eb6da011173c1efd0f1f946c  decisions/ADR-20261009-cull-after-20-misses.md
 b010774f1301c63c24778d33ec9a59f9f0a3ffab37e1c3e947612bcb4d67c4d8  decisions/ADR-20261009-index-must-be-regenerated.md
@@ -10,7 +11,7 @@ b010774f1301c63c24778d33ec9a59f9f0a3ffab37e1c3e947612bcb4d67c4d8  decisions/ADR-
 bc1f0419dfa994fef5ad804e47e55fa99b79878d96edaf0f9277b9ac404babb3  decisions/ADR-20261009-lesson-must-be-replayed.md
 ace7bf03604ecec0fdfa46ee10e1c88c37d2ec6665816a0974c028bbf0bc788c  decisions/ADR-20261009-lesson-must-land-in-artifact.md
 c7651b77758a2168fc47365332d71bff0845cf10a6f70f108f95cddc0fdd5efa  decisions/ADR-20261009-shell-var-before-cjk-must-brace.md
-be61df3ca824d44979f0c94c77cd283ffb942ffa10c885a9c440b8fd468f90a9  decisions/INDEX.md
+bb8d4000cbc7d097320bc814df804cd0ae4cc7a33e15edb4162fa86ef918a9a9  decisions/INDEX.md
 57262df467a982a9406fc75c3872c79b47e17d89d39066036ee70b54d2ca40e6  decisions/README.md
 42e24e0dc81dc4b6ef232d13b94e041b6cab81ffe3aa0dda8995631a2d6a3ab3  tools/check-baseline.sh
 b37b88134a010a1adbad56c782e7b353060e816ebc0ec4b1c7472e553135f568  tools/ci-local.sh
