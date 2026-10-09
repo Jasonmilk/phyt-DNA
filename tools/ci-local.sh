@@ -10,6 +10,10 @@
 #
 # Usage: bash tools/ci-local.sh
 set -uo pipefail
+# ★ 复现【不应改动仓库】：探针会写 kind:probe 账本 ⇒ 让它写进临时目录，
+# 否则每跑一次 ci-local 都弄脏 ledger/hits-2026.jsonl（实测过）。
+export PHYT_LEDGER="$(mktemp -d)"
+trap 'rm -rf "$PHYT_LEDGER"' EXIT
 fail=0
 step(){ printf '  %-42s ' "$1"; }
 
