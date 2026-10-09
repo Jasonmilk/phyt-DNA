@@ -278,7 +278,7 @@ ledger/hits-<年>.jsonl      append-only，kind 必填
 ledger/appeals-<年>.jsonl   独立申诉账（破解自证陷阱）
 fixtures/<id>/inject.sh     反例注入，接受 $F
 tools/validate.sh           引擎（自动发现 + --probe/--override/--appeal/--timing）
-tools/spec-lint.sh          规范自检（7 条闸门）
+tools/spec-lint.sh          规范自检（当前闸门数：`ls decisions/ADR-*.md | wc -l`）
 tools/check-baseline.sh     闸门资产哈希（防就地篡改）
 tools/claim-check.sh        报告自查：每个"已实测"断言，账本里有记录吗
 .github/workflows/phyt.yml  CI 五步：资产完整性 / spec-lint / 心跳 / 全仓扫描 / hook 漂移
@@ -361,7 +361,9 @@ validity: alive | unproven | unattributable | flaky
 
 ### ★ 本仓第一次 `--probe-all` 的结果（2026-10-09）
 
-**6 个闸门全部活着（RED），但每个都报告"无反例夹具"** —— 即：**它们都只证了"该红的红"。**
+**当时 6 个闸门全部活着（RED），但每个都报告"无反例夹具"** —— 即：**它们都只证了"该红的红"。**
+**⇒ 现况（非当时）：闸门数 `ls decisions/ADR-*.md | wc -l` · 每个都已有反例（`counter.sh`）·
+`bash tools/validate.sh --probe-all` 有"基线（未注入）/ 注入后 / 反例守住"三行。**
 **⚠️ 本节初稿曾写成"三条闸门报出本仓自身的不合规"，那是**错读**，已更正：**
 那三条 RED 是**夹具注入后**的世界（`PLAN.md 177>150` · `layer1 326>280` · `examples/phyt.yml` 残留），
 **不是仓库的状态** —— 实测仓库为 `PLAN.md 26 行` · `DNA+RNA+SPEC 175 行` · `examples/phyt.yml` 无该残留。
