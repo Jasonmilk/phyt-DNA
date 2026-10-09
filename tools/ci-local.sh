@@ -21,7 +21,20 @@ trap 'cp "$LED_BAK" "$LED" 2>/dev/null; rm -f "$LED_BAK"' EXIT
 fail=0
 step(){ printf '  %-42s ' "$1"; }
 
-step "1 · 资产完整性"; if ./tools/check-baseline.sh >/dev/null 2>&1; then echo OK; else echo "★ RED"; fail=1; fi
+step "1 · 资产完整性"
+if ./tools/check-baseline.sh >/tmp/phyt_baseline.log 2>&1; then
+  echo "OK"
+else
+  echo "★ RED"
+  # ★ 鸡生蛋要【写成指令】，不是留给记忆：改动 tools/ 或 decisions/ 之后，基线必然先红一次
+  # （那个被改的文件还没登记）。本会话两次踩在这里（第二次还推了）。⇒ 与其提示"别忘了"，
+  # 不如把下一步印出来：跑 --update，然后【再跑一次本脚本】。
+  if grep -q '资产未登记' /tmp/phyt_baseline.log; then
+    echo "      ⇒ 这是预期内的：你改了 tools/ 或 decisions/，那个文件还没登记进基线。"
+    echo "      ⇒ 下一步：bash tools/check-baseline.sh --update && bash tools/ci-local.sh"
+  fi
+  fail=1
+fi
 step "2 · spec-lint";  if ./tools/spec-lint.sh docs/PROTECTION.md >/dev/null 2>&1; then echo OK; else echo "★ RED"; fail=1; fi
 
 step "3 · 全部闸门能力心跳"
