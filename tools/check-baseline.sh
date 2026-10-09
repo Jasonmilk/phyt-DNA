@@ -6,11 +6,15 @@ BASE="tools/baseline.sha256"
 RED(){ printf '  RED  %s\n' "$1" >&2; fail=1; }
 fail=0
 
-calc(){ find decisions tools -type f \( -name '*.md' -o -name '*.sh' \) -print0 \
+# DNA.md 也在 scope 内（P9 元闸门的第一例）：'DNA 不可改'由【已有的资产基线】守，不新增机制。
+calc(){ find decisions tools DNA.md -type f \( -name '*.md' -o -name '*.sh' \) -print0 \
         | sort -z | xargs -0 sha256sum | grep -v 'baseline.sha256'; }
 
 case "${1:-}" in
   --update) calc > "$BASE"; echo "基线已更新: $(wc -l < "$BASE") 个文件"; exit 0 ;;
+  # ★ --scope：把【真实 scope 输出】给出去，供元闸门断言"机制在位"。
+  # 元闸门必须问这个输出，**不得 grep 本文件的源码文本** —— 否则又盯错对象（第 29 条同源）。
+  --scope) calc | awk '{print $2}'; exit 0 ;;
 esac
 
 [ -f "$BASE" ] || { echo "无基线，先跑 --update" >&2; exit 2; }

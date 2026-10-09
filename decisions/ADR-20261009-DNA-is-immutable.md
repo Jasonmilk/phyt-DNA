@@ -3,7 +3,7 @@ id: ADR-20261009-DNA-is-immutable
 seq: 0006
 status: accepted
 hard: true
-applies-to: ["DNA.md"]
+applies-to: ["tools/check-baseline.sh"]
 effective-from: 2026-10-09
 timing: pre
 redtest: "validate --probe ADR-20261009-DNA-is-immutable"
@@ -13,7 +13,10 @@ owner: "@jason"
 origin: "README 硬约束：DNA 不可直接编辑（改基因 = 修宪 = 走 ADR + 人批准）"
 risk: normal
 check: |
-  [ "$F" = "DNA.md" ] && echo "DNA 不可变: 禁止写入 $F（改基因 = 修宪，走 ADR + 人批准）"
+  # 元闸门（P9 第一例）：断言"DNA 的不可变性【由机制守着】"，**不断言 DNA 的内容**。
+  # 必须问工具的【真实 scope 输出】—— 不得 grep 源码文本（否则又盯错对象，第 29 条同源）。
+  s=$(bash tools/check-baseline.sh --scope 2>/dev/null)
+  printf '%s\n' "$s" | grep -qx 'DNA.md' || echo "元闸门失守: DNA.md 不在资产基线 scope 内 ⇒ 改基因将无人拦"
 last-hit: null
 hit-count: 0
 supersedes: null
