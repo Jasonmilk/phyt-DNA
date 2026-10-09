@@ -21,6 +21,22 @@ effective-from: 2026-10-09
 > **Authoritative source: the `v2` branch (default).** The `v1` branch is kept as historical
 > archive only — don't anchor to it.
 
+
+## The second axis: is a verdict *trustworthy*? (BACKFLOW 2026-10-09)
+
+`pass | block` cannot tell these four apart:
+
+| | **true** | **false** |
+|---|---|---|
+| **green** | passed **and can be shown to fail** (a fixture crosses the threshold) | passed but **no fixture** — nobody ever proved it can go red |
+| **red** | failed for a **nameable** reason (the criterion) | failed for **something else** (tool usage error / missing precondition / the same command answering differently) |
+
+> **`pass` alone is NOT reportable — it must be `pass + alive`.**
+> **A green set with no fixtures is not green, it is UNMEASURED.**
+
+See **`docs/MULTIMETER.md`**. Measured on the first adopter: 79 "proven" of which 78 had no fixture;
+8 runs in one identical environment produced 6 distinct fingerprints (`proven 53..79`, `red 2..10`, `held 1..31`).
+
 ## Philosophy
 
 **A plant is not designed — it grows from a seed**, spontaneously, continuously, slowly,
