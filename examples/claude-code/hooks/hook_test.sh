@@ -27,16 +27,15 @@ case_ "空对象（无工具无路径）⇒ 放行"          0 '{}'
 case_ "工具无路径 ⇒ 放行"                    0 '{"tool_name":"Bash","tool_input":{}}'
 case_ "普通文件写入（不违任何闸门）⇒ 放行"     0 '{"tool_name":"Write","tool_input":{"file_path":"tmp/scratch.txt"}}'
 case_ "写 PLAN.md（有 post 闸门）⇒ 由引擎判"   0 '{"tool_name":"Write","tool_input":{"file_path":"PLAN.md"}}'
-# ★★ 下面两行【断言的是当前真相】，而那个真相是一个缺陷（K22）——所以它们被单独标注。
-# 不把它们写成"期望拦截"：那样测试会红，而红的原因是【产品缺陷】不是【测试写错】——
-# 混在一起会让后来的人以为"测试坏了"。⇒ 真相记在这里，缺陷记在 KNOWN_ISSUES。
-case_ "★真相·写 DNA.md ⇒ 放行（pre 时刻无守卫；DNA 守卫是 post）" 0 '{"tool_name":"Write","tool_input":{"file_path":"DNA.md"}}'
-case_ "★真相·rm -rf ⇒ 放行（本仓闸门全是内容型，无一条管命令形状）" 0 '{"tool_name":"Bash","tool_input":{"command":"rm -rf /tmp/x"}}'
+# ★ K22 的修法（ADR-…-dangerous-action-shapes-must-be-blocked，timing: pre）——以下三例是【回归判据】：
+#   形状题与权威卷题**必须拦**（exit 2）；而普通路径必须放行（上面那几例）。
+case_ "★回归·rm -rf 形状 ⇒ 必须拦"            2 '{"tool_name":"Bash","tool_input":{"command":"rm -rf /tmp/x"}}'
+case_ "★回归·git push --force ⇒ 必须拦"       2 '{"tool_name":"Bash","tool_input":{"command":"git push --force origin v2"}}'
+case_ "★回归·写 DNA.md（权威卷）⇒ 必须拦"      2 '{"tool_name":"Write","tool_input":{"file_path":"DNA.md"}}'
+case_ "safety·git push --force-with-lease ⇒ 放行" 0 '{"tool_name":"Bash","tool_input":{"command":"git push --force-with-lease origin v2"}}'
 
-echo
-echo "  ⚠️ 上两行是【纸面 vs 真相】的实证：hook 自述'三层 fail-closed'，"
-echo "     但它只对【解析/依赖错误】fail-closed；对【真危险动作】是 fail-open。见 KNOWN_ISSUES K22。"
-echo "  ⇒ 这也说明该 hook 【缺一条判据】：'危险动作形状'（rm -rf / force push / 权威卷路径）"
+# ★ K22 已修：原先这两行【断言旧真相】（写 DNA.md / rm -rf 都放行）—— 现在它们已被
+# 上面两处修法拦下（权威卷由 ADR 闸门、命令形状由 hook 的 L0.5）⇒ 旧断言已无对象，删除。
 echo
 echo "hook_test: $pass passed, $fail failed"
 [ "$fail" = 0 ] || exit 1

@@ -9,6 +9,7 @@
 | `ADR-20261009-PLAN-must-stay-under-150-lines` | `["PLAN.md"]` | yes | yes | post |
 | `ADR-20261009-README-must-carry-the-one-command` | `["README.md"]` | yes | yes | post |
 | `ADR-20261009-VISION-must-exist-and-be-a-seed` | `["VISION.md"]` | yes | yes | post |
+| `ADR-20261009-dangerous-action-shapes-must-be-blocked` | `["DNA.md", "VISION.md", "decisions/**"]` | NO | NO | pre |
 | `ADR-20261009-docs-must-be-indexed` | `["docs/INDEX.md"]` | yes | yes | post |
 | `ADR-20261009-index-must-be-regenerated` | `["decisions/INDEX.md"]` | yes | yes | post |
 | `ADR-20261009-layer1-total-under-280-lines` | `["DNA.md", "RNA.md", "SPEC.md"]` | yes | yes | post |

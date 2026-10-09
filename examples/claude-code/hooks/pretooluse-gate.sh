@@ -37,6 +37,22 @@ tool=$(printf '%s' "$parsed" | python3 -c 'import sys,json; print(json.load(sys.
 paths=$(printf '%s' "$parsed" | python3 -c 'import sys,json; print(" ".join(json.load(sys.stdin)["paths"]))')
 [ -z "$tool$paths" ] && exit 0
 
+# ── L0.5 · 危险动作【形状】（本 hook 自己判）────────────────────────────────
+# 为什么不交给引擎的 ADR 闸门：闸门模型是【路径型】(applies-to glob)，
+# 而命令是任意字符串 —— 实测用 applies-to=["**"] 去兼管，会因为引擎既有的
+# "路径不存在 ⇒ fail-closed" 规则把【写任何新文件】都拦掉（全拦，不是形状判据）。
+# ⇒ 形状必须在这里判，因为这里是唯一看得到"命令"的地方。
+# 词界用【空格或行尾】：`git push --force` 要拦，而 `--force-with-lease` 要放（它是安全的那种）。
+case "$paths" in
+  *"rm -rf"*|*"rm -fr"*|*"rm -r -f"*|*"rm --recursive --force"*)
+    echo "⛔ 危险动作形状 · 递归强制删除：$paths" >&2
+    echo "出口: 先在 ledger 留痕（--override 带 note），或改用可逆写法" >&2
+    exit 2 ;;
+  *"git push --force "*|*"git push -f "*|*"git push --force")
+    echo "⛔ 危险动作形状 · 强推（--force-with-lease 不在此列）：$paths" >&2
+    exit 2 ;;
+esac
+
 # 送检引擎：合法 JSON 直通 stdin（含引号命令不再被 grep 截断）
 out=$(printf '%s' "$parsed" | ./tools/validate.sh 2>&1)
 rc=$?
