@@ -5,6 +5,16 @@ revisit-on: 2027-04-09
 effective-from: 2026-10-09
 ---
 
+<p align="center">
+  <a href="README.md">English</a> · <a href="README.zh-CN.md">简体中文</a>
+</p>
+
+<p align="center">
+  <a href="https://github.com/Jasonmilk/phyt-DNA/actions/workflows/phyt.yml"><img src="https://github.com/Jasonmilk/phyt-DNA/actions/workflows/phyt.yml/badge.svg?branch=v2" alt="CI status" /></a>
+  <a href="LICENSE"><img src="https://img.shields.io/github/license/Jasonmilk/phyt-DNA" alt="License: Apache-2.0" /></a>
+  <a href="https://github.com/Jasonmilk/phyt-DNA/stargazers"><img src="https://img.shields.io/github/stars/Jasonmilk/phyt-DNA?style=flat-square&label=stars" alt="GitHub stars" /></a>
+</p>
+
 # phyt-DNA
 
 > Generic self-growing project methodology template and authoritative source.
@@ -35,30 +45,46 @@ Methodology protection spec: [`docs/PROTECTION.md`](docs/PROTECTION.md)
 
 ## What's new in V2
 
-V1 was a document template. **V2 adds the parts that were proven by actually running it:**
-演进走 **diff，不走 rewrite**——下表即演进记录，债务列不许藏。
+V1 was a document template. **V2 adds the parts that were proven by actually running it.**
+Evolution goes by **diff, not rewrite** — the table below is the evolution record.
+The debt column must not hide anything.
 
-| 项 | v1 | v2 | 债务（未完成，不许藏） |
+| | v1 | v2 | Debt (unfinished — not hidden) |
 |---|---|---|---|
-| 闸门 | README 散文（无 id、无 check、不会死） | **`hard: true` 字段的 ADR**（有 id、有 `check:`、有心跳、会死） | — |
-| 判定 | 引擎硬编码 | **ADR 自带 `check:`**（引擎零硬编码闸门） | — |
-| 时机 | 未区分 | **`timing: pre｜post`**（路径先于内容） | — |
-| 验证 | 无 | 三层栈 + 自指边界 | — |
-| CI | 无 | 5 步 + 红测（首红 → 补基线 → 绿；注入违规 → RED → revert → 绿） | — |
-| hook 物理拦截 | 无 | `.claude/` hook 组装完成，payload 级实测（Edit DNA.md → exit 2） | **未在真实 agent 任务中发生**（T2 缺口，不声称已验证） |
-| `--cull` | 法只在对话里 | 法官入位（`validate.sh --cull`，只报告不删） | **执法未落地**：冷存要人批准，尚无真实冷存发生 |
-| 年轮格式 | 只有四个总数 | 三数 + 三分类（hits/任务 · override_rate · 心跳红率） | **趋势/分布/override 按原因分类字段**（T8） |
-| 60 分钟参数 | 硬编码 | 可校准字段 | **跨年后校准**（revisit-on 2027-04-09） |
+| Gates | prose in README (no id, no check, cannot die) | **`hard: true` field on an ADR** (has id, `check:`, a heartbeat, can die) | — |
+| Check logic | hardcoded in the engine | **ADR carries its own `check:`** (zero hardcoded gates in the engine) | — |
+| Timing | not distinguished | **`timing: pre\|post`** (path before, content after) | — |
+| Verification | none | 3-layer stack + self-reference boundary | — |
+| CI | none | 5 steps + red-test (first RED → baseline → GREEN; injected violation → RED → revert → GREEN) | — |
+| Hook interception | none | `.claude/` hook assembled, payload-level tested (Edit DNA.md → exit 2) | **not observed in a real agent task** (T2 gap — not claimed verified) |
+| `--cull` | law only in conversation | judge in place (`validate.sh --cull`, report-only) | **no enforcement yet**: cold-store needs human approval; no real cold-store has happened |
+| Growth-ring format | four totals only | three numbers + three categories (hits/task · override_rate · heartbeat rate) | **trend / distribution / override-by-reason fields** (T8) |
+| 60-minute parameter | hardcoded | calibratable field | **recalibrate after one year** (revisit-on 2027-04-09) |
 
 ### Evidence-based
 
 Every conclusion in [`docs/PROTECTION.md`](docs/PROTECTION.md) is tagged
-**已实测 (measured) / 研究背书 (research-backed) / 待验证 (unverified)**.
+**measured (已实测) / research-backed (研究背书) / unverified (待验证)**.
 Unverified items must not be written into DNA.
 
 Measured in this repo (v2.1, 2026-10-09): **6 hard:true gates · 6/6 heartbeats RED ·
-5 ADR crystallized + 1 governance rule · 2 engine bugs found & fixed by probing ·
-CI: first run RED (no baseline) → GREEN → red-test RED → GREEN · 2 real hook interceptions (payload-level).**
+5 ADRs crystallized + 1 governance rule · 2 engine bugs found & fixed by probing ·
+CI: first run RED (no baseline) → GREEN → red-test RED → GREEN · 2 self-test interceptions (payload-level).**
+
+---
+
+## Status · current real state (honesty boundary)
+
+| Item | State |
+|---|---|
+| Gate mechanism | ✅ 6 `hard: true` gates, heartbeats 6/6 RED, CI all green |
+| **Inner-ring rotation** | ⚠️ **0/0 — phyt-DNA itself has zero `kind: task` production tasks** |
+| Physical interception | ⚠️ payload-level only, **never observed in a real agent task** |
+| `--cull` | ✅ judge in place, but **no defendant yet** (no gate has seen 20 production tasks) |
+
+> Complete machinery ≠ production-verified. This system is all green in its own
+> self-checks, and **has never turned once in production**.
+> The first real project will produce the real numbers.
 
 ---
 
@@ -66,7 +92,7 @@ CI: first run RED (no baseline) → GREEN → red-test RED → GREEN · 2 real h
 
 ```bash
 # 1. Copy the methodology skeleton into your project
-#    v2: 仓库根即模板（原 template/ 已并入根）
+#    v2: the repo root IS the template (the former template/ was merged into the root)
 git clone git@github.com:Jasonmilk/phyt-DNA.git /tmp/phyt-dna
 cp -r /tmp/phyt-dna/{DNA.md,RNA.md,SPEC.md,PLAN.md,GROWTH.md,VISION.md,DEPRECATE.md,decisions,ledger,fixtures,tools} <your-project>/
 
@@ -76,12 +102,12 @@ cp examples/ADR-EXAMPLE.md <your-project>/decisions/ADR-<date>-<your-first-gate>
 
 # 3. Turn on CI (the only real gate — pre-commit can be skipped with --no-verify)
 cp examples/phyt.yml <your-project>/.github/workflows/
-#    first run will be RED until the asset baseline lands:
+#    the first run will be RED until the asset baseline lands:
 cd <your-project> && ./tools/check-baseline.sh --update && git add tools/baseline.sha256 && git commit
 
 # 4. Optional: hook for real-time interception
-#    ⚠ 未声称已验证：物理拦截仅 payload 级实测（Edit DNA.md → exit 2），
-#    尚未在真实 agent 任务中发生。装上后请先跑一次真实任务自行验证。
+#    ⚠ not claimed verified: physical interception is payload-level only (Edit DNA.md → exit 2);
+#    it has never happened in a real agent task. Run a real task to verify it yourself.
 cp examples/pretooluse-gate.sh <your-project>/.claude/hooks/pretooluse-gate.sh
 cp examples/.claude-settings.json <your-project>/.claude/settings.json
 ```
@@ -91,39 +117,25 @@ Writing scripts before you have real data = guessing which gates deserve to exis
 
 ---
 
-## Status · 当前真实状态（诚实边界）
+## Adoption · land V2 in your project in three steps
 
-| 项 | 状态 |
-|---|---|
-| 闸门机制 | ✅ 6 条 `hard: true`，心跳 6/6 RED，CI 全绿 |
-| **内圈转速** | ⚠️ **0/0 —— phyt-DNA 自身尚无 `kind: task` 生产任务** |
-| 物理拦截 | ⚠️ 仅 payload 级实测，**未在真实 agent 任务中发生** |
-| `--cull` | ✅ 法官已到位，但**尚无被告**（无闸门经历过 20 个生产任务） |
+README's promise: *"Every project adopting this methodology lands the zero-cost checklist at its first public milestone."*
+V2 makes this sentence **executable for the first time** — formerly manual checkmarks, now `cp -r` plus CI checks automatically:
 
-> 机制完备 ≠ 已被生产验证。这套系统在自检中全绿，
-> **在生产中一次没转过**。第一个真实项目才会给出真数据。
+1. **Copy the skeleton** (Quick start step 1): the 6 root docs + `decisions/ ledger/ fixtures/ tools/` into your project
+2. **Write your first ADR** (step 2): crystallize your first prose constraint into an executable gate — with `id`, `check:`, a heartbeat, and the ability to die
+3. **Turn on CI** (step 3): `.github/workflows/phyt.yml` five-step gate, checked on every push
+   - the first run is **necessarily RED** (missing asset baseline) — land the baseline per step 3 to go green; don't bypass it
+   - every push after that: asset integrity / spec-lint / heartbeats / full-repo scan / anti-decoration — all 5 must pass to be green
 
----
-
-## Adoption · 三步把 V2 落地到你的项目
-
-README 承诺：*"Every project adopting this methodology lands the zero-cost checklist at its first public milestone."*
-V2 让这句话**第一次可执行**——以前是手工打勾，现在是 `cp -r` + CI 自动检查：
-
-1. **拷贝骨架**（Quick start 第 1 步）：6 个根文档 + `decisions/ ledger/ fixtures/ tools/` 全部进项目
-2. **写第一条 ADR**（第 2 步）：把第一条散文约束结晶成可执行闸门——有 `id`、有 `check:`、有心跳、会死
-3. **开 CI**（第 3 步）：`.github/workflows/phyt.yml` 五步门禁，push 即检查
-   - 首次运行**必然 RED**（缺资产基线）——按第 3 步补基线即复绿，不要绕开
-   - 之后每次 push：资产完整性 / spec-lint / 心跳 / 全仓扫描 / 防装饰，5 步全过才算绿
-
-hook（第 4 步）保持 **optional**：组装已验证，物理拦截未在真实 agent 任务中发生——不要声称已验证。
+The hook (step 4) stays **optional**: assembly is verified; physical interception has not happened in a real agent task — don't claim it verified.
 
 ---
 
 ## Directory
 
 ```
-根目录（v2：仓库根即模板，原 template/ 已并入根）
+Repo root (v2: the root IS the template; the former template/ was merged in)
   DNA.md          immutable gene (10 native + 6 derived laws)
   RNA.md          loading protocol (3-layer attention budget)
   SPEC.md         knowledge ontology
