@@ -12,13 +12,13 @@ effective-from: 2026-10-09
 <p align="center">
   <a href="https://github.com/Jasonmilk/phyt-DNA/actions/workflows/phyt.yml"><img src="https://github.com/Jasonmilk/phyt-DNA/actions/workflows/phyt.yml/badge.svg?branch=v2" alt="CI 状态" /></a>
   <a href="LICENSE"><img src="https://img.shields.io/github/license/Jasonmilk/phyt-DNA" alt="Apache-2.0" /></a>
-  <a href="https://github.com/Jasonmilk/phyt-DNA/stargazers"><img src="https://img.shields.io/github/stars/Jasonmilk/phyt-DNA?style=flat-square&label=stars" alt="GitHub stars" /></a>
 </p>
 
 # phyt-DNA
 
 > 通用自生长项目方法论模板与权威源。
 > 所有采用此方法论的项目的锚点，避免版本漂移与歧义。
+> **现行权威：`v2` 分支（默认分支）。** `v1` 分支仅为历史归档，请勿以其为锚。
 
 ## 理念
 
@@ -87,10 +87,10 @@ cp examples/phyt.yml <your-project>/.github/workflows/
 cd <your-project> && ./tools/check-baseline.sh --update && git add tools/baseline.sha256 && git commit
 
 # 4. 可选：hook 实时拦截
+#    住在 examples/claude-code/ —— 可选就是可选，想要才拷进来
 #    ⚠ 未声称已验证：物理拦截仅 payload 级实测（Edit DNA.md → exit 2），
 #    尚未在真实 agent 任务中发生。装上后请先跑一次真实任务自行验证。
-cp examples/pretooluse-gate.sh <your-project>/.claude/hooks/pretooluse-gate.sh
-cp examples/.claude-settings.json <your-project>/.claude/settings.json
+cp -r examples/claude-code/ <your-project>/.claude/
 ```
 
 **W0 铁律：先零脚本。** 手工跑一个真实任务并记账。
@@ -144,7 +144,7 @@ hook（第 4 步）保持 **optional**：组装已验证，物理拦截未在真
   tools/          引擎 + 检查器（零硬编码闸门）
 
 docs/PROTECTION.md   完整规范
-examples/            即拷即用的 ADR、hook、CI workflow
+examples/            即拷即用的 ADR、CI workflow、claude-code/ hook 包
 ```
 
 ---

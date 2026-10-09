@@ -12,13 +12,14 @@ effective-from: 2026-10-09
 <p align="center">
   <a href="https://github.com/Jasonmilk/phyt-DNA/actions/workflows/phyt.yml"><img src="https://github.com/Jasonmilk/phyt-DNA/actions/workflows/phyt.yml/badge.svg?branch=v2" alt="CI status" /></a>
   <a href="LICENSE"><img src="https://img.shields.io/github/license/Jasonmilk/phyt-DNA" alt="License: Apache-2.0" /></a>
-  <a href="https://github.com/Jasonmilk/phyt-DNA/stargazers"><img src="https://img.shields.io/github/stars/Jasonmilk/phyt-DNA?style=flat-square&label=stars" alt="GitHub stars" /></a>
 </p>
 
 # phyt-DNA
 
 > Generic self-growing project methodology template and authoritative source.
 > All projects adopting this methodology anchor to it, avoiding version drift and ambiguity.
+> **Authoritative source: the `v2` branch (default).** The `v1` branch is kept as historical
+> archive only — don't anchor to it.
 
 ## Philosophy
 
@@ -106,10 +107,10 @@ cp examples/phyt.yml <your-project>/.github/workflows/
 cd <your-project> && ./tools/check-baseline.sh --update && git add tools/baseline.sha256 && git commit
 
 # 4. Optional: hook for real-time interception
+#    lives in examples/claude-code/ — optional means optional, copy it in only if you want it
 #    ⚠ not claimed verified: physical interception is payload-level only (Edit DNA.md → exit 2);
 #    it has never happened in a real agent task. Run a real task to verify it yourself.
-cp examples/pretooluse-gate.sh <your-project>/.claude/hooks/pretooluse-gate.sh
-cp examples/.claude-settings.json <your-project>/.claude/settings.json
+cp -r examples/claude-code/ <your-project>/.claude/
 ```
 
 **W0 rule: zero scripts at first.** Do one real task by hand and log it.
@@ -149,7 +150,7 @@ Repo root (v2: the root IS the template; the former template/ was merged in)
   tools/          engine + linters (zero hardcoded gates)
 
 docs/PROTECTION.md   the full spec
-examples/            copy-paste ready ADR, hook, CI workflow
+examples/            copy-paste ready ADR, CI workflow, claude-code/ hook package
 ```
 
 ---
