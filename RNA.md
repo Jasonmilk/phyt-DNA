@@ -30,7 +30,7 @@
 |---|---|
 | **PLAN.md** | **每次新会话必读**——确认当前阶段，避免重复已完成的工作 |
 | **`decisions/`（闸门池）** | **在【提出新闸门/新判据/新机制】之前必读** —— 见下方「先查再写」 |
-| **生态的 `HANDOFF.md`** | **每次与 Helix 生态协作的【第一份】**（`helix-mind/docs/helixECO/HANDOFF.md`）—— 一句话入口：现在在哪 · 哪些等人类 · 已有什么 · 怎么验 · 下一件 |
+| **生态的 `HANDOFF.md`** | **与 Helix 生态协作时的第一份**（`helix-mind/docs/helixECO/HANDOFF.md`）—— **它是指针不是容器**（≤40 行）：状态由命令现量，唯一写下来的是「下一件」 |
 | **生态的 `KNOWN_ISSUES.md`** | **在与任何 Helix 生态仓协作前必读**（`helix-mind/docs/helixECO/KNOWN_ISSUES.md`）—— **跨仓缺陷的唯一登记处**，也是**人类与 agent 共用的笔记本**：「为什么还没修」一列区分【待裁决=要人类】与【没人做=要 agent】 |
 | DNA.md | 涉及原则/修宪时 |
 | SPEC.md | 需要完整叙事时 |
