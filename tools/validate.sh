@@ -58,13 +58,18 @@ probe_one(){ # probe_one <gate-id> → 0=闸门活着（RED）· 2=腐化/拓扑
   if [ ! -f "$F" ]; then echo "  [B] 拓扑失配: $F 不存在" >&2; rec "$id" block "topology-mismatch"; return 2; fi
   fx="$FIX_DIR/$id/inject.sh"
   if [ ! -f "$fx" ]; then echo "  [A] 缺 fixture: ${fx}（无夹具就无法证明闸门能红）" >&2; rec "$id" block "no-fixture"; return 2; fi
+  # ★ 报【两个世界】（2026-10-09 教训）：注入后的 RED 是**夹具的功劳**，不是仓库的状态。
+  # 只报注入态，读者会把"夹具造出来的违规"误读成"仓库不合规"——本仓就有人这么误读过一次。
+  base_out=$(F="$F" bash -c "$(check_of "$id")" 2>/dev/null)
+  if [ -z "$base_out" ]; then echo "  基线（未注入）: 绿"
+  else echo "  基线（未注入）: 红 → ${base_out}"; fi
   cp "$F" /tmp/inj.bak
   F="$F" bash "$fx" >/dev/null 2>&1
   out=$(F="$F" bash -c "$(check_of "$id")" 2>/dev/null)
   cp /tmp/inj.bak "$F" 2>/dev/null; rm -f /tmp/inj.bak
-  if [ -z "$out" ]; then echo "  心跳 NOT RED — 闸门已腐化（夹具没能越过阈值）" >&2
+  if [ -z "$out" ]; then echo "  注入后: NOT RED — 闸门已腐化（夹具没能越过阈值）" >&2
     rec "$id" block "corrupted: fixture did not cross the threshold"; return 2; fi
-  echo "  心跳 RED — 检出: $out"
+  echo "  注入后: RED — 检出: ${out}"
   # 反例：内容不变的改动【必须不】触发判据。
   # 只有正例时，一个读时钟的判据照样能红（inject 追加字节同时改了内容与 mtime）⇒ 退化无人发现。
   cf="$FIX_DIR/$id/counter.sh"
