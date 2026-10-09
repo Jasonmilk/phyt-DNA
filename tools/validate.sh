@@ -72,14 +72,18 @@ probe_one(){ # probe_one <gate-id> → 0=闸门活着（RED）· 2=腐化/拓扑
     echo "  [具名] 无反例夹具 ${cf} —— 该闸门只证了'该红的红'，没证'不该红的不红'" >&2
     rec "$id" pass "probe: ${out}（no counter-fixture: negative direction unproven）"; return 0
   fi
+  # ★ 判据是【结论是否改变】，不是【是否红】—— 因为 gate 可能【本来就红】
+  # （本仓就有一条：PLAN.md 177 行 > 它自定的 150）。只看"是否红"会把"本来就红"
+  # 误报成假阳性 —— 这个缺陷是在真闸门上加反例时才现形的。
+  before_out=$(F="$F" bash -c "$(check_of "$id")" 2>/dev/null)
   cp "$F" /tmp/cnt.bak
   F="$F" bash "$cf" >/dev/null 2>&1
-  out2=$(F="$F" bash -c "$(check_of "$id")" 2>/dev/null)
+  after_out=$(F="$F" bash -c "$(check_of "$id")" 2>/dev/null)
   cp /tmp/cnt.bak "$F" 2>/dev/null; rm -f /tmp/cnt.bak
-  if [ -n "$out2" ]; then
-    echo "  [假阳性] 内容未变却红: $out2" >&2
-    echo "          判据在'变了'与'没变'两个世界都能红 ⇒ 按 Ω 是装饰品" >&2
-    rec "$id" block "false-positive: fires on a content-preserving change"; return 2
+  if [ "$before_out" != "$after_out" ]; then
+    echo "  [假阳性] 内容未变，结论却变了：'${before_out}' → '${after_out}'" >&2
+    echo "          判据在'变了'与'没变'两个世界给出不同结论 ⇒ 按 Ω 是装饰品" >&2
+    rec "$id" block "false-positive: conclusion changed on a content-preserving edit"; return 2
   fi
   echo "  反例守住 — 内容未变时不红 ✅"
   rec "$id" pass "probe: ${out}; counter: not tripped"; return 0
