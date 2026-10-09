@@ -41,6 +41,16 @@ for f in $(git ls-files '*.md' '*.py' '*.sh' '*.yml'); do
 done
 [ "$f4" = 0 ] && echo "OK" || { echo "      ★ RED"; fail=1; }
 
+# ★ 第 5 步之前：跑那些【CI 里没有、但必须被行使】的测试。
+# 为什么在这里：`examples/claude-code/hooks/` 与 `examples/fixtures/` 不在 CI 的四步里，
+# 而"存在但没人跑"与"不存在"是同一种病（x 光 2026-10-09 的 G6-①）。⇒ 本地自证入口负责行使它们。
+step "5a · PreToolUse 执行闸的测试"
+if bash examples/claude-code/hooks/hook_test.sh >/tmp/phyt_hook_test.log 2>&1; then
+  echo "OK  ($(tail -1 /tmp/phyt_hook_test.log))"
+else
+  echo "★ RED（详见 /tmp/phyt_hook_test.log）"; fail=1
+fi
+
 step "5 · spec-lint（必须真实可红）"; if ./tools/spec-lint.sh docs/PROTECTION.md >/dev/null 2>&1; then echo OK; else echo "★ RED"; fail=1; fi
 
 echo
