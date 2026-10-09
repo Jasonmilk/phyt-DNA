@@ -49,8 +49,8 @@
 | # | 缺口 | 状态 |
 |---|---|---|
 | **G1** | **`VISION.md`（种子）没有任何闸门** —— 被清空/顶替无人拦 | ✅ **已补**（`ADR-20261009-VISION-must-exist-and-be-a-seed`，双向可证伪） |
-| **G2** | **`README.md` / `README.zh-CN.md` / `DEPRECATE.md` 无闸门** | `[ ]` 待定：README 是入口、DEPRECATE 是机制（"会死的才算活"）⇒ 值得各一条？ |
-| **G3** | **`RNA.md` 引用了采用者（Cellrix）的 `port_table_test.js`** | `[ ]` **跨仓引用**：phyt-DNA 是**通用层**，不应引用采用者的文件（"生态优先/通用后做"要避免的混淆）⇒ 改为中性措辞 |
+| **G2** | ~~`README.md` / `README.zh-CN.md` / `DEPRECATE.md` 无闸门~~ | ✅ **已补两条**：`ADR-…-README-must-carry-the-one-command`（存在 + **必须带着那条命令**）· `ADR-…-DEPRECATE-must-exist`。`README.zh-CN.md` 仍无（中英双版是同一件事的两处，**先不各配一条** —— 避免"同一件事两条闸门"） |
+| **G3** | ~~`RNA.md` 引用采用者的 `port_table_test.js`~~ | ⚠️ **我先把它说重了，已更正**：`docs/PROTECTION.md:356` / `MULTIMETER.md:41` 的"**已在采用者 Cellrix 跑通**"是**出处与归因** —— 而 `spec-lint` 自己就在查「出处登记」⇒ **删它反而违反本仓纪律**。**真正该改的只有**：协议文档把采用者的**内部文件名**当协议的一部分。⇒ ✅ **已中性化为"采用者仓里早有一条同类闸门"**（保留出处） |
 | **G4** | 本次扫描**我自己的假阳性**（2 条） | ✅ 已记录（上面引文）—— **留给下一次的我：裸匹配先收紧再报** |
 
 **⇒ G1 已修；G2/G3 是明确的待办；G4 是留给下次的教训。**
