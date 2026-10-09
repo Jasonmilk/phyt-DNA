@@ -25,13 +25,13 @@ step "1 · 资产完整性"; if ./tools/check-baseline.sh >/dev/null 2>&1; then 
 step "2 · spec-lint";  if ./tools/spec-lint.sh docs/PROTECTION.md >/dev/null 2>&1; then echo OK; else echo "★ RED"; fail=1; fi
 
 step "3 · 全部闸门能力心跳"
-f3=0
-for id in $(ls decisions/*.md | xargs -n1 basename | sed 's/\.md$//'); do
-  grep -q '^hard: true$' "decisions/$id.md" || continue
-  grep -q '^status: deprecated' "decisions/$id.md" && continue
-  ./tools/validate.sh --probe "$id" >/dev/null 2>&1 || { echo; echo "      ★ $id"; f3=1; }
-done
-[ "$f3" = 0 ] && echo "OK（$(grep -l '^hard: true$' decisions/ADR-*.md | wc -l | tr -d ' ') 条）" || { echo "      ★ RED"; fail=1; }
+# ★ 与 CI 同一步【同一条命令】—— 这里曾经把 CI 的 for 循环抄了一遍（第二份清单，A5）。
+# 现在它与 .github/workflows/phyt.yml 的第 3 步调用同一个入口 ⇒ 那一步不会两边漂。
+if ./tools/validate.sh --probe-all >/dev/null 2>&1; then
+  echo "OK（$(ls decisions/ADR-*.md | wc -l | tr -d ' ') 个 ADR）"
+else
+  echo "★ RED"; fail=1
+fi
 
 step "4 · 全仓违规扫描（timing:post）"
 f4=0

@@ -130,8 +130,15 @@ if [ "$mode" = probe ]; then
     if [ -f "$FIX_DIR/$g/inject.sh" ]; then ran=$((ran+1)); probe_one "$g" || rc=2
     else skipped="$skipped $g"; fi
   done < <(gates)
-  [ -n "$skipped" ] && echo "  [具名跳过] 无夹具的闸门:${skipped}" >&2
-  echo "  probe-all: 跑了 $ran 个闸门$( [ -n "$skipped" ] && echo "，跳过 $(echo $skipped | wc -w | tr -d ' ')" )"
+  # ★ 无夹具的闸门是 `unproven`，不是 `alive` ⇒ 它【必须让这条命令失败】（P11："pass 不可独报"）。
+  # 早先这里是"具名跳过但 exit 0" —— 那会让 CI 在【有闸门没夹具】时照样绿，
+  # 即"没装门看起来像门通过了"（I7）的同一形状。**具名仍然保留**（说清是哪些），只是结论变成失败。
+  if [ -n "$skipped" ]; then
+    echo "  [无夹具] 这些闸门只是 unproven，不是 alive:${skipped}" >&2
+    echo "           ⇒ 各补一个 fixtures/<id>/counter.sh 与 inject.sh；证据不足时不得算通过" >&2
+    rc=2
+  fi
+  echo "  probe-all: 跑了 $ran 个闸门$( [ -n "$skipped" ] && echo "，无夹具 $(echo $skipped | wc -w | tr -d ' ')" )"
   exit $rc
 fi
 

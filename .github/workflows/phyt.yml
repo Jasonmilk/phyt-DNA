@@ -16,15 +16,11 @@ jobs:
         run: ./tools/spec-lint.sh docs/PROTECTION.md
 
       - name: 3 · 全部闸门能力心跳
-        run: |
-          fail=0
-          for id in $(ls decisions/*.md | xargs -n1 basename | sed 's/.md$//'); do
-            grep -q '^hard: true$' "decisions/$id.md" || continue
-            grep -q '^status: deprecated' "decisions/$id.md" && continue
-            echo "probe: $id"
-            ./tools/validate.sh --probe "$id" || fail=1
-          done
-          [ "$fail" = 0 ] || { echo "心跳失败"; exit 1; }
+        # ★ 一步，不再自己复制一遍"哪些文件算闸门"（那是 `gates()` 的事，见 tools/validate.sh）。
+        # 曾经这里有一段 `for id in $(ls decisions/*.md …) ; grep '^hard: true$'` —— 与引擎的发现逻辑
+        # 是【第二份清单】(A5)：我修 gates()（只认 ADR-*.md）时，这一段不经过它，于是不受益。
+        # 现在它调用引擎，于是：ADR-*.md 的限制 · 无夹具即失败（unproven ≠ alive）· 两世界读数，全都自动同源。
+        run: ./tools/validate.sh --probe-all
 
       - name: 4 · 全仓库违规扫描（只跑 timing:post 闸门）
         # timing:pre 是路径黑名单，事后全仓扫描必然误报 ⇒ 只扫 post 型
