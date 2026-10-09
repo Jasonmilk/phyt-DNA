@@ -178,6 +178,51 @@ The hook (step 4) stays **optional**: assembly is verified; physical interceptio
 
 ---
 
+## Workflow — the order is the point (agents and humans both)
+
+**A description is not guidance.** Follow these four steps **in this order**; each one exists because
+skipping it cost someone real time (that is recorded in `decisions/ADR-*.md`'s `origin:` fields).
+
+```
+① LOOK FIRST   (before proposing anything)
+     bash tools/validate.sh --index        # one line per gate: id · applies-to · inject · counter · timing
+     cat PLAN.md                           # the current stage — what is already DONE
+   ⇒ If the thing you are about to build is already in that table, you are about to duplicate it.
+     (Measured 2026-10-09: an adopter "discovered" that ports needed a gate — a port-table test already
+      existed; and "discovered" that think/say/do needed separating — the channels, the gate contract
+      and the I7 rule already existed.)
+
+② WRITE        (add a gate = four pieces, never fewer)
+     decisions/ADR-<date>-<slug>.md        # H1 first line, then front-matter: id/seq/status/hard/
+                                           #   applies-to/redtest/revisit-on/check
+     fixtures/<gate-id>/inject.sh          # making the defect → the criterion MUST go red
+     fixtures/<gate-id>/counter.sh         # a content-preserving edit → the conclusion MUST NOT change
+     bash tools/validate.sh --index > decisions/INDEX.md     # regenerate (the INDEX has its own gate)
+   ⇒ A gate without `counter.sh` is `unproven`, not `alive`.
+
+③ VERIFY       (two worlds, three lines)
+     bash tools/validate.sh --probe-all
+     #   baseline (un-injected)  = is the repo ill?      → red ⇒ the repo is ill
+     #   injected RED            = is the gate alive?    → this red is made by the fixture
+     #   counter held            = two-way falsifiable?  → a content-preserving edit must not change it
+
+④ PUSH         (replay CI, do not assume)
+     bash tools/ci-local.sh                # "locally green" is NOT "CI green"
+```
+
+**Anything you cannot run, you cannot claim.** If a step is declared but missing, it is a marked skip
+(`exit 4`), never a silent pass.
+
+### Adding a gate, concretely
+
+| step | file | why |
+|---|---|---|
+| 1 | `decisions/ADR-…md` | gates are an **attribute of an ADR**, not a separate layer (`decisions/README.md`) |
+| 2 | `fixtures/<gate-id>/inject.sh` | proves it **can** go red |
+| 3 | `fixtures/<gate-id>/counter.sh` | proves it does **not** go red when nothing changed |
+| 4 | `bash tools/validate.sh --index > decisions/INDEX.md` | otherwise the INDEX drifts — and a gate catches that |
+| 5 | `bash tools/check-baseline.sh --update` | any change under `decisions/` or `tools/` must refresh the asset baseline |
+
 ## Directory
 
 ```
