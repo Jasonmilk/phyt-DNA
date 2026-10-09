@@ -85,8 +85,16 @@ probe_one(){ # probe_one <gate-id> → 0=闸门活着（RED）· 2=腐化/拓扑
   else echo "  基线（未注入）: 红 → ${base_out}"; fi
   cp "$F" /tmp/inj.bak
   F="$F" bash "$fx" >/dev/null 2>&1
-  out=$(F="$F" bash -c "$(check_of "$id")" 2>/dev/null)
+  # ★ check 自己跑不起来时，【必须具名失败】—— 不能与"无输出=通过"混同。
+  # 实测（2026-10-09）：一个 check 因嵌套 heredoc 语法错误而根本没运行，
+  # 而 stderr 被丢掉 ⇒ 报"NOT RED"，看起来像闸门活着。**这正是本仓禁止的"静默失败=伪证"。**
+  err=$(F="$F" bash -c "$(check_of "$id")" 2>&1 >/tmp/chk.out); crc=$?
+  out=$(cat /tmp/chk.out 2>/dev/null)
   cp /tmp/inj.bak "$F" 2>/dev/null; rm -f /tmp/inj.bak
+  if [ "${crc:-0}" != 0 ] && [ -z "$out" ]; then
+    echo "  [check 失败] 判据自己没能运行（rc=${crc}）：${err}" >&2
+    rec "$id" block "check failed to run (rc=${crc}): ${err}"; return 2
+  fi
   if [ -z "$out" ]; then echo "  注入后: NOT RED — 闸门已腐化（夹具没能越过阈值）" >&2
     rec "$id" block "corrupted: fixture did not cross the threshold"; return 2; fi
   # ★ 夹具必须【真的改变了结论】（2026-10-09）。若注入前后的结论一字不差，那么这次"RED"
@@ -113,6 +121,7 @@ probe_one(){ # probe_one <gate-id> → 0=闸门活着（RED）· 2=腐化/拓扑
   cp "$F" /tmp/cnt.bak
   F="$F" bash "$cf" >/dev/null 2>&1
   after_out=$(F="$F" bash -c "$(check_of "$id")" 2>/dev/null)
+  # （反例段只比"结论是否改变"；若 check 本身坏了，上面的正例段已经具名报过。）
   cp /tmp/cnt.bak "$F" 2>/dev/null; rm -f /tmp/cnt.bak
   if [ "$before_out" != "$after_out" ]; then
     echo "  [假阳性] 内容未变，结论却变了：'${before_out}' → '${after_out}'" >&2
@@ -205,7 +214,10 @@ while read -r id; do
         if [ ! -e "$p" ]; then
           out="[输入失效] $p 不存在 —— 按 fail-closed 处理（静默放行=伪证）"
         else
-          out=$(F="$p" bash -c "$(check_of "$id")" 2>&1)
+          out=$(F="$p" bash -c "$(check_of "$id")" 2>&1); crc=$?
+          if [ "${crc:-0}" != 0 ] && [ -z "$(printf '%s' "$out" | grep -v '^bash:')" ]; then
+            out="[check 失败] 判据 ${id} 自己没能运行（rc=${crc}）—— 静默失败=伪证"
+          fi
         fi
         [ -n "$out" ] && hits="$hits|$id:$out"
         break
