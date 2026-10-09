@@ -5,7 +5,7 @@ id: ADR-20261009-shell-var-before-cjk-must-brace
 seq: 9002
 status: accepted
 hard: true
-applies-to: ["**/*.sh"]
+applies-to: ["**/*.sh", "decisions/ADR-*.md"]
 effective-from: 2026-10-09
 timing: post
 redtest: "bash tools/validate.sh --probe ADR-20261009-shell-var-before-cjk-must-brace"
@@ -17,7 +17,18 @@ risk: normal
 check: |
   # 只看【非注释行】：注释里的 `$F（…）` 是说明文字，不是代码（否则假红 ⇒ 装饰品）。
   # LC_ALL=C 下 `[^ -~]` 匹配一切非可打印 ASCII 字节 ⇒ 不依赖 PCRE。
-  hits=$(grep -vE '^[[:space:]]*#' "$F" | LC_ALL=C grep -nE '\$[A-Za-z_][A-Za-z0-9_]*[^ -~]')
+  # ★ scope 含 decisions/ADR-*.md：因为 `check:` 块【就是 shell 代码】，只是住在 .md 里。
+  # 少了这一层，本闸门漏掉了唯一真正写坏过账本的那处（2026-10-09 事故，见 ADR-…-ledger-must-be-valid-utf8）。
+  #
+  # ★★ 但 .md 只扫 `check:` 块，**不扫正文** —— 实测教训（同一次 ci-local 抓到）：
+  # 本条自己那份 ADR 的正文【必须】引用这个陷阱（`$L1（` / `$rc）`）才能说明它；
+  # 扫整份 .md 会把"文档在展示一个东西"判成"文档在犯那个错"。
+  # 与"夹具不得字面包含它要注入的违规"同课：**要禁的是可执行的形状，不是被引用的形状。**
+  case "$F" in
+    *.md) src=$(awk '/^check: \|/{f=1;next} f&&/^[^ ]/{f=0} f&&NF{print}' "$F") ;;
+    *)    src=$(cat "$F") ;;
+  esac
+  hits=$(printf '%s\n' "$src" | grep -vE '^[[:space:]]*#' | LC_ALL=C grep -nE '\$[A-Za-z_][A-Za-z0-9_]*[^ -~]')
   [ -n "$hits" ] && echo "变量名后紧跟非 ASCII（必须写 \${var}）: $hits"
 last-hit: null
 hit-count: 0

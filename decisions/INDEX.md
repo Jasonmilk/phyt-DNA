@@ -12,6 +12,7 @@
 | `ADR-20261009-docs-must-be-indexed` | `["docs/INDEX.md"]` | yes | yes | post |
 | `ADR-20261009-index-must-be-regenerated` | `["decisions/INDEX.md"]` | yes | yes | post |
 | `ADR-20261009-layer1-total-under-280-lines` | `["DNA.md", "RNA.md", "SPEC.md"]` | yes | yes | post |
+| `ADR-20261009-ledger-must-be-valid-utf8` | `["ledger/hits-2026.jsonl"]` | yes | yes | post |
 | `ADR-20261009-lesson-must-be-replayed` | `["ledger/hits-2026.jsonl"]` | yes | yes | post |
 | `ADR-20261009-lesson-must-land-in-artifact` | `["examples/phyt.yml", ".github/workflows/**"]` | yes | yes | post |
-| `ADR-20261009-shell-var-before-cjk-must-brace` | `["**/*.sh"]` | yes | yes | post |
+| `ADR-20261009-shell-var-before-cjk-must-brace` | `["**/*.sh", "decisions/ADR-*.md"]` | yes | yes | post |
