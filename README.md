@@ -78,13 +78,20 @@ The debt column must not hide anything.
 | Growth-ring format | four totals only | three numbers + three categories (hits/task · override_rate · heartbeat rate) | **trend / distribution / override-by-reason fields** (T8) |
 | 60-minute parameter | hardcoded | calibratable field | **recalibrate after one year** (revisit-on 2027-04-09) |
 
+### What a verdict is worth (backflow 2026-10-09, from the first real adopter)
+
+`pass` alone is **not reportable** — it must be `pass + alive`. A green set with no fixtures is not
+green, it is **unmeasured**. And a probe must report **two worlds**: the un-injected baseline
+(*is the repo ill?*) and the injected state (*is the gate alive?*) — reporting only the latter makes a
+fixture's achievement look like the repo's disease. See `docs/MULTIMETER.md`.
+
 ### Evidence-based
 
 Every conclusion in [`docs/PROTECTION.md`](docs/PROTECTION.md) is tagged
 **measured (已实测) / research-backed (研究背书) / unverified (待验证)**.
 Unverified items must not be written into DNA.
 
-Measured in this repo (v2.1, 2026-10-09): **6 hard:true gates · 6/6 heartbeats RED ·
+Measured in this repo (2026-10-09): **gates = `ls decisions/ADR-*.md | wc -l` · heartbeats = `bash tools/validate.sh --probe-all` ·
 5 ADRs crystallized + 1 governance rule · 2 engine bugs found & fixed by probing ·
 CI: first run RED (no baseline) → GREEN → red-test RED → GREEN · 2 self-test interceptions (payload-level).**
 
@@ -94,7 +101,7 @@ CI: first run RED (no baseline) → GREEN → red-test RED → GREEN · 2 self-t
 
 | Item | State |
 |---|---|
-| Gate mechanism | ✅ 6 `hard: true` gates, heartbeats 6/6 RED, CI all green |
+| Gate mechanism | ✅ every gate is **two-way falsifiable** (an `inject.sh` that really crosses the threshold **and** a `counter.sh` that must not trip) · run `bash tools/validate.sh --probe-all` for the current reading · CI all green |
 | **Inner-ring rotation** | ⚠️ **0/0 — phyt-DNA itself has zero `kind: task` production tasks** |
 | Physical interception | ⚠️ payload-level only, **never observed in a real agent task** |
 | `--cull` | ✅ judge in place, but **no defendant yet** (no gate has seen 20 production tasks) |
@@ -106,6 +113,21 @@ CI: first run RED (no baseline) → GREEN → red-test RED → GREEN · 2 self-t
 ---
 
 ## Quick start
+
+**The one command** (run it after you change anything — this is the repo's signature move):
+
+```bash
+bash tools/validate.sh --probe-all
+```
+
+Three lines matter, and a reading without all three is incomplete:
+
+| line | what it tells you |
+|---|---|
+| `基线（未注入）` | **is the repo compliant right now** → red ⇒ the repo is ill |
+| `注入后 RED` | **is the gate alive** → this red is **manufactured by the fixture**, *not* the repo's illness |
+| `反例守住` | **is the criterion two-way falsifiable** → a content-preserving edit must not change the verdict |
+
 
 ```bash
 # 1. Copy the methodology skeleton into your project
@@ -162,8 +184,10 @@ Repo root (v2: the root IS the template; the former template/ was merged in)
   DEPRECATE.md    death and retirement (3 kinds of ending)
   decisions/      single source of truth — gates live here
   ledger/         append-only accounting
-  fixtures/       counter-examples for heartbeats
+  fixtures/       per-gate counter-examples: `inject.sh` (must go RED) + `counter.sh` (must NOT)
   tools/          engine + linters (zero hardcoded gates)
+  docs/           MULTIMETER.md (the second axis) · REPLAY-MISSING.md (G2's 4th turn) ·
+                  DNA-GATE-DIAGNOSIS.md (how a gate was found to be V=0) · PROTECTION.md
 
 docs/PROTECTION.md   the full spec
 examples/            copy-paste ready ADR, CI workflow, claude-code/ hook package
