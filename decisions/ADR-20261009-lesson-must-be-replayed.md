@@ -17,9 +17,9 @@ risk: normal
 replay-window: 10
 check: |
   LED="${PHYT_LEDGER:-ledger}/hits-2026.jsonl"
-  N=$(grep -h '^replay-window:' decisions/ADR-*.md 2>/dev/null | head -1 | awk '{print $2}')
+  N=$(grep -h '^replay-window:' decisions/ADR-*.md | head -1 | awk '{print $2}')
   [ -z "$N" ] && N=10
-  recent=$(grep -h '"kind"[[:space:]]*:[[:space:]]*"replay"' "$LED" 2>/dev/null | tail -n "$N")
+  recent=$(grep -h '"kind"[[:space:]]*:[[:space:]]*"replay"' "$LED" | tail -n "$N")
   miss=""
   for f in decisions/ADR-*.md; do
     grep -q '^hard: true$' "$f" || continue

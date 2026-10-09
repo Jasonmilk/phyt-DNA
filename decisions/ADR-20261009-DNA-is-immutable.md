@@ -15,7 +15,7 @@ risk: normal
 check: |
   # 元闸门（P9 第一例）：断言"DNA 的不可变性【由机制守着】"，**不断言 DNA 的内容**。
   # 必须问工具的【真实 scope 输出】—— 不得 grep 源码文本（否则又盯错对象，第 29 条同源）。
-  s=$(bash tools/check-baseline.sh --scope 2>/dev/null)
+  s=$(bash tools/check-baseline.sh --scope)
   printf '%s\n' "$s" | grep -qx 'DNA.md' || echo "元闸门失守: DNA.md 不在资产基线 scope 内 ⇒ 改基因将无人拦"
 last-hit: null
 hit-count: 0

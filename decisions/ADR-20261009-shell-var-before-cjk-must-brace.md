@@ -17,7 +17,7 @@ risk: normal
 check: |
   # 只看【非注释行】：注释里的 `$F（…）` 是说明文字，不是代码（否则假红 ⇒ 装饰品）。
   # LC_ALL=C 下 `[^ -~]` 匹配一切非可打印 ASCII 字节 ⇒ 不依赖 PCRE。
-  hits=$(grep -vE '^[[:space:]]*#' "$F" 2>/dev/null | LC_ALL=C grep -nE '\$[A-Za-z_][A-Za-z0-9_]*[^ -~]' 2>/dev/null)
+  hits=$(grep -vE '^[[:space:]]*#' "$F" | LC_ALL=C grep -nE '\$[A-Za-z_][A-Za-z0-9_]*[^ -~]')
   [ -n "$hits" ] && echo "变量名后紧跟非 ASCII（必须写 \${var}）: $hits"
 last-hit: null
 hit-count: 0
