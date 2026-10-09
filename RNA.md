@@ -3,7 +3,8 @@
 > ## 一条命令（改完文件就跑它 —— 这是本仓的招牌动作）
 >
 > ```bash
-> bash tools/validate.sh --probe-all
+> bash tools/validate.sh --probe-all     # 每一条闸门的三态：基线 / 注入后 / 反例守住
+> bash tools/validate.sh --index         # 闸门 INDEX（一行一条）—— 【提出新闸门之前先跑它】
 > ```
 >
 > **读数怎么用**（三行都要看，缺一就不完整）：

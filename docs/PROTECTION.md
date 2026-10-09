@@ -277,7 +277,8 @@ decisions/*.md              唯一真源，ADR 自带 check 字段
 ledger/hits-<年>.jsonl      append-only，kind 必填
 ledger/appeals-<年>.jsonl   独立申诉账（破解自证陷阱）
 fixtures/<id>/inject.sh     反例注入，接受 $F
-tools/validate.sh           引擎（自动发现 + --probe/--override/--appeal/--timing）
+tools/validate.sh           引擎（自动发现 + --probe/--probe-all/--index/--override/--appeal/--timing/--cull）
+tools/ci-local.sh           逐字复现 CI 的五步（推送前跑它 —— "本地绿" ≠ "CI 绿"）
 tools/spec-lint.sh          规范自检（当前闸门数：`ls decisions/ADR-*.md | wc -l`）
 tools/check-baseline.sh     闸门资产哈希（防就地篡改）
 tools/claim-check.sh        报告自查：每个"已实测"断言，账本里有记录吗
