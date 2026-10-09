@@ -69,8 +69,18 @@ fi
 # 不写账本就不算闭环："我没跑过它"与"我跑过且它红了"在账本上无法区分。
 rec(){ # rec <gate_id> <verdict> <note>
   [ -d "$LED_DIR" ] || return 0
-  printf '{"ts":"%s","gate_id":"%s","verdict":"%s","override":false,"source":"probe","event_id":"probe-%s-%s","kind":"probe","note":"%s"}\n' \
-    "$(TZ=CST-8 date +%Y-%m-%dT%H:%M:%S%z)" "$1" "$2" "$1" "$(date +%s)-$$-$RANDOM" "$3" >> "$LED_DIR"/hits-2026.jsonl
+  # ★ 2026-10-09 修：note 此前被 **printf 直接插进 JSON**，未转义 ⇒ 只要理由里带一个 `"`
+  #   整行 JSON 就非法（实测第 76 行起，账本从此读不出来，且**读者无法察觉**）。
+  #   改为经 python 构造：**转义由 json.dumps 负责**，不可能再漏；且保证【一行一条】（JSONL 的下限）。
+  LED_APPEND=1 python3 -c '
+import json, os, sys, time
+note = sys.argv[3]
+rec = {"ts": time.strftime("%Y-%m-%dT%H:%M:%S%z", time.localtime()),
+       "gate_id": sys.argv[1], "verdict": sys.argv[2], "override": False, "source": "probe",
+       "event_id": "probe-%s-%s-%s" % (sys.argv[1], int(time.time()), os.getpid()),
+       "kind": "probe", "note": note}
+sys.stdout.write(json.dumps(rec, ensure_ascii=False) + "\n")
+' "$1" "$2" "$3" >> "$LED_DIR"/hits-2026.jsonl
 }
 probe_one(){ # probe_one <gate-id> → 0=闸门活着（RED）· 2=腐化/拓扑失配/假阳性
   local id="$1" F fx out cf out2
