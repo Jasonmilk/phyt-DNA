@@ -43,7 +43,7 @@ rc=$?
 
 # L3 · 引擎异常：仅 0（放行）与 2（拦截）是合法结局，其余一律 fail-closed
 if [ "$rc" != 0 ] && [ "$rc" != 2 ]; then
-  echo "⛔ fail-closed: 引擎异常（exit $rc）—— 不得静默放行" >&2
+  echo "⛔ fail-closed: 引擎异常（exit ${rc}）—— 不得静默放行" >&2
   exit 2
 fi
 
