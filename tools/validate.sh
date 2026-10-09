@@ -69,6 +69,15 @@ probe_one(){ # probe_one <gate-id> → 0=闸门活着（RED）· 2=腐化/拓扑
   cp /tmp/inj.bak "$F" 2>/dev/null; rm -f /tmp/inj.bak
   if [ -z "$out" ]; then echo "  注入后: NOT RED — 闸门已腐化（夹具没能越过阈值）" >&2
     rec "$id" block "corrupted: fixture did not cross the threshold"; return 2; fi
+  # ★ 夹具必须【真的改变了结论】（2026-10-09）。若注入前后的结论一字不差，那么这次"RED"
+  # 不是夹具的功劳：要么它没越过阈值，要么**判据对这个文件的内容不敏感**（例如只断言文件名）。
+  # 后者是一种天然长出来的 V=0 闸门 —— 恒红，永远说明不了任何事；而它此前会被报成"心跳 RED ✅"。
+  # 这条不加，"守卫能抓住判据退化"就一直是未证明的（本会话悬了两轮）。
+  if [ "$base_out" = "$out" ]; then
+    echo "  [夹具无效] 注入前后的结论完全相同 ⇒ 夹具没越阈，或判据对该文件的内容不敏感" >&2
+    echo "             结论: ${out}" >&2
+    rec "$id" block "ineffective fixture: identical conclusion before/after injection"; return 2
+  fi
   echo "  注入后: RED — 检出: ${out}"
   # 反例：内容不变的改动【必须不】触发判据。
   # 只有正例时，一个读时钟的判据照样能红（inject 追加字节同时改了内容与 mtime）⇒ 退化无人发现。
