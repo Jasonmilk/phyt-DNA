@@ -16,10 +16,13 @@ origin: "2026-10-09：README 是唯一的入口，而入口的价值不在'内�
 risk: normal
 check: |
   [ -f "$F" ] || { echo "输入失效: $F 不存在（静默失败=伪证）"; }
-  # 按需指针块的两个必需特征：一个可检索的块标识 + 一张"问题 → 读这份"的表。
-  grep -q '按需指针' "$F" || echo "README 缺【按需指针】块标识（入口会退化成目录）"
-  grep -qE '^\| *我要回答的问题 *\|' "$F" || echo "README 缺【问题 → 读这份】表头（读者无法按需取用）"
-  grep -q 'docs/INDEX.md' "$F" || echo "README 未指向 docs/INDEX.md（按问题索引的唯一入口）"
+  # 按需指针块的三个必需特征（**与工件的真实形态一致**：README.md 是英文，
+  # 中文块在 README.zh-CN.md —— 闸门必须跟着工件走，否则它守的是一个不存在的形状）。
+  grep -qE '^## Start here' "$F" || echo "README.md 缺【Start here】段（入口会退化成目录）"
+  grep -qE '^\| *The question you are asking *\|' "$F" || echo "README.md 缺【question → read this】表头（读者无法按需取用）"
+  grep -q 'docs/INDEX.md' "$F" || echo "README.md 未指向 docs/INDEX.md（按问题索引的唯一入口）"
+  # 中英分家（人类 2026-10-09 裁定：README.md 里不许混中文 ⇒ zh 块的家是 README.zh-CN.md）
+  if LC_ALL=C grep -qE '^\| *我要回答的问题' "$F"; then echo "README.md 混入了中文块（应放在 README.zh-CN.md）"; fi
 last-hit: null
 hit-count: 0
 supersedes: null

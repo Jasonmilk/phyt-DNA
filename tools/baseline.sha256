@@ -16,7 +16,7 @@ b010774f1301c63c24778d33ec9a59f9f0a3ffab37e1c3e947612bcb4d67c4d8  decisions/ADR-
 ff32af3ae9bd6b3a36005fa9b38e1ae2dabcd253b020c41deede21da3deb528d  decisions/ADR-20261009-ledger-must-be-valid-utf8.md
 bc1f0419dfa994fef5ad804e47e55fa99b79878d96edaf0f9277b9ac404babb3  decisions/ADR-20261009-lesson-must-be-replayed.md
 ace7bf03604ecec0fdfa46ee10e1c88c37d2ec6665816a0974c028bbf0bc788c  decisions/ADR-20261009-lesson-must-land-in-artifact.md
-b93b662e9849533522e281d992aae44454e8db7939f46e15b265603f1692d6a2  decisions/ADR-20261009-readme-must-carry-the-on-demand-pointer-block.md
+eea60eb718bd4dbd3f374c800087b9e55020fdb0b73b08276214c065c3f7980b  decisions/ADR-20261009-readme-must-carry-the-on-demand-pointer-block.md
 fe45b942465413cc5d7a903bf6de0c3fb07d709df5d7b52ac12804dbbd4c895b  decisions/ADR-20261009-shell-var-before-cjk-must-brace.md
 1543007cc8f3ad6d4881b04e1609e42a1b4cab4029871fd78641a6b5fb316a1b  decisions/INDEX.md
 57262df467a982a9406fc75c3872c79b47e17d89d39066036ee70b54d2ca40e6  decisions/README.md
