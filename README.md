@@ -22,6 +22,23 @@ effective-from: 2026-10-09
 > archive only — don't anchor to it.
 
 
+
+## ▸ 从这里开始（**按需指针**：先看你要回答的**问题**，只取那一份）
+
+> **状态是【量出来】的，不是存在这里的。** 本文件的计数是**快照**，会腐 ⇒ 以自证命令为准。
+> **本仓是"基因"仓**：它管的是**规矩本身**（闸门怎么设计、裁决怎么才算可信）⇒ 所以下面的指针先指向**方法**，再指向**资产**。
+
+| 我要回答的问题 | 读这一份 |
+|---|---|
+| **本仓现在健康吗？怎么自证？** | `bash tools/ci-local.sh`（五步）· 闸门能力心跳 `bash tools/validate.sh --probe-all` · 清单 `bash tools/validate.sh --index` |
+| **本仓的规矩到底是什么？** | `docs/PROTECTION.md`（可落地规范：闸门是叶子不是墙；有名·能红·会死·有度；三层验证栈） |
+| **一个裁决是否可信？（真绿/假绿/真红/假红）** | `docs/MULTIMETER.md`（第二根轴 `verdict` × `validity` · 两世界读数） |
+| **哪些知识文档存在？按问题怎么找？** | `docs/INDEX.md`（**按问题索引**；有闸门守着"不许漏"：`ADR-20261009-docs-must-be-indexed`） |
+| **闸门本体（能红的判据）在哪？** | `decisions/`（索引 `decisions/INDEX.md`，由 `validate.sh --index` 生成） |
+| **运行/探针的账在哪？** | `ledger/`（append-only；修正 = 追加记录，见 `ledger/README.md`） |
+| **跨仓：还有哪些已知问题？** | `helix-mind/docs/helixECO/KNOWN_ISSUES.md`（唯一登记册） |
+| **跨仓：怎么看出判据在骗人？** | `helix-mind/docs/helixECO/DIAGNOSIS-METHODS.md`（诊断法 7 条，slug 锚点） |
+
 ## The second axis: is a verdict *trustworthy*? (BACKFLOW 2026-10-09)
 
 `pass | block` cannot tell these four apart:
