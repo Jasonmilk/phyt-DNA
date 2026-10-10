@@ -5,6 +5,12 @@ set -uo pipefail
 # 本文件已有 `PHYT_LEDGER`；此处把另外两处也做成配置，理由同一条：
 # 硬编码路径会逼采用者【改脚本】，而改脚本 = 分叉 = 漂移。
 #   PHYT_DECISIONS=docs/decisions PHYT_FIXTURES=fixtures bash tools/validate.sh
+# ★ 采纳者的【布局声明】（2026-10-09）：引擎与工件分层 —— 引擎**字节不变**，
+#   布局差异写进 `tools/paths.env`（一行，如 `PHYT_DECISIONS=docs/decisions`）。
+# 为什么需要它（实证）：`Cellrix/tools/validate.sh` 曾用"环境适配的副本"解决同一件事
+#   ⇒ 与上游差 274 行、缺 `--index`/`--cull`，而**改脚本 = 分叉 = 漂移**（本文件自己的注释）。
+#   ⇒ 有了它，布局不同的采纳者**不改引擎**、只提交一行声明；引擎仍受上游指纹保护。
+_d=$(dirname "$0"); [ -f "$_d/paths.env" ] && . "$_d/paths.env"
 DEC_DIR="${PHYT_DECISIONS:-decisions}"
 FIX_DIR="${PHYT_FIXTURES:-fixtures}"
 LED_DIR="${PHYT_LEDGER:-ledger}"

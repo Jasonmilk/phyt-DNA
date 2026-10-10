@@ -13,9 +13,12 @@
 #   E. 具名的例外（probe: none + probe-why）
 # Usage: bash tools/xray.sh
 set -uo pipefail
-DEC=decisions; FIX=fixtures
+DEC_DIR="${PHYT_DECISIONS:-decisions}"
+FIX_DIR="${PHYT_FIXTURES:-fixtures}"
+LED_DIR="${PHYT_LEDGER:-ledger}"
+DEC="$DEC_DIR"; FIX="$FIX_DIR"
 covered_adr=$(grep -h '^applies-to:' "$DEC"/ADR-*.md 2>/dev/null | sed 's/^applies-to: *//' | tr -d '[]" ' | tr ',' '\n' | grep -v '^$' | sort -u)
-covered_probe=$(ls "$FIX" 2>/dev/null | sed 's|^|fixtures/|')
+covered_probe=$(ls "$FIX" 2>/dev/null | sed "s|^|$FIX_DIR/|")
 ci=$(cat .github/workflows/*.yml 2>/dev/null)
 ok=0; gap=0
 report(){ printf '  %-46s %s\n' "$1" "$2"; }
@@ -34,7 +37,7 @@ done < <(ls "$DEC"/ADR-*.md 2>/dev/null | sort)
 for f in decisions/INDEX.md; do report "$f" "✅ A·$(grep -l 'index-must-be-regenerated' "$DEC"/*.md >/dev/null 2>&1 && echo 'ADR-index-must-be-regenerated')"; done
 for f in docs/INDEX.md;     do report "$f" "✅ A·ADR-docs-must-be-indexed"; done
 # 4. 账本
-for f in ledger/hits-2026.jsonl ledger/appeals-2026.jsonl; do
+for f in "$LED_DIR"/hits-2026.jsonl "$LED_DIR"/appeals-2026.jsonl; do
   [ -f "$f" ] || continue
   report "$f" "✅ A·ADR-ledger/appeals-must-be-*（可解析性）"
 done

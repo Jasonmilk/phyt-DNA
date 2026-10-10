@@ -19,6 +19,21 @@ LED_BAK="$(mktemp)"
 cp "$LED" "$LED_BAK" 2>/dev/null || true
 trap 'cp "$LED_BAK" "$LED" 2>/dev/null; rm -f "$LED_BAK"' EXIT
 fail=0
+
+# ── 引擎清单必须与工作区一致（改了引擎却没重算 ⇒ 采纳者会拿到过期指纹）──────────
+# ★ 两条教训都写在这里：
+#  ① **必须放在 `fail=0` 之后** —— 我第一版把它插在前面 ⇒ 它报了 ★ RED 而总结仍说"五步全绿"：
+#     **检查跑在它要影响的状态初始化之前 ⇒ 裁决被静默丢弃**。这比"仪器静音"更隐蔽：
+#     输出看得见，影响不作数（"看得见但不作数"）。
+#  ② **路径风格必须与 `--write` 一致**（带 `tools/` 前缀）—— 第一版用 `cd tools && shasum *.sh`
+#     ⇒ 生成的是不带前缀的路径 ⇒ 与清单**必然不同** ⇒ **一个永远红的检查**（最坏的一种）。
+tmp=$(mktemp)
+shasum $(ls tools/*.sh | grep -vE '^tools/(upstream-manifest)\.sh$') > "$tmp"
+step "0 · 引擎清单是最新的"
+if diff -q "$tmp" tools/UPSTREAM.sha256 >/dev/null 2>&1; then echo "OK"; else
+  echo "★ RED  ⇒ 跑：bash tools/upstream-manifest.sh --write"; fail=1
+fi
+rm -f "$tmp"
 step(){ printf '  %-42s ' "$1"; }
 
 step "1 · 资产完整性"
