@@ -387,3 +387,29 @@ validity: alive | unproven | unattributable | flaky
 | 5 | **每个二分先问第三态**（本轮三个二分各漏一支，且漏的那支先验最高）。 | 尚未（推理） | 同上 `#ask-the-third-state` |
 | 6 | **静音仪器不能当证据**；**静默的腐败机制是"产出零"，而零冒充阴性**。 | 判据须有"能红"证明 | 同上 `#silent-instrument` |
 | 7 | **入口必须带按需指针**（README 的价值不在"内容全"，在"指向唯一的那一份"）。 | 已是闸门 | `ADR-20261009-readme-must-carry-the-on-demand-pointer-block` |
+
+## 引擎与工件的分层（2026-10-09 · 实测驱动的解耦）
+
+> **问题**：`Cellrix/tools/validate.sh` 是"**环境适配的副本**"（它自己的头注这么写）。
+> **实测（2026-10-09）**：那份副本与上游**差 274 行**，且**缺 `--index` 与 `--cull`**
+> —— 即 **副本不仅会漂，还会永久拿不到上游的新能力**。
+> 而它漂的原因不是别的：它的**布局不同**（`docs/decisions/` 而非 `decisions/`），
+> 于是它**改了脚本** —— 而本仓自己的注释早已写着：**"改脚本 = 分叉 = 漂移"**。
+
+**分层原则**
+
+| 层 | 内容 | 是否每项目一份 | 判据 |
+|---|---|---|---|
+| **工件** | `decisions/` · `fixtures/` · `ledger/` · 七卷（DNA/RNA/…） | ✅ **一份一份**（它们是该项目的事实） | 由闸门与 CI 守 |
+| **引擎** | `tools/*.sh`（validate / xray / ci-local / check-baseline / spec-lint / upstream-manifest） | ❌ **单一上游**；可复制以保**零安装自足**，但**必须可校验与上游一致** | `shasum -c tools/UPSTREAM.sha256` |
+| **布局声明** | `tools/paths.env`（一行，如 `PHYT_DECISIONS=docs/decisions`） | ✅ 每项目一份（它描述**该项目自己的布局**） | 引擎启动时读取 |
+
+**两条命令（都用标准工具，不发明格式）**
+
+```bash
+shasum -c tools/UPSTREAM.sha256        # 采纳者：一行查出引擎是否与上游一致
+bash tools/upstream-manifest.sh --write # 维护者：引擎变了就重算清单
+```
+
+**红线**：**引擎【不得】因为布局而分叉** —— 布局写进 `tools/paths.env`（一行），
+引擎字节不变、受上游指纹保护。**若确要分叉，必须在提交信息里具名说明为什么。**
