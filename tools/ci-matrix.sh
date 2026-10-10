@@ -28,7 +28,14 @@ try:
     marks=[]
     if sha != head: marks.append('⚠️过期')
     if not re.search(gate, x['name']): marks.append('⚠️非判据')
-    if not marks and conc != 'success': marks.append('★红')
+    # ★★ D12 修补（2026-10-10）：**运行中绝不标 ★红** ——
+    #   实测：Tuck 的 run 状态是 `—`（in_progress）而我的第一版把它标成 ★红
+    #   ⇒ **矩阵自己制造了一次翻转**（并让一轮审查去追一个没发生的红）。
+    #   ⇒ 未完成 ⇒ 显式写「⏳运行中」，**它既不是绿也不是红**。
+    if x['status'] != 'completed':
+        marks.append('⏳运行中')
+    elif not marks and conc != 'success':
+        marks.append('★红')
     note = '收据≠HEAD（%s）' % head if sha != head else ''
     if '⚠️非判据' in marks: note = (note+' ' if note else '')+'此 workflow 不是判据（如 Graph Update）'
     print('%-16s %-9s %-10s %-9s %-16s %s' % (r, sha, conc, ' '.join(marks) or '✅', name, note))
