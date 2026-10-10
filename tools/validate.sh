@@ -14,13 +14,18 @@ _d=$(dirname "$0"); [ -f "$_d/paths.env" ] && . "$_d/paths.env"
 DEC_DIR="${PHYT_DECISIONS:-decisions}"
 FIX_DIR="${PHYT_FIXTURES:-fixtures}"
 LED_DIR="${PHYT_LEDGER:-ledger}"
-# ★ 轻件 d（2026-10-09）：**把"我用的布局"说出来** —— 布局错了要显形，不要静默回退。
-#   静默回退 = 静默家族的新成员（引擎假装正常，其实在错的地方找闸门）。
-#   （"找到 0 个闸门"另有一道具名 BLOCK（P3 零闸门）⇒ 此处只需**具名报出使用的路径**。）
-if [ "${PHYT_QUIET:-0}" != "1" ]; then
+# ★ 轻件 d（2026-10-09）：把"我用的布局"说出来 —— **但只在它与约定不同时才响**。
+#
+# ★★ 为什么必须加"只在偏离时"这个条件（血的教训，CI 实证 2026-10-09）：
+#   第一版无条件打 stderr ⇒ 而**引擎把闸门 check 的 stderr 也并进"违规文本"**
+#   ⇒ 任何【其 check 内部会调用 validate.sh】的闸门（如 index-must-be-regenerated）
+#     都收到了一段假违规 ⇒ **一道健康的闸门被我的诊断变成假红源** ⇒ CI 第 4 步因此失败。
+#   ⇒ 这是"永远红的检查"家族的新成员：**在协议通道上倒垃圾的诊断**。
+#   ⇒ 正解：默认静默（零污染），**只有偏离约定布局时**才具名报出（那才是需要显形的情形）。
+if [ "${PHYT_QUIET:-0}" != "1" ] && { [ -f "$_d/paths.env" ] || [ "$DEC_DIR" != "decisions" ] || [ "$FIX_DIR" != "fixtures" ] || [ "$LED_DIR" != "ledger" ]; }; then
   printf 'validate: 布局 decisions=%s fixtures=%s ledger=%s%s\n' \
     "$DEC_DIR" "$FIX_DIR" "$LED_DIR" \
-    "$( [ -f "$_d/paths.env" ] && echo ' （来自 tools/paths.env）' || echo ' （约定布局）')" >&2
+    "$( [ -f "$_d/paths.env" ] && echo ' （来自 tools/paths.env）' || echo ' （非约定布局）')" >&2
 fi
 mode=check; target=""; only_timing=""
 case "${1:-}" in

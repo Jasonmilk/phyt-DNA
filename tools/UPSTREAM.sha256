@@ -3,5 +3,6 @@ aa74b25f6bcda8735cf07ba195d430080efe46e5  tools/check-baseline.sh
 8ce6f9b17962ef0fc73606d35988ca9f3a34e817  tools/claim-check.sh
 e98364dc156d1ec865218fe76cbdb1b356ebd748  tools/redrate.sh
 8da900b3b30058e3daedf0095300a0058d5c021b  tools/spec-lint.sh
-798f7750a58a2a0a0f0516a7ef90925068862067  tools/validate.sh
+1a29eef48923128bd715923b8b9edd06728c8657  tools/sync-upstream.sh
+dd9dc2fa31dacdbfbbcf9670dd6ff265bbc2a166  tools/validate.sh
 28beabce5d9041e5c04aff2a72a02dfd46cc10a9  tools/xray.sh
