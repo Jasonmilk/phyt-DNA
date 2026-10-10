@@ -5,6 +5,11 @@
 # 而"记得去测"正是这套生态从第一天就在消灭的东西（人类 2026-10-09：不能 100% 相信工具，
 # 但更不该依赖"人的记性"）。⇒ 与 validate.sh / xray.sh 同一层，同一套声明式路径。
 #
+#
+# ★ 样本量分层（reviewer 2026-10-09）：
+#   · **小样本（如 3/3）只证明【红路径存在】**（存在性证明）
+#   · **红率（N≥20，双模式）才管【稳定性】**
+#   ⇒ 引用时**不得**把 3/3 当红率引用（否则是把存在性冒充稳定性）。
 # 用法：
 #   bash redrate.sh 20 --cd <dir> -- cargo test --all-features --no-fail-fast
 #   bash redrate.sh 20 --cd <dir> --both -- cargo test --test foo      # 并行 + 串行（--test-threads=1）各 N 次

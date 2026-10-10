@@ -1,7 +1,7 @@
 aa74b25f6bcda8735cf07ba195d430080efe46e5  tools/check-baseline.sh
 4d13869b315b7d623bc2c31a1735ec681f22b9f4  tools/ci-local.sh
 8ce6f9b17962ef0fc73606d35988ca9f3a34e817  tools/claim-check.sh
-55ada9584c67ac81ae14d7a74bd9e1f48119d10d  tools/redrate.sh
+e98364dc156d1ec865218fe76cbdb1b356ebd748  tools/redrate.sh
 8da900b3b30058e3daedf0095300a0058d5c021b  tools/spec-lint.sh
-2cc8dce80b4601c21662e6f4b9e74f83cc5fbcf6  tools/validate.sh
+798f7750a58a2a0a0f0516a7ef90925068862067  tools/validate.sh
 28beabce5d9041e5c04aff2a72a02dfd46cc10a9  tools/xray.sh
