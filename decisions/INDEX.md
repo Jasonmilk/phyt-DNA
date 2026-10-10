@@ -1,5 +1,3 @@
-<!-- 由 `bash tools/validate.sh --index` 生成 —— 不要手改。 -->
-
 | 闸门 id | applies-to | 正例 inject.sh | 反例 counter.sh | timing |
 |---|---|---|---|---|
 | `ADR-20261009-DEPRECATE-must-exist` | `["DEPRECATE.md"]` | yes | yes | post |
@@ -17,4 +15,5 @@
 | `ADR-20261009-ledger-must-be-valid-utf8` | `["ledger/hits-2026.jsonl"]` | yes | yes | post |
 | `ADR-20261009-lesson-must-be-replayed` | `["ledger/hits-2026.jsonl"]` | yes | yes | post |
 | `ADR-20261009-lesson-must-land-in-artifact` | `["examples/phyt.yml", ".github/workflows/**"]` | yes | yes | post |
+| `ADR-20261009-readme-must-carry-the-on-demand-pointer-block` | `["README.md"]` | yes | yes | post |
 | `ADR-20261009-shell-var-before-cjk-must-brace` | `["**/*.sh", "decisions/ADR-*.md"]` | yes | yes | post |
