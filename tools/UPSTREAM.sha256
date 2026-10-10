@@ -1,6 +1,6 @@
 aa74b25f6bcda8735cf07ba195d430080efe46e5  tools/check-baseline.sh
 4d13869b315b7d623bc2c31a1735ec681f22b9f4  tools/ci-local.sh
-8e95bb526d956fcb8f069fee2897cbdb5b0751f5  tools/ci-matrix.sh
+4df8f65eec977293d4b03f91d47aaeb9efa21100  tools/ci-matrix.sh
 8ce6f9b17962ef0fc73606d35988ca9f3a34e817  tools/claim-check.sh
 e98364dc156d1ec865218fe76cbdb1b356ebd748  tools/redrate.sh
 8da900b3b30058e3daedf0095300a0058d5c021b  tools/spec-lint.sh
