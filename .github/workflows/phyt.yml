@@ -4,7 +4,9 @@ on: [push, pull_request]
 
 jobs:
   gate:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04   # ★ 钉住（2026-10-10）：ubuntu-latest 将于 2026-10-19 迁到 Ubuntu 26
+                           #   ⇒ 不钉住 = 9 天后由【外部变更】决定我们的红绿（"今天绿"可能纯因环境）
+                           #   冻结是默认；预演 26 应是一次【有意】的实验，不是被动接受
     steps:
       - uses: actions/checkout@v4
         with: { fetch-depth: 0 }
