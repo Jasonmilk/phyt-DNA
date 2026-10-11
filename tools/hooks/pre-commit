@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# pre-commit —— 【改完即重生】：闸门资产一变，就自动重生 INDEX 与基线。
+#
+# ★ 为什么存在（reviewer ③ · 2026-10-11）：INDEX 的一致性检查在 **CI 层（事后）**，
+#   而 **pre-commit 层是空的** ⇒ 同一个坑我踩了两次（改了闸门资产却忘重生 INDEX）。
+#   **同坑两次不是粗心，是位置错**：投资阶梯已到结晶线，缺的是【位置】不是数量。
+#   ⇒ 把防线**前移到事前**：不依赖"记得"，改完即重生。
+set -uo pipefail
+cd "$(git rev-parse --show-toplevel)" || exit 0
+staged=$(git diff --cached --name-only 2>/dev/null | grep -E '^(decisions/|tools/|DNA\.md)' || true)
+[ -z "$staged" ] && exit 0
+changed=0
+if ! bash tools/validate.sh --index > /tmp/.idx.$$ 2>/dev/null; then rm -f /tmp/.idx.$$; exit 0; fi
+if ! cmp -s /tmp/.idx.$$ decisions/INDEX.md 2>/dev/null; then mv /tmp/.idx.$$ decisions/INDEX.md; git add decisions/INDEX.md; changed=1; else rm -f /tmp/.idx.$$; fi
+if bash tools/check-baseline.sh --update >/dev/null 2>&1; then git add tools/baseline.sha256 2>/dev/null || true; fi
+[ "$changed" = 1 ] && echo "  [pre-commit] 闸门资产变了 ⇒ decisions/INDEX.md 已自动重生（不依赖记得）"
+exit 0
