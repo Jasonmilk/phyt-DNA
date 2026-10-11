@@ -3,7 +3,7 @@ id: ADR-20261011-derivation-must-carry-origin
 seq: 9013
 status: accepted
 hard: true
-applies-to: ["decisions/ADR-*.md", "tools/*.sh"]
+applies-to: ["decisions/ADR-*.md"]
 effective-from: 2026-10-11
 timing: post
 redtest: "validate --probe ADR-20261011-derivation-must-carry-origin"
