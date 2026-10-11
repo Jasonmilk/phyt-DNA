@@ -24,9 +24,9 @@ check: |
     grep -q '^hard: true$' "$f" || continue
     grep -q '^status: deprecated' "$f" && continue
     grep -q '^replay-exempt: true' "$f" && continue
-    id=$(basename "$f" .md)
+    id=$(grep -m1 '^id:' "$f" | awk '{print $2}')   # ★ 用前言字段（夹具改 id 才可见；文件名当 id 是错的）
     rv=$(grep -m1 '^revisit-on:' "$f" | awk '{print $2}')
-    last=$(grep -h '"kind"[[:space:]]*:[[:space:]]*"replay"' "$LED" 2>/dev/null | grep -F "\"$id\"" | tail -1 | sed -nE 's/.*"ts"[[:space:]]*:[[:space:]]*"([0-9-]{10}).*/\1/p')
+    last=$(grep -h '"kind"[[:space:]]*:[[:space:]]*"replay"' "$LED" | grep -F "\"$id\"" | tail -1 | sed -nE 's/.*"ts"[[:space:]]*:[[:space:]]*"([0-9-]{10}).*/\1/p')
     if [ -z "$last" ]; then
       if [ -n "$rv" ] && [ "$rv" != "null" ] && [ "$TODAY" \> "$rv" ]; then
         echo "已过 revisit-on（$rv）却从未重放: $id"; fail=1
