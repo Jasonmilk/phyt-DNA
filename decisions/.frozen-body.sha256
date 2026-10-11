@@ -14,6 +14,7 @@ f112e0b3e39a2bb271d84169c2df6c07566a0063ae06313aaf33d8c499866255  ADR-20261009-i
 c0f8776c05330751daf785983d808d3890453e91c68ea47df5820aff983f1023  ADR-20261009-layer1-total-under-280-lines.md
 6ef418769fcf84c0d92e5b5d779410737889131d1edcdc7a853c911e0c9be4fb  ADR-20261009-ledger-must-be-valid-utf8.md
 0205a5840b08cd0aa1a9ad97e1b2e48109ea87a95fd272b33a51c797836a7800  ADR-20261009-lesson-must-be-replayed.md
+# rebaseline ADR-20261009-lesson-must-be-replayed.md 理由: 2026-10-11：supersede 的后半（status→deprecated + 取代指针），前端已立新 ADR
 7fac7ab5ec85a026a6cbe12ac2b51af0783be8d1562430aa644d47fcbaf11ae9  ADR-20261009-lesson-must-land-in-artifact.md
 1b577ab315080126db38f56219ff1af474aa3de3ead90e1110fc7a16d4dcf8c8  ADR-20261009-readme-must-carry-the-on-demand-pointer-block.md
 2c0fa565d63d6c39c9438385738cc8e1b80cfa633bbf91eec9c8dcc8d5c615ea  ADR-20261009-shell-var-before-cjk-must-brace.md
@@ -25,4 +26,4 @@ bafc8a095eb14a4975e9dd861454f87e750e2ed57e8d3132a582fb0859bdfe03  ADR-20261011-f
 ef6c49f99683f565e9cfab22a2e933e912eceab3d3f8a1ee78dcbd816975ac8d  ADR-20261011-layer1-budget-is-attention-not-maintenance.md
 bbd12d8b7b22bbf4c91cbc339571a08cf0b48972ffbc58f7c40a54e69e17a626  ADR-20261011-layer1-threshold-calibrated-by-premiere.md
 9710370865fa18f29af2e3160ee9b71233a53ae4a26f12d747b3bc0c172a76bc  ADR-20261011-recopy-must-equal-the-gene-set.md
-617abc2344c64ebb45fbcafa935921917cb9cf9b17d35ac6fc6f262a7227805f  ADR-20261011-replay-per-revisit-period.md
+b8c03f7f056dd008fe93e8b94639a66b006d134f5b2d610cd56f405aa46d7840  ADR-20261011-replay-per-revisit-period.md
