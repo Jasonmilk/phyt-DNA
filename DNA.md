@@ -129,16 +129,16 @@ pass 单独不可报告：pass + alive 才算数。
 可机检的禁令（`2>/dev/null`、破坏性 git 命令）由 lint / CI 执法——
 确定性归脚本的落地形态。
 
-> **落地注（Pi 2026-10-11 · 审查实测）**：上述六条律**尚未各自立号** —— `decisions/` 现有 22 个 id 中
-> 无一以这些名字立号。**当前的真值源**分别落在：
-> · **不静默失败** ⇒ `spec-lint.sh` 的 `check 表达式无静默失败`（**绿/红已成判据**）＋ `ADR-…dangerous-action-shapes-must-be-blocked`（可机检禁令）
-> · **只引用不复制 / 派生必带 origin** ⇒ 目前散见于 `RNA.md` 与各 ADR 的 `origin:` 前言字段，**未立号**
-> · **仪器数字进 ledger** ⇒ `tools/` 的账本写入路径（**未立号**）
-> · **测试不破坏被测物** ⇒ **未立号**
-> · **外部性降治理层** ⇒ 见"守卫不自签"的收据（**未立号**）
-> ⇒ **此注是"引用挂真值源"（D24）的落地**：指针必须解析得开。**立号六条已登记为欠账**
-> （判据：每条一个 `hard: true` ADR + 一个 redtest；或显式声明"该律由 lint 承载、不立号"）。
-> **本节先按"预定住址"读，不按"已建住址"读。**
+> **落地注（Pi 2026-10-11 · 取证后定稿）**：六条律**各有真住址**，逐条实测如下（**引用挂真值源**）：
+> · **不静默失败** ⇒ `tools/spec-lint.sh` **闸门6**（扫 `decisions/*.md` 的 `2>/dev/null`）；
+> · **测试不破坏被测物** ⇒ `tools/spec-lint.sh` **闸门7**（ADR-0009 · 扫全量还原命令）；
+> · **外部性降治理层** ⇒ `decisions/ADR-20261009-dangerous-action-shapes-must-be-blocked`（`applies-to: ["DNA.md","VISION.md","decisions/**"]`）
+>   ＋ `helix-mind/docs/helixECO/KNOWN_ISSUES.md` 的 **K34**（跨仓判据的适用范围声明：**不许自签放行**）；
+> · **只引用不复制** ⇒ **对齐链实践**（五个仓的 `VISION.md` 头部各一行"生态方法论之根在…"）＋ 评审环；
+> · **仪器数字进 ledger** ⇒ **派生视图生成器**（`GROWTH.md` 已改为"不在此处写数字"）＋ `ledger/*.jsonl` 四本账；
+> · **派生必带 origin** ⇒ ★ **本轮立号**：`ADR-20261011-derivation-must-carry-origin`（`hard: true` · 判据：`hard:true` 的 ADR 必须有非空 `origin`
+>   ⇒ **取证时实测 18/18 全有 ⇒ 零红上线**）。
+> ⇒ 六律中**五条已有承载者、一条本轮立号**；本节不再有"预定住址"，**指针全部解析得开**。
 
 ---
 

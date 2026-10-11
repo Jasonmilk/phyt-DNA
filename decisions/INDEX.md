@@ -16,4 +16,5 @@
 | `ADR-20261009-lesson-must-land-in-artifact` | `["examples/phyt.yml", ".github/workflows/**"]` | yes | yes | post |
 | `ADR-20261009-readme-must-carry-the-on-demand-pointer-block` | `["README.md"]` | yes | yes | post |
 | `ADR-20261009-shell-var-before-cjk-must-brace` | `["**/*.sh", "decisions/ADR-*.md"]` | yes | yes | post |
+| `ADR-20261011-derivation-must-carry-origin` | `["decisions/ADR-*.md"]` | yes | yes | post |
 | `ADR-20261011-layer1-budget-is-attention-not-maintenance` | `["PLAN.md", "RNA.md"]` | yes | yes | post |
