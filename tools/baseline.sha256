@@ -1,4 +1,4 @@
-41d38cd9986317efe460b5864b0d89adf36d613224b465f8614d54cc00e1dc3c  DNA.md
+89fe94b80e22ec260e2841084025572122d3a94fb64eb30d08b65845b0730451  DNA.md
 8b270fca345f5a8e523aea1eeb77a7b504c334d446f016b9ce3010f4c132273c  decisions/ADR-20261009-DEPRECATE-must-exist.md
 35514f6345316846d15a50a3342ed7c90fed940f9eb11033c9d06a271a844307  decisions/ADR-20261009-DNA-is-immutable.md
 e260f056a5cea117cea79e6e5875f729db0c74c770a177ea73ed2629aa5c1f9a  decisions/ADR-20261009-GROWTH-max-3-entries.md
@@ -19,6 +19,7 @@ ace7bf03604ecec0fdfa46ee10e1c88c37d2ec6665816a0974c028bbf0bc788c  decisions/ADR-
 eea60eb718bd4dbd3f374c800087b9e55020fdb0b73b08276214c065c3f7980b  decisions/ADR-20261009-readme-must-carry-the-on-demand-pointer-block.md
 fe45b942465413cc5d7a903bf6de0c3fb07d709df5d7b52ac12804dbbd4c895b  decisions/ADR-20261009-shell-var-before-cjk-must-brace.md
 e2693f257f8e9512848e01c932078e4d687f34d6b19ca3bffac4e7cbe24f74e1  decisions/ADR-20261009-upstream-manifest-threat-model.md
+6fcffa675afc20f0c814cde54e9e44da4f9e287010d5b9d14592f2371f0f701b  decisions/ADR-20261011-dna-modification-first-exercise.md
 f5a8aafd9f3c875211a000e600ea74646790cbcfb5fd9c9f1e6d520f57c48516  decisions/ADR-20261011-failure-must-be-named-where-machines-can-read.md
 1543007cc8f3ad6d4881b04e1609e42a1b4cab4029871fd78641a6b5fb316a1b  decisions/INDEX.md
 57262df467a982a9406fc75c3872c79b47e17d89d39066036ee70b54d2ca40e6  decisions/README.md

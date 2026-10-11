@@ -116,7 +116,7 @@ pass 单独不可报告：pass + alive 才算数。
 
 ## 继承
 
-子仓 DNA = 此名目 ∪ 株系基因（如 Tentacle 增"用完即焚"）。
+子仓 DNA = 此名目 ∪ 株系基因（如 Tentacle 以其 `VISION.md` 的"用完即焚"为株系基因 —〔2026-10-11 改：原举例误指其 DNA，实测该词在其 DNA 里出现 0 次；此改动走【修改门】首演，见 `decisions/ADR-20261011-dna-modification-first-exercise.md`〕）。
 对齐链向上指认，解释不复制——
 **名字可以抄，伤疤各归各。**
 
