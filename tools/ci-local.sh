@@ -54,6 +54,15 @@ else
 fi
 step "2 · spec-lint";  if ./tools/spec-lint.sh docs/PROTECTION.md >/dev/null 2>&1; then echo OK; else echo "★ RED"; fail=1; fi
 
+# ★ 基线红必须作数（reviewer ② 2026-10-11）：心跳只验"夹具能否红"，**不验"仓库现在红不红"** ⇒
+#   实测后果：一条【数学上不可满足】的闸门（replay-window 10 < 硬闸门 22）长红，而**没有任何检查会失败**。
+#   ⇒ 这里把"基线红"变成**会失败的检查**（并把红的闸门具名列出）。
+step "3b · 基线红必须作数（红要具名）"
+_bl=$(bash tools/validate.sh --probe-all 2>&1 | grep -c '基线（未注入）: 红')
+if [ "${_bl:-0}" = "0" ]; then echo OK; else
+  echo "★ RED ($_bl 条闸门基线红)"; bash tools/validate.sh --probe-all 2>&1 | grep -B2 '基线（未注入）: 红' | grep -E '^\s*[0-9]+:[A-Za-z]|红 →' | head -6 | sed 's/^/       /'; fail=1
+fi
+
 step "3 · 全部闸门能力心跳"
 # ★ 与 CI 同一步【同一条命令】—— 这里曾经把 CI 的 for 循环抄了一遍（第二份清单，A5）。
 # 现在它与 .github/workflows/phyt.yml 的第 3 步调用同一个入口 ⇒ 那一步不会两边漂。
