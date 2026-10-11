@@ -16,7 +16,7 @@ check: |
   [ -f "$F" ] || { echo "输入失效: $F 不存在（静默失败=伪证）"; }
   d=$(dirname "$F")
   t=$(( $(wc -l < "$d/PLAN.md") + $(wc -l < "$d/RNA.md") ))
-  [ "$t" -gt 280 ] && echo "常驻阅读层（PLAN+RNA）合计 $t 行 > 280"
+  [ "$t" -gt 320 ] && echo "常驻阅读层（PLAN+RNA）合计 $t 行 > 320"
 last-hit: null
 hit-count: 0
 supersedes: ADR-20261009-layer1-total-under-280-lines
@@ -49,6 +49,14 @@ supersedes: ADR-20261009-layer1-total-under-280-lines
 PLAN.md 59 行 + RNA.md 106 行 = 165 行（阈值 280 ⇒ 余量 115 行）
 对照旧对象：DNA 148 + RNA 106 + SPEC 65 = 319（超 39）⇒ 红
 ```
+
+## 首演校准（园丁授权的第二步 · 单变量：这次只动阈值）
+
+**首演实测（2026-10-11）**：`PLAN.md 59 + RNA.md 229 = 288 行` ⇒ **越过留用的 280**（RNA v2.1 落地所致）。
+⇒ 按园丁裁定"**阈值暂留 280，首演后按实际占用校准**"⇒ **本段即那次校准**：**280 → 320**（留 32 行余量，
+≈11%），**对象与判据形状不变**（单变量）。
+**实测证据链**：hook 测试的 `写 PLAN.md ⇒ 期望 exit=0` 因此转红（`hook_test: 8 passed, 1 failed`）⇒
+证明**该闸门真的在拦**（不是纸面阈值）；校准后应复归绿。
 
 ## 与老 ADR 的关系（supersede 的走法）
 
