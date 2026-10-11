@@ -46,3 +46,17 @@ supersedes: null
 | `post` | **内容判定**（行数/条目数/git diff） | pre-commit / CI |
 
 > 事后全仓扫描**必须只跑 post 型**，否则 pre 型路径黑名单必然误报。
+
+---
+
+## 元数据白名单（与 `tools/frozen-body.sh` **严格同源** · reviewer 刺五 2026-10-11）
+
+`decisions/` 冻结：**改 = supersede，不改原文**。但 **supersede 落地时必须碰两处** ⇒ 它们**合法**：
+
+| 可改（元数据页） | 不可改（冻结体） |
+|---|---|
+| 前言键 `status` · `supersedes` · `last-hit` · `hit-count` | 前言**其余键** + **正文主体** |
+| 正文末尾的"取代指针块"（以 `---` 分隔、含"已由"） | 其余一切 |
+
+⇒ **白名单只有一处真源**：`tools/frozen-body.sh`；本表与它**同源**（改一处必须改另一处，否则对不上）。
+⇒ 执法者：`ADR-20261011-frozen-body-immutable`（**正文一改即红**）—— 它把"问句能抓一次是运气"变成"**probe 抓第二次是制度**"。

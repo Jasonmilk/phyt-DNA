@@ -17,5 +17,6 @@
 | `ADR-20261009-readme-must-carry-the-on-demand-pointer-block` | `["README.md"]` | yes | yes | post |
 | `ADR-20261009-shell-var-before-cjk-must-brace` | `["**/*.sh", "decisions/ADR-*.md"]` | yes | yes | post |
 | `ADR-20261011-derivation-must-carry-origin` | `["decisions/ADR-*.md"]` | yes | yes | post |
+| `ADR-20261011-frozen-body-immutable` | `["decisions/ADR-*.md"]` | yes | yes | post |
 | `ADR-20261011-layer1-threshold-calibrated-by-premiere` | `["PLAN.md", "RNA.md"]` | yes | yes | post |
 | `ADR-20261011-recopy-must-equal-the-gene-set` | `["GROWTH.md"]` | yes | yes | post |

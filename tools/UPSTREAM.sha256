@@ -1,9 +1,11 @@
 aa74b25f6bcda8735cf07ba195d430080efe46e5  tools/check-baseline.sh
-0a4c5de31d8ee742da642daa26dc421b11c8f985  tools/ci-local.sh
+45ea6cf976897a2d1c3bbc2d4c5bf99da772dfd6  tools/ci-local.sh
 4df8f65eec977293d4b03f91d47aaeb9efa21100  tools/ci-matrix.sh
 8ce6f9b17962ef0fc73606d35988ca9f3a34e817  tools/claim-check.sh
 43006122bfb2b383f97da3a1abd3bc32d805bb17  tools/deprecated_skip_test.sh
 353407b382e2fc6bb5cba21aa639117a318571e9  tools/emit-failures.sh
+081d2c573e00a8515b641d7edc43ca202c525a6d  tools/frozen-body.sh
+a32713ad18b2cc66437402a08048428918915a51  tools/probe.sh
 e98364dc156d1ec865218fe76cbdb1b356ebd748  tools/redrate.sh
 8da900b3b30058e3daedf0095300a0058d5c021b  tools/spec-lint.sh
 1a29eef48923128bd715923b8b9edd06728c8657  tools/sync-upstream.sh
