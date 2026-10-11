@@ -19,6 +19,9 @@ LED_BAK="$(mktemp)"
 cp "$LED" "$LED_BAK" 2>/dev/null || true
 trap 'cp "$LED_BAK" "$LED" 2>/dev/null; rm -f "$LED_BAK"' EXIT
 fail=0
+# ★ 定义必须先于调用（2026-10-11 实测）：`step` 原定义在第 37 行、第 32 行就被调用 ⇒
+#   `step: command not found` ⇒ 第一行输出缺失 ⇒ 且**掩盖了 step 0 的真实红灯**（引擎清单过期）。
+step(){ printf '  %-42s ' "$1"; }
 
 # ── 引擎清单必须与工作区一致（改了引擎却没重算 ⇒ 采纳者会拿到过期指纹）──────────
 # ★ 两条教训都写在这里：
@@ -34,7 +37,6 @@ if diff -q "$tmp" tools/UPSTREAM.sha256 >/dev/null 2>&1; then echo "OK"; else
   echo "★ RED  ⇒ 跑：bash tools/upstream-manifest.sh --write"; fail=1
 fi
 rm -f "$tmp"
-step(){ printf '  %-42s ' "$1"; }
 
 step "1 · 资产完整性"
 if ./tools/check-baseline.sh >/tmp/phyt_baseline.log 2>&1; then
