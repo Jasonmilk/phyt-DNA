@@ -5,9 +5,11 @@
 ## 年轮 · 2026-W41
 
 ```
-真实闸门   12 条 hard:true ADR（decisions/ADR-*.md；另有 2 份 hard:false 不计）
-           —— 心跳口径见 decisions/INDEX.md（由 validate.sh --index 生成，不手写）
-心跳红测   12/12 RED —— fixtures 注入反例全部被检出，且每条都有 counter.sh（双向可证伪）
+真实闸门   **不在此处写数字**（DNA「唯一真源」：派生视图禁手编）—— 真数由脚本产出：
+           条数与口径 ⇒ `decisions/INDEX.md`（`validate.sh --index` 生成）· 心跳 ⇒ `validate.sh --probe-all`
+           〔2026-10-11 修：原文写"12 条 hard:true / 2 份 hard:false" ⇒ **实测已漂到 18 / 4**
+             （ADR 从 12 增到 18 —— 差 6 条、false 差 2 条）⇒ 这正是"两抄之差即突变显红"要抓的东西，
+             而数字写在散文里 ⇒ 没有任何东西会报红 ⇒ 故改为指向生成物〕
 新增结晶   本圈 +6：lesson-must-be-replayed（G2 第四圈）· shell-var-before-cjk-must-brace ·
            index-must-be-regenerated · VISION-must-exist-and-be-a-seed ·
            README-must-carry-the-one-command · DEPRECATE-must-exist
