@@ -6,7 +6,14 @@
 #   **同坑两次不是粗心，是位置错**：投资阶梯已到结晶线，缺的是【位置】不是数量。
 #   ⇒ 把防线**前移到事前**：不依赖"记得"，改完即重生。
 set -uo pipefail
-cd "$(git rev-parse --show-toplevel)" || # ★ 防线前移（reviewer ③/④ · 2026-10-11）：只重生 INDEX/基线**不够** —— 我因【不跑 step 4】把一条
+cd "$(git rev-parse --show-toplevel)" || # ㊂ 逃生门（reviewer ③）：中间态提交（ADR 先行·夹具后补）需要旁路。
+#   `--no-verify` 是霰弹枪（连 INDEX 重生一起杀）⇒ 用 [wip] 只跳【扫描】、保留【重生】。CI 兜底。
+if git log -1 --pretty=%s 2>/dev/null | grep -q '\[wip\]'; then
+  echo "  [pre-commit] 提交信息含 [wip] ⇒ 跳过 step-4 扫描（保留 INDEX/基线重生；CI 兜底）"
+  exit 0
+fi
+
+# ★ 防线前移（reviewer ③/④ · 2026-10-11）：只重生 INDEX/基线**不够** —— 我因【不跑 step 4】把一条
 #   `$var（` 违规放进了提交。⇒ 钩子对**本次暂存的文本文件**跑一次 timing:post 扫描；红则不提交。
 viol=0
 for f in $(git diff --cached --name-only | grep -E '\.(md|sh|py|ya?ml)$' || true); do

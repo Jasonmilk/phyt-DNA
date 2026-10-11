@@ -3,7 +3,7 @@
 ---
 id: ADR-20261009-lesson-must-be-replayed
 seq: 9001
-status: accepted
+status: deprecated
 hard: true
 applies-to: ["ledger/hits-2026.jsonl"]
 effective-from: 2026-10-09
@@ -63,3 +63,8 @@ SPEC.md:27 经历 → 记账(ledger) → 结晶(经济门槛+三要件) → 重�
 - **"本来就红"是允许的**：若本仓还没有任何 `kind: replay` 记录，本闸门**本来就红** ——
   **那是真实发现，不是夹具的功劳。**（`tools/validate.sh` 的反例段比较的是**结论是否改变**，
   故不会被它误报为假阳性。）
+
+---
+
+> **已由 `ADR-20261011-replay-per-revisit-period` 取代**（2026-10-11 第三次落定）。
+> ★ 本行被静默回滚两次；第三次的教训：**哨兵串在 check 正文里出现 ⇒ 子串匹配是假判（锚点必须行首）** + **编辑与探针不得同批**。
