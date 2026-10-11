@@ -60,6 +60,7 @@ case "${1:-}" in
     man="decisions/.frozen-body.sha256"; [ -f "$man" ] || { echo "缺 ${man}（先跑 --write）"; exit 0; }
     fail=0
     while read -r h name; do
+      case "$h" in \#*) continue;; esac   # ★ 跳过注释行（rebaseline 留痕）
       f="decisions/$name"; [ -f "$f" ] || { echo "冻结体清单里的 $name 已不存在"; fail=1; continue; }
       now=$(body "$f" | shasum -a 256 | cut -d' ' -f1)
       [ "$now" = "$h" ] || { echo "冻结体被改（违宪：正文/前言非白名单键被动过）: $name"; fail=1; }

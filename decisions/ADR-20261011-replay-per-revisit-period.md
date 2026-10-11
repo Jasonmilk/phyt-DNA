@@ -2,7 +2,7 @@
 id: ADR-20261011-replay-per-revisit-period
 seq: 9017
 status: accepted
-hard: true
+hard: false
 applies-to: ["decisions/ADR-*.md"]
 effective-from: 2026-10-11
 timing: post
@@ -67,3 +67,15 @@ supersedes: ADR-20261009-lesson-must-be-replayed
 ## 边界
 
 **窗口概念废除**（`replay-window` 不再被读）。只管"有/无重放 + 是否过期"，不管"重放了几次"。
+
+---
+
+## 状态降级记录（2026-10-11 · Pi · 第六次夹具尝试后收敛）
+
+**判据保留在册（园丁批的 A 带牙），状态降为 `hard: false`（图纸）。**
+理由：**夹具在本仓的夹具模型下反复做不出**（六次尝试各自引入新问题：对象/`$F` 未纳入 · 看板误 print ·
+普查后"过期但已重放"不成形 · **判据用文件名当 id 而夹具改前言 id** · check 内 `2>/dev/null` 被闸门6 抓 · 环境变量通道不通）。
+按**出生律**：**没有夹具的闸门不是 `alive`，是 `unproven`** ⇒ 不配 `hard: true`。
+**转正判据（登记在案）**：夹具能造出"过期且从未重放"的形状并让 probe 出 `注入后 RED + 反例守住` ⇒ 那一刻转回 `hard: true`。
+**降级期的人工补位（reviewer ③-b 的仪式）**：**每圈收尾手跑保留的单闸 probe**（`--probe <id>`）⇒ 自动停了，手动不停。
+★ **代价如实**：降级期间"到期未重放"**不会被自动抓**（看板读数仍在报告头）。
