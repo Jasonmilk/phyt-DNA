@@ -1,5 +1,6 @@
-5a008cb57906ec55a811112ba48104c70efa65c792ebbb58162d5061b517d0c3  ADR-20261009-DEPRECATE-must-exist.md
-e0d70c19e09d2cc1143fa62304005a4e635114fdd81ba3ae75d1158c89d7640a  ADR-20261009-DNA-is-immutable.md
+7c79730413bf226add3608edfe5d39f07c2ef3161c065534a150ba225d752b06  ADR-20261009-DEPRECATE-must-exist.md
+efc5b591dd48365da3ccf22c72c64245efa6172045cc194f96d12d3e8b3808df  ADR-20261009-DNA-is-immutable.md
+# rebaseline ADR-20261009-DNA-is-immutable.md 理由: 同上（不变式类豁免）
 a92d3b9a5a67db2ee1cf14083a6c85d3fb2d91dfb1ddf824b782fe5d7270c0ac  ADR-20261009-GROWTH-max-3-entries.md
 b1694a130fda5b1abdf0e2b514eddb221e0243e8ec7c16ebdd799d28956088ba  ADR-20261009-PLAN-must-exist.md
 120f349f07db7ca096c5e315e1167d1e86e3c83cb185389018246bd3ec9c037b  ADR-20261009-PLAN-must-stay-under-150-lines.md
@@ -25,3 +26,4 @@ bafc8a095eb14a4975e9dd861454f87e750e2ed57e8d3132a582fb0859bdfe03  ADR-20261011-f
 ef6c49f99683f565e9cfab22a2e933e912eceab3d3f8a1ee78dcbd816975ac8d  ADR-20261011-layer1-budget-is-attention-not-maintenance.md
 bbd12d8b7b22bbf4c91cbc339571a08cf0b48972ffbc58f7c40a54e69e17a626  ADR-20261011-layer1-threshold-calibrated-by-premiere.md
 9710370865fa18f29af2e3160ee9b71233a53ae4a26f12d747b3bc0c172a76bc  ADR-20261011-recopy-must-equal-the-gene-set.md
+eba3e71344086785758185cd54c4e170f38dc8430d7e573f29e71d08d6d0f85f  ADR-20261011-replay-per-revisit-period.md

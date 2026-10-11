@@ -24,9 +24,30 @@ body(){ # $1 = ADR 路径 → 打印"冻结体"
 }
 case "${1:-}" in
   --write)
-    out="decisions/.frozen-body.sha256"; : > "$out"
-    for f in decisions/ADR-*.md; do printf '%s  %s\n' "$(body "$f" | shasum -a 256 | cut -d' ' -f1)" "$(basename "$f")" >> "$out"; done
-    echo "已写入 ${out}（$(wc -l < "$out" | tr -d ' ') 个文件）"; exit 0 ;;
+    out="decisions/.frozen-body.sha256"
+    # ★ 防"洗白"（reviewer ③ · 2026-10-11）：`--write` 若【静默重记】已存在条目，就等于给了违宪一条洗白通道
+    #   （我改 `hard: true → false` 后就正是这样把指纹重算了）。⇒ **已存在条目一律不许改**，
+    #   除非显式 `--rebaseline <ADR 文件名> "理由"`（**具名 + 留痕**，且理由会写进清单注释行）。
+    rebase=""; rebase_why=""
+    if [ "${2:-}" = "--rebaseline" ]; then rebase="${3:?需要 ADR 文件名}"; rebase_why="${4:-（未写理由）}"; fi
+    : > "$out.tmp"
+    changed=""
+    for f in decisions/ADR-*.md; do
+      n="$(basename "$f")"; h="$(body "$f" | shasum -a 256 | cut -d' ' -f1)"
+      oldh=$(grep -E "  ${n}$" "$out" 2>/dev/null | head -1 | awk '{print $1}')
+      if [ -n "$oldh" ] && [ "$oldh" != "$h" ] && [ "$n" != "$rebase" ]; then
+        changed="$changed $n"; printf '%s  %s\n' "$oldh" "$n" >> "$out.tmp"; continue   # 保留旧指纹
+      fi
+      printf '%s  %s\n' "$h" "$n" >> "$out.tmp"
+      [ "$n" = "$rebase" ] && printf '# rebaseline %s 理由: %s\n' "$n" "$rebase_why" >> "$out.tmp"
+    done
+    mv "$out.tmp" "$out"
+    if [ -n "$changed" ]; then
+      echo "★ 冻结体已被改（拒绝重记，保留旧指纹）：$changed"
+      echo "  ⇒ 若这是合法修改（走 supersede 或经园丁追溯批准）⇒ 明示：bash tools/frozen-body.sh --write --rebaseline <ADR 文件名> \"理由\""
+      exit 1
+    fi
+    echo "已写入 ${out}（$(grep -vc '^#' "$out" | tr -d ' ') 个文件）"; exit 0 ;;
   --check-file)
     f="${2:?用法: $0 --check-file <ADR 路径>}"; man="decisions/.frozen-body.sha256"
     [ -f "$man" ] || { echo "缺 ${man}（先跑 --write）"; exit 0; }

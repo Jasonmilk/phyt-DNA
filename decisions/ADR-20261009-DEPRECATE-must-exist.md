@@ -18,6 +18,7 @@ check: |
   n=$(wc -l < "$F")
   [ "$n" -lt 3 ] && echo "DEPRECATE.md 只有 ${n} 行 —— 退休机制被清空或丢失（只剩会长、不会落）"
 last-hit: null
+replay-exempt: true   # 不变式类：活性由 CI run 证明，重放不合身（园丁 2026-10-11）
 hit-count: 0
 supersedes: null
 ---

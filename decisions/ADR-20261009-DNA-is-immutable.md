@@ -18,6 +18,7 @@ check: |
   s=$(bash tools/check-baseline.sh --scope)
   printf '%s\n' "$s" | grep -qx 'DNA.md' || echo "元闸门失守: DNA.md 不在资产基线 scope 内 ⇒ 改基因将无人拦"
 last-hit: null
+replay-exempt: true   # 不变式类：活性由 CI run 证明，重放不合身（园丁 2026-10-11）
 hit-count: 0
 supersedes: null
 ---

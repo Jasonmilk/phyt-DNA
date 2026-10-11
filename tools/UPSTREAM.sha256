@@ -4,7 +4,7 @@ b5d62c2232107a944f725f1b4d7fa099dc4d2407  tools/ci-local.sh
 8ce6f9b17962ef0fc73606d35988ca9f3a34e817  tools/claim-check.sh
 43006122bfb2b383f97da3a1abd3bc32d805bb17  tools/deprecated_skip_test.sh
 5441a89e63e1b6d1f4e413dbacf5d2d0cf046482  tools/emit-failures.sh
-27eccdde074847272b63fe427418b6e776b01345  tools/frozen-body.sh
+f7de9e45a84d9d87864969d44fa9c455818c1d09  tools/frozen-body.sh
 a32713ad18b2cc66437402a08048428918915a51  tools/probe.sh
 e98364dc156d1ec865218fe76cbdb1b356ebd748  tools/redrate.sh
 8da900b3b30058e3daedf0095300a0058d5c021b  tools/spec-lint.sh
