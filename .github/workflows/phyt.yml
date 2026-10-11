@@ -48,7 +48,8 @@ jobs:
         # ★ 为什么存在：读 CI 失败的四条通道里，logs 需 admin(403) · artifacts 需凭据(401) ·
         #   job summary 只在网页（API 的 output.summary 为 null）⇒ **annotation 是唯一机器可读的**。
         #   脚本各仓自带一份（引擎纪律：不跨仓取文件），会自己找共享日志并**明说读了哪个**。
-        # ★ 不设 `if: failure()`：**绿 run 上也要打 `::notice 读取 <日志>`** ⇒ 接线是否生效
-        #   **在绿 run 上就能看见**（ADR 里的那条判据必须真的成立，不能停在声明）。
-        if: always()
+        # ★ 机制事实（2026-10-11 实测）：**`::error` 不是"打印"，是"判决"** —— 它会把所在步骤判红。
+        #   ⇒ 本步必须 `if: failure()`：绿 run 上若也发射 `::error`（日志里几乎总有匹配行），
+        #     就会**把绿 run 判红**（我把它改成 `always` 后确实发生了）⇒ 回退。
+        if: failure()
         run: bash tools/emit-failures.sh /tmp/phyt-gate.log
