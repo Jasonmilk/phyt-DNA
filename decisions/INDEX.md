@@ -18,3 +18,4 @@
 | `ADR-20261009-shell-var-before-cjk-must-brace` | `["**/*.sh", "decisions/ADR-*.md"]` | yes | yes | post |
 | `ADR-20261011-derivation-must-carry-origin` | `["decisions/ADR-*.md"]` | yes | yes | post |
 | `ADR-20261011-layer1-budget-is-attention-not-maintenance` | `["PLAN.md", "RNA.md"]` | yes | yes | post |
+| `ADR-20261011-recopy-must-equal-the-gene-set` | `["GROWTH.md"]` | yes | yes | post |
