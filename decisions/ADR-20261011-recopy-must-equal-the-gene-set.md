@@ -14,18 +14,27 @@ origin: "DNA「恒常不靠冻结，靠重抄」+ VISION「GROWTH.md 每圈的�
 risk: normal
 check: |
   [ -f "$F" ] || { echo "输入失效: $F 不存在（静默失败=伪证）"; }
-  d=$(dirname "$F")
-  norm(){ tr -d ' \t' | sed 's/·$//'; }
-  genes=$(sed -n '/^## 元基因/,/^## 地盘/p' "$d/DNA.md" | grep -E '^\*\*.+\*\*$' | sed 's/^\*\*//;s/\*\*$//' | tr '\n' '·' | norm)
-  # ★ 取【最新一条】重抄（`grep -m1` 会取到最早那条 —— 2026-10-11 由外挂审核发现实现与声明不符）
-  recopy=$(grep '名目重抄' "$d/GROWTH.md" | tail -1 | sed 's/.*：//' | norm)
-  [ -n "$genes" ] || { echo "判据自失效：从 DNA.md 抽不出名目（元基因/物种基因两段的粗体独占行）"; exit 0; }
-  [ -n "$recopy" ] || { echo "GROWTH.md 里找不到「名目重抄」行 —— 重抄是恒常的机制，不是可选项"; exit 0; }
-  if [ "$genes" != "$recopy" ]; then
-    echo "重抄与 DNA 名目【不一致】—— 两抄之差即突变显红处（要么被那圈的故事解释=走 ADR，要么就是漂移）："
-    echo "  DNA   : $genes"
-    echo "  最新重抄: $recopy"
-  fi
+  # ★ locale 无关（2026-10-11 实测教训）：原实现用 sed/tr/grep 处理中文与 `·` ⇒ 在 `LC_ALL=C`（CI 常见）下
+  #   抽取结果不同 ⇒ 比不相等 ⇒ **本地绿 / CI 红**。⇒ 改用 python 抽取与比对（UTF-8 文件、locale 无关）。
+  python3 - "$F" <<'PY' || exit 0
+import io, re, sys, os
+f = sys.argv[1]; d = os.path.dirname(f)
+def norm(t): return re.sub(r'[ \t]', '', t).rstrip('·')
+dna = io.open(os.path.join(d, 'DNA.md'), encoding='utf-8').read().split('\n')
+i0 = next((i for i,l in enumerate(dna) if l.startswith('## 元基因')), None)
+i1 = next((i for i,l in enumerate(dna) if l.startswith('## 地盘')), None)
+genes = '·'.join(m.group(1) for m in (re.match(r'^\*\*(.+)\*\*$', l) for l in dna[i0:i1]) if m) if i0 is not None and i1 else ''
+gtxt = io.open(os.path.join(d, 'GROWTH.md'), encoding='utf-8').read().split('\n')
+rec = [l for l in gtxt if '名目重抄' in l]
+if not genes:
+    print('判据自失效：从 DNA.md 抽不出名目（元基因/物种基因两段的粗体独占行）'); sys.exit(0)
+if not rec:
+    print('GROWTH.md 里找不到「名目重抄」行 —— 重抄是恒常的机制，不是可选项'); sys.exit(0)
+latest = norm(rec[-1].split('：', 1)[-1].split(':', 1)[-1])
+if norm(genes) != latest:
+    print('重抄与 DNA 名目【不一致】—— 两抄之差即突变显红处（要么被那圈的故事解释=走 ADR，要么就是漂移）：')
+    print('  DNA   : ' + norm(genes)); print('  最新重抄: ' + latest)
+PY
 last-hit: null
 hit-count: 0
 supersedes: null

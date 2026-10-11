@@ -30,7 +30,7 @@ jobs:
         # timing:pre 是路径黑名单，事后全仓扫描必然误报 ⇒ 只扫 post 型
         # 含 *.yml：lesson ADR（ADR-20261009-lesson-must-land-in-artifact）判定对象是 CI 工件
         run: |
-          exec > >(tee -a /tmp/phyt-scan.log) 2>&1
+          exec > >(tee -a /tmp/phyt-gate.log) 2>&1
           fail=0
           for f in $(git ls-files '*.md' '*.py' '*.sh' '*.yml'); do
             printf '{"tool":"Write","paths":["%s"]}\n' "$f" \
@@ -53,4 +53,4 @@ jobs:
         #   ⇒ 本步必须 `if: failure()`：绿 run 上若也发射 `::error`（日志里几乎总有匹配行），
         #     就会**把绿 run 判红**（我把它改成 `always` 后确实发生了）⇒ 回退。
         if: failure()
-        run: bash tools/emit-failures.sh /tmp/phyt-gate.log
+        run: bash tools/emit-failures.sh
