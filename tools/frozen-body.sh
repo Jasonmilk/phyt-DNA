@@ -29,14 +29,14 @@ case "${1:-}" in
     echo "已写入 ${out}（$(wc -l < "$out" | tr -d ' ') 个文件）"; exit 0 ;;
   --check-file)
     f="${2:?用法: $0 --check-file <ADR 路径>}"; man="decisions/.frozen-body.sha256"
-    [ -f "$man" ] || { echo "缺 $man（先跑 --write）"; exit 0; }
+    [ -f "$man" ] || { echo "缺 ${man}（先跑 --write）"; exit 0; }
     name="$(basename "$f")"; h=$(grep -E "  ${name}$" "$man" | head -1 | awk '{print $1}')
     [ -n "$h" ] || { echo "该 ADR 不在冻结体清单里（新文件？跑 tools/frozen-body.sh --write）"; exit 0; }
     now=$(body "$f" | shasum -a 256 | cut -d' ' -f1)
     if [ "$now" != "$h" ]; then echo "冻结体被改（违宪）：${name} —— 元数据白名单外的一字一句都不许动（改要走 supersede）"; exit 1; fi
     exit 0 ;;
   --check)
-    man="decisions/.frozen-body.sha256"; [ -f "$man" ] || { echo "缺 $man（先跑 --write）"; exit 0; }
+    man="decisions/.frozen-body.sha256"; [ -f "$man" ] || { echo "缺 ${man}（先跑 --write）"; exit 0; }
     fail=0
     while read -r h name; do
       f="decisions/$name"; [ -f "$f" ] || { echo "冻结体清单里的 $name 已不存在"; fail=1; continue; }

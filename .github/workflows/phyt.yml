@@ -30,6 +30,7 @@ jobs:
         # timing:pre 是路径黑名单，事后全仓扫描必然误报 ⇒ 只扫 post 型
         # 含 *.yml：lesson ADR（ADR-20261009-lesson-must-land-in-artifact）判定对象是 CI 工件
         run: |
+          exec > >(tee -a /tmp/phyt-scan.log) 2>&1
           fail=0
           for f in $(git ls-files '*.md' '*.py' '*.sh' '*.yml'); do
             printf '{"tool":"Write","paths":["%s"]}\n' "$f" \
