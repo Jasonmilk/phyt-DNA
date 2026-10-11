@@ -1,7 +1,7 @@
 ---
 id: ADR-20261011-layer1-budget-is-attention-not-maintenance
 seq: 9012
-status: accepted
+status: deprecated
 hard: true
 applies-to: ["PLAN.md", "RNA.md"]
 effective-from: 2026-10-11
@@ -16,7 +16,7 @@ check: |
   [ -f "$F" ] || { echo "输入失效: $F 不存在（静默失败=伪证）"; }
   d=$(dirname "$F")
   t=$(( $(wc -l < "$d/PLAN.md") + $(wc -l < "$d/RNA.md") ))
-  [ "$t" -gt 320 ] && echo "常驻阅读层（PLAN+RNA）合计 $t 行 > 320"
+  [ "$t" -gt 280 ] && echo "常驻阅读层（PLAN+RNA）合计 $t 行 > 280"
 last-hit: null
 hit-count: 0
 supersedes: ADR-20261009-layer1-total-under-280-lines
@@ -50,14 +50,6 @@ PLAN.md 59 行 + RNA.md 106 行 = 165 行（阈值 280 ⇒ 余量 115 行）
 对照旧对象：DNA 148 + RNA 106 + SPEC 65 = 319（超 39）⇒ 红
 ```
 
-## 首演校准（园丁授权的第二步 · 单变量：这次只动阈值）
-
-**首演实测（2026-10-11）**：`PLAN.md 59 + RNA.md 229 = 288 行` ⇒ **越过留用的 280**（RNA v2.1 落地所致）。
-⇒ 按园丁裁定"**阈值暂留 280，首演后按实际占用校准**"⇒ **本段即那次校准**：**280 → 320**（留 32 行余量，
-≈11%），**对象与判据形状不变**（单变量）。
-**实测证据链**：hook 测试的 `写 PLAN.md ⇒ 期望 exit=0` 因此转红（`hook_test: 8 passed, 1 failed`）⇒
-证明**该闸门真的在拦**（不是纸面阈值）；校准后应复归绿。
-
 ## 与老 ADR 的关系（supersede 的走法）
 
 新 ADR 立（`hard: true` · 新对象）+ 老 ADR 的 `status` 改为 **`deprecated`** ——
@@ -65,8 +57,7 @@ PLAN.md 59 行 + RNA.md 106 行 = 165 行（阈值 280 ⇒ 余量 115 行）
 `status` 是**生命周期字段**，不是正文 ⇒ 与「`decisions/` 冻结、改 = supersede，不改原文」相容。
 老 ADR 的正文与出处**原样保留**（它是 v1 三层预算的历史真源）。
 
-## 附：`seq` 命名规则（微点① · 2026-10-11 取证）
+---
 
-实测 `decisions/` 的 seq 分布：**`9002–9012` = v2 世代**（本 ADR 为 `9012`）；
-更早的 v1 世代用 `0001–0004`（如被本 ADR supersede 的 `ADR-20261009-layer1-total-under-280-lines` = `0004`）。
-**规则一句话**：`seq` 按**世代分段**（v1: 000X · v2: 900X），同段内递增；改名不重编（id 是终身身份）。
+> **已由 `ADR-20261011-layer1-threshold-calibrated-by-premiere` 取代**（2026-10-11，走正门）。
+> 本 ADR 原文一字未动（含阈值 280）。★ 附记：本修正**曾被一次探针的清理动作（git checkout -- decisions/）静默回滚**，经外挂审核发现后重做 ⇒ 「**探针必须不留痕**」这条纪律由此得证。

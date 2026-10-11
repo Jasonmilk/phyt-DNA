@@ -17,7 +17,8 @@ check: |
   d=$(dirname "$F")
   norm(){ tr -d ' \t' | sed 's/·$//'; }
   genes=$(sed -n '/^## 元基因/,/^## 地盘/p' "$d/DNA.md" | grep -E '^\*\*.+\*\*$' | sed 's/^\*\*//;s/\*\*$//' | tr '\n' '·' | norm)
-  recopy=$(grep -m1 '名目重抄' "$d/GROWTH.md" | sed 's/.*：//' | norm)
+  # ★ 取【最新一条】重抄（`grep -m1` 会取到最早那条 —— 2026-10-11 由外挂审核发现实现与声明不符）
+  recopy=$(grep '名目重抄' "$d/GROWTH.md" | tail -1 | sed 's/.*：//' | norm)
   [ -n "$genes" ] || { echo "判据自失效：从 DNA.md 抽不出名目（元基因/物种基因两段的粗体独占行）"; exit 0; }
   [ -n "$recopy" ] || { echo "GROWTH.md 里找不到「名目重抄」行 —— 重抄是恒常的机制，不是可选项"; exit 0; }
   if [ "$genes" != "$recopy" ]; then

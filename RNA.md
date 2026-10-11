@@ -61,7 +61,7 @@ bash tools/validate.sh --index         # 闸门 INDEX（一行一条）—— �
 | **合计** | | **≤280 行 / ≤4500 tokens** |
 DNA 全文不入常驻——名目过堂走信号，不走整读。
 **两个 280，各量各的**：本表量**运行时注入占用**；
-文件物理行数归 `ADR-20261011-layer1-budget-is-attention-not-maintenance`
+文件物理行数归 `ADR-20261011-layer1-threshold-calibrated-by-premiere`（≤320；前身 budget ADR 已 deprecated）
 （真源在 `decisions/`；对象 = `PLAN.md + RNA.md`，**阈值经首演校准为 ≤320 行**）——
 同值不同物，勿互引；行数读数入 ledger，不入本文。
 开工最小载入＝本圈截＋PLAN；本表＝稳态上限——
