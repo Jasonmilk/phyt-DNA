@@ -4,6 +4,9 @@ on: [push, pull_request]
 
 jobs:
   gate:
+    env:
+      # ★ 一处设、全局稳（2026-10-11）：判据里不要各自 hack locale（那会引入 2>/dev/null，被闸门6 禁）
+      LC_ALL: C.UTF-8
     runs-on: ubuntu-24.04   # ★ 钉住（2026-10-10）：ubuntu-latest 将于 2026-10-19 迁到 Ubuntu 26
                            #   ⇒ 不钉住 = 9 天后由【外部变更】决定我们的红绿（"今天绿"可能纯因环境）
                            #   冻结是默认；预演 26 应是一次【有意】的实验，不是被动接受
