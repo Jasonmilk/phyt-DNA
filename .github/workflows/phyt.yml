@@ -23,15 +23,13 @@ jobs:
         # 是【第二份清单】(A5)：我修 gates()（只认 ADR-*.md）时，这一段不经过它，于是不受益。
         # 现在它调用引擎，于是：ADR-*.md 的限制 · 无夹具即失败（unproven ≠ alive）· 两世界读数，全都自动同源。
         run: |
-          set -o pipefail   # ★ 必须：否则 `| tee` 把失败掩盖成成功（已本地实测）
-          ./tools/validate.sh --probe-all 2>&1 | tee -a /tmp/phyt-gate.log
+          set -o pipefail   # ★ 必须：否则 `| tee` 把失败掩盖成成功（本地实测：带=1 / 不带=0）
+          ./tools/validate.sh --probe-all 2>&1 | tee /tmp/phyt-gate.log
 
       - name: 4 · 全仓库违规扫描（只跑 timing:post 闸门）
         # timing:pre 是路径黑名单，事后全仓扫描必然误报 ⇒ 只扫 post 型
         # 含 *.yml：lesson ADR（ADR-20261009-lesson-must-land-in-artifact）判定对象是 CI 工件
         run: |
-          set -o pipefail   # ★ 必须（同上）
-          exec 2>&1 | tee -a /tmp/phyt-gate.log   # 整块输出入共享日志（失败仍以 exit 1 传出）
           fail=0
           for f in $(git ls-files '*.md' '*.py' '*.sh' '*.yml'); do
             printf '{"tool":"Write","paths":["%s"]}\n' "$f" \
@@ -51,4 +49,4 @@ jobs:
         #   job summary 只在网页（API 的 output.summary 为 null）⇒ **annotation 是唯一机器可读的**。
         #   脚本各仓自带一份（引擎纪律：不跨仓取文件），会自己找共享日志并**明说读了哪个**。
         if: failure()
-        run: bash tools/emit-failures.sh
+        run: bash tools/emit-failures.sh /tmp/phyt-gate.log
