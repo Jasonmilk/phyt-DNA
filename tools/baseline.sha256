@@ -1,4 +1,4 @@
-89fe94b80e22ec260e2841084025572122d3a94fb64eb30d08b65845b0730451  DNA.md
+0855f14aeca857a4762d4dde331f44fd68f4132785deb4c0624bcdd7adb439a4  DNA.md
 8b270fca345f5a8e523aea1eeb77a7b504c334d446f016b9ce3010f4c132273c  decisions/ADR-20261009-DEPRECATE-must-exist.md
 35514f6345316846d15a50a3342ed7c90fed940f9eb11033c9d06a271a844307  decisions/ADR-20261009-DNA-is-immutable.md
 e260f056a5cea117cea79e6e5875f729db0c74c770a177ea73ed2629aa5c1f9a  decisions/ADR-20261009-GROWTH-max-3-entries.md
@@ -12,7 +12,7 @@ a43fdb802ad75491b66e086b147a0f49a80e1f2f51e8c6b77c46fbf94cb8a6c8  decisions/ADR-
 884a3850621e2f3ba0eef8c74e2b875f9fcf3092290a5f177b6bfe50a420ffec  decisions/ADR-20261009-dangerous-action-shapes-must-be-blocked.md
 fee43d4d5a84ac4438c2d80ca89ee32d2e2bd820e4686572d1074824160b7152  decisions/ADR-20261009-docs-must-be-indexed.md
 b010774f1301c63c24778d33ec9a59f9f0a3ffab37e1c3e947612bcb4d67c4d8  decisions/ADR-20261009-index-must-be-regenerated.md
-38e5af83ffee5c6a814ec41af494bb8f6d27968ddee168015b8af7792589a705  decisions/ADR-20261009-layer1-total-under-280-lines.md
+cd064ea0f72a80e2b99e0c451548e2c17598b716d85973dcf5353f1f246c35c8  decisions/ADR-20261009-layer1-total-under-280-lines.md
 ff32af3ae9bd6b3a36005fa9b38e1ae2dabcd253b020c41deede21da3deb528d  decisions/ADR-20261009-ledger-must-be-valid-utf8.md
 bc1f0419dfa994fef5ad804e47e55fa99b79878d96edaf0f9277b9ac404babb3  decisions/ADR-20261009-lesson-must-be-replayed.md
 ace7bf03604ecec0fdfa46ee10e1c88c37d2ec6665816a0974c028bbf0bc788c  decisions/ADR-20261009-lesson-must-land-in-artifact.md
@@ -21,6 +21,7 @@ fe45b942465413cc5d7a903bf6de0c3fb07d709df5d7b52ac12804dbbd4c895b  decisions/ADR-
 e2693f257f8e9512848e01c932078e4d687f34d6b19ca3bffac4e7cbe24f74e1  decisions/ADR-20261009-upstream-manifest-threat-model.md
 6fcffa675afc20f0c814cde54e9e44da4f9e287010d5b9d14592f2371f0f701b  decisions/ADR-20261011-dna-modification-first-exercise.md
 f5a8aafd9f3c875211a000e600ea74646790cbcfb5fd9c9f1e6d520f57c48516  decisions/ADR-20261011-failure-must-be-named-where-machines-can-read.md
+78adf7a421589798df88f705f0f2a7adbd4c319190f7bd3bcd26d4a0689b70a1  decisions/ADR-20261011-layer1-budget-is-attention-not-maintenance.md
 1543007cc8f3ad6d4881b04e1609e42a1b4cab4029871fd78641a6b5fb316a1b  decisions/INDEX.md
 57262df467a982a9406fc75c3872c79b47e17d89d39066036ee70b54d2ca40e6  decisions/README.md
 42e24e0dc81dc4b6ef232d13b94e041b6cab81ffe3aa0dda8995631a2d6a3ab3  tools/check-baseline.sh

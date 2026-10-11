@@ -1,7 +1,7 @@
 ---
 id: ADR-20261009-layer1-total-under-280-lines
 seq: 0004
-status: accepted
+status: deprecated
 hard: true
 applies-to: ["DNA.md", "RNA.md", "SPEC.md"]
 effective-from: 2026-10-09
