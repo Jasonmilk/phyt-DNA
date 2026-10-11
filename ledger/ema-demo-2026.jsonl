@@ -1,0 +1,4 @@
+{"ts": "2026-10-09", "kind": "sim", "source": "cli", "gate_id": null, "event_id": "ema-demo-10-09-0.65", "note": "EMA 首演（α=0.3 · 初值 0.5）：观测=1.0 ⇒ EMA=0.6500 —— 尺子转向：判据被证能红（成功）"}
+{"ts": "2026-10-10", "kind": "sim", "source": "cli", "gate_id": null, "event_id": "ema-demo-10-10-0.455", "note": "EMA 首演（α=0.3 · 初值 0.5）：观测=0.0 ⇒ EMA=0.4550 —— 一条写死的路径让红瞎了三轮（失败）"}
+{"ts": "2026-10-11", "kind": "sim", "source": "cli", "gate_id": null, "event_id": "ema-demo-10-11-0.6185", "note": "EMA 首演（α=0.3 · 初值 0.5）：观测=1.0 ⇒ EMA=0.6185 —— 通道修好：真根因现形（成功）"}
+{"ts": "2026-10-11", "kind": "sim", "source": "cli", "gate_id": null, "event_id": "ema-demo-10-11-0.7329", "note": "EMA 首演（α=0.3 · 初值 0.5）：观测=1.0 ⇒ EMA=0.7329 —— 闸门咬建造者两次，均被修好（成功）"}
