@@ -14,7 +14,6 @@ f112e0b3e39a2bb271d84169c2df6c07566a0063ae06313aaf33d8c499866255  ADR-20261009-i
 c0f8776c05330751daf785983d808d3890453e91c68ea47df5820aff983f1023  ADR-20261009-layer1-total-under-280-lines.md
 8c83a27f100e6433749973c8c0a5ab370653ba76a46d64e414eb42b956638a67  ADR-20261009-ledger-must-be-valid-utf8.md
 0eaaf180035e29641a196c8e9615d83abb7229e199c45973ac9f15674122b4e6  ADR-20261009-lesson-must-be-replayed.md
-# rebaseline ADR-20261009-lesson-must-be-replayed.md 理由: 2026-10-11：supersede 后半（行首锚定重做）
 7fac7ab5ec85a026a6cbe12ac2b51af0783be8d1562430aa644d47fcbaf11ae9  ADR-20261009-lesson-must-land-in-artifact.md
 1b577ab315080126db38f56219ff1af474aa3de3ead90e1110fc7a16d4dcf8c8  ADR-20261009-readme-must-carry-the-on-demand-pointer-block.md
 e1c8f26008594eda1462da27cd4b38ac97e354871a39fee4c8bcbcb42ec60299  ADR-20261009-shell-var-before-cjk-must-brace.md
