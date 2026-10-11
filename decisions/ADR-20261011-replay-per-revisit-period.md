@@ -19,7 +19,7 @@ check: |
   #   豁免：`replay-exempt: true` 的不变式类闸门（活性由 CI run 证明，重放不合身）。
   fail=0
   # ★ 判据必须包含【被测文件 $F】本身（2026-10-11 实测）：只扫真目录 ⇒ 夹具的注入（在副本上）看不见 ⇒
-  #   `probe: 注入后 NOT RED — 闸门已腐化`。⇒ 先判 $F，再扫全池（去重）。
+  #   `probe: 注入后 NOT RED — 闸门已腐化`。⇒ 先判 ${F}，再扫全池（去重）。
   for f in $(printf '%s\n' "$F" decisions/ADR-*.md | sort -u); do
     grep -q '^hard: true$' "$f" || continue
     grep -q '^status: deprecated' "$f" && continue
@@ -29,7 +29,7 @@ check: |
     last=$(grep -h '"kind"[[:space:]]*:[[:space:]]*"replay"' "$LED" | grep -F "\"$id\"" | tail -1 | sed -nE 's/.*"ts"[[:space:]]*:[[:space:]]*"([0-9-]{10}).*/\1/p')
     if [ -z "$last" ]; then
       if [ -n "$rv" ] && [ "$rv" != "null" ] && [ "$TODAY" \> "$rv" ]; then
-        echo "已过 revisit-on（$rv）却从未重放: $id"; fail=1
+        echo "已过 revisit-on（${rv}）却从未重放: $id"; fail=1
       fi
     fi
   done

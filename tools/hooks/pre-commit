@@ -6,7 +6,17 @@
 #   **同坑两次不是粗心，是位置错**：投资阶梯已到结晶线，缺的是【位置】不是数量。
 #   ⇒ 把防线**前移到事前**：不依赖"记得"，改完即重生。
 set -uo pipefail
-cd "$(git rev-parse --show-toplevel)" || exit 0
+cd "$(git rev-parse --show-toplevel)" || # ★ 防线前移（reviewer ③/④ · 2026-10-11）：只重生 INDEX/基线**不够** —— 我因【不跑 step 4】把一条
+#   `$var（` 违规放进了提交。⇒ 钩子对**本次暂存的文本文件**跑一次 timing:post 扫描；红则不提交。
+viol=0
+for f in $(git diff --cached --name-only | grep -E '\.(md|sh|py|ya?ml)$' || true); do
+  [ -f "$f" ] || continue
+  printf '{"tool":"Write","paths":["%s"]}\n' "$f" | bash tools/validate.sh --timing post >/tmp/.hookscan.$$ 2>&1
+  if [ $? = 2 ]; then grep -m1 '违规' /tmp/.hookscan.$$ | sed 's/^/  ★ 违规: /'; viol=1; fi
+done
+rm -f /tmp/.hookscan.$$
+if [ "$viol" = 1 ]; then echo "  ⇒ step 4 扫描有违规 ⇒ 拒绝提交（防线前移到事前）" >&2; exit 1; fi
+exit 0
 staged=$(git diff --cached --name-only 2>/dev/null | grep -E '^(decisions/|tools/|DNA\.md)' || true)
 [ -z "$staged" ] && exit 0
 changed=0

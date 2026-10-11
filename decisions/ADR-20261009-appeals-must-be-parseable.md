@@ -12,7 +12,7 @@ redtest: "bash tools/validate.sh --probe ADR-20261009-appeals-must-be-parseable"
 revisit-on: 2027-04-09
 expires-on: null
 owner: "@jason"
-origin: "真实经历（2026-10-09 x 光）：`ledger/appeals-2026.jsonl`（独立申诉账）此前【无任何守卫】—— 而它的全部意义就是'独立留痕、破解运营者自己分类自己的自证陷阱'。它自己坏了，这个承诺就没了。同一天我们还实测到 hits 账出现过非法 UTF-8（一个三字节汉字丢首字节，根因是 第32条 $var（ 陷阱）⇒ 同族风险真实存在。"
+origin: "真实经历（2026-10-09 x 光）：`ledger/appeals-2026.jsonl`（独立申诉账）此前【无任何守卫】—— 而它的全部意义就是'独立留痕、破解运营者自己分类自己的自证陷阱'。它自己坏了，这个承诺就没了。同一天我们还实测到 hits 账出现过非法 UTF-8（一个三字节汉字丢首字节，根因是 第32条 ${var}（ 陷阱）⇒ 同族风险真实存在。"
 risk: normal
 probe: yes
 check: |
@@ -50,7 +50,7 @@ supersedes: null
 `ledger/appeals-2026.jsonl` 的用途写在 `ledger/README.md`：**独立申诉账 —— 破解"运营者自己分类自己"的自证陷阱。**
 **⇒ 它的全部价值在于"能被独立读到"。** 一行坏了，那条申诉就等于不存在。
 
-**⇒ 与 `hits` 的 UTF-8 闸门同族**（同日实测：hits 真的出现过非法 UTF-8，根因是 `$var（` 陷阱）。
+**⇒ 与 `hits` 的 UTF-8 闸门同族**（同日实测：hits 真的出现过非法 UTF-8，根因是 `${var}（` 陷阱）。
 **⇒ 本闸门是那张网的第二个网眼。**
 
 ## 判据（两条，都是"读不出来就红"）

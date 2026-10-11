@@ -5,19 +5,18 @@ b1694a130fda5b1abdf0e2b514eddb221e0243e8ec7c16ebdd799d28956088ba  ADR-20261009-P
 120f349f07db7ca096c5e315e1167d1e86e3c83cb185389018246bd3ec9c037b  ADR-20261009-PLAN-must-stay-under-150-lines.md
 5d8300acd49afa5306cbdb719feb32879f15b741bd69701dc1259605fc5ed6c7  ADR-20261009-README-must-carry-the-one-command.md
 3aa73190cbc62efade71d33635aae6bad058dc4b37437cc588943ac9c49a3924  ADR-20261009-VISION-must-exist-and-be-a-seed.md
-cdf3bfec1a9a7ef3c7de977325094bffad254ca3c85aaad5d38411ed5909ff4b  ADR-20261009-appeals-must-be-parseable.md
+0bce51796f1e248a3ebaef0d828cf73f2aa6c4473dc509e2fff3d96ae22ea6e9  ADR-20261009-appeals-must-be-parseable.md
 9f7e437a307ffd12d6a437684fdb962e9d973451f1874a6bbbce3be864d5de89  ADR-20261009-claim-needs-redtest.md
 337405710b208bb206f94e4ed5afe60bb0f6ba240c1ef5aa2413a59e34f792f5  ADR-20261009-cull-after-20-misses.md
 51f361101a27fb7903cfd6f69b2832ba2552a2bb97f2a84669d58d896cb064b7  ADR-20261009-dangerous-action-shapes-must-be-blocked.md
 73a1188f5fc7a8c17c58b813250ba7ca1926bc59572b83cb2912ebdc4b74cc59  ADR-20261009-docs-must-be-indexed.md
 f112e0b3e39a2bb271d84169c2df6c07566a0063ae06313aaf33d8c499866255  ADR-20261009-index-must-be-regenerated.md
 c0f8776c05330751daf785983d808d3890453e91c68ea47df5820aff983f1023  ADR-20261009-layer1-total-under-280-lines.md
-6ef418769fcf84c0d92e5b5d779410737889131d1edcdc7a853c911e0c9be4fb  ADR-20261009-ledger-must-be-valid-utf8.md
+8c83a27f100e6433749973c8c0a5ab370653ba76a46d64e414eb42b956638a67  ADR-20261009-ledger-must-be-valid-utf8.md
 0205a5840b08cd0aa1a9ad97e1b2e48109ea87a95fd272b33a51c797836a7800  ADR-20261009-lesson-must-be-replayed.md
-# rebaseline ADR-20261009-lesson-must-be-replayed.md 理由: 2026-10-11：supersede 的后半（status→deprecated + 取代指针），前端已立新 ADR
 7fac7ab5ec85a026a6cbe12ac2b51af0783be8d1562430aa644d47fcbaf11ae9  ADR-20261009-lesson-must-land-in-artifact.md
 1b577ab315080126db38f56219ff1af474aa3de3ead90e1110fc7a16d4dcf8c8  ADR-20261009-readme-must-carry-the-on-demand-pointer-block.md
-2c0fa565d63d6c39c9438385738cc8e1b80cfa633bbf91eec9c8dcc8d5c615ea  ADR-20261009-shell-var-before-cjk-must-brace.md
+e1c8f26008594eda1462da27cd4b38ac97e354871a39fee4c8bcbcb42ec60299  ADR-20261009-shell-var-before-cjk-must-brace.md
 7fd4bc72b6899850df248c66170bc0427a2a9c8a3b546c7c42a5aff0bf3c689d  ADR-20261009-upstream-manifest-threat-model.md
 c3e2b3049e3af6eb7e77101718495b041130baba57478cda25563a5d50c294ea  ADR-20261011-derivation-must-carry-origin.md
 67af532f9e29ef5b580273cd56e9e2855b52fb02cffffca8de031959eb9194f9  ADR-20261011-dna-modification-first-exercise.md
@@ -26,4 +25,7 @@ bafc8a095eb14a4975e9dd861454f87e750e2ed57e8d3132a582fb0859bdfe03  ADR-20261011-f
 ef6c49f99683f565e9cfab22a2e933e912eceab3d3f8a1ee78dcbd816975ac8d  ADR-20261011-layer1-budget-is-attention-not-maintenance.md
 bbd12d8b7b22bbf4c91cbc339571a08cf0b48972ffbc58f7c40a54e69e17a626  ADR-20261011-layer1-threshold-calibrated-by-premiere.md
 9710370865fa18f29af2e3160ee9b71233a53ae4a26f12d747b3bc0c172a76bc  ADR-20261011-recopy-must-equal-the-gene-set.md
-b8c03f7f056dd008fe93e8b94639a66b006d134f5b2d610cd56f405aa46d7840  ADR-20261011-replay-per-revisit-period.md
+aa44c14c404efebee71da67882d5ec965d5167ad47ec28f20fc3a8369b2512bd  ADR-20261011-replay-per-revisit-period.md
+# rebaseline ADR-20261011-replay-per-revisit-period.md 理由: 2026-10-11：$var 紧跟中文的扫修（本仓自有 ADR 的判据，第四次同族）
+bd5748b5962269e14cf187b5aa8a266b580731caa7961f5071c4772edee009bd  ADR-20261011-supersede-must-be-paired.md
+0fb2a114de74309f3a9b09d4465a8703d206cccd297dea740f4be2d58c2a782d  ADR-99999999-injected-predecessor.md
