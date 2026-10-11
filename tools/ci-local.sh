@@ -95,5 +95,5 @@ fi
 step "5 · spec-lint（必须真实可红）"; if ./tools/spec-lint.sh docs/PROTECTION.md >/dev/null 2>&1; then echo OK; else echo "★ RED"; fail=1; fi
 
 echo
-if [ "$fail" = 0 ]; then echo "CI-LOCAL: 全绿（9 项；其中 4b=unproven，不计入判据绿数）（7 项）⇒ GitHub Actions 会过（不再有失败通知）"; exit 0; fi
+if [ "$fail" = 0 ]; then echo "CI-LOCAL: 全绿（9 项；其中 4b=unproven，不计入判据绿数）⇒ GitHub Actions 会过（不再有失败通知）"; exit 0; fi
 echo "CI-LOCAL: 有步骤红 ⇒ **不要推送**（推送会触发失败通知）" >&2; exit 1
