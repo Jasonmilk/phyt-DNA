@@ -14,6 +14,7 @@ f112e0b3e39a2bb271d84169c2df6c07566a0063ae06313aaf33d8c499866255  ADR-20261009-i
 c0f8776c05330751daf785983d808d3890453e91c68ea47df5820aff983f1023  ADR-20261009-layer1-total-under-280-lines.md
 8c83a27f100e6433749973c8c0a5ab370653ba76a46d64e414eb42b956638a67  ADR-20261009-ledger-must-be-valid-utf8.md
 0205a5840b08cd0aa1a9ad97e1b2e48109ea87a95fd272b33a51c797836a7800  ADR-20261009-lesson-must-be-replayed.md
+# rebaseline ADR-20261009-lesson-must-be-replayed.md 理由: 2026-10-11：supersede 后半重做（前两次被静默回滚）
 7fac7ab5ec85a026a6cbe12ac2b51af0783be8d1562430aa644d47fcbaf11ae9  ADR-20261009-lesson-must-land-in-artifact.md
 1b577ab315080126db38f56219ff1af474aa3de3ead90e1110fc7a16d4dcf8c8  ADR-20261009-readme-must-carry-the-on-demand-pointer-block.md
 e1c8f26008594eda1462da27cd4b38ac97e354871a39fee4c8bcbcb42ec60299  ADR-20261009-shell-var-before-cjk-must-brace.md
@@ -26,6 +27,5 @@ ef6c49f99683f565e9cfab22a2e933e912eceab3d3f8a1ee78dcbd816975ac8d  ADR-20261011-l
 bbd12d8b7b22bbf4c91cbc339571a08cf0b48972ffbc58f7c40a54e69e17a626  ADR-20261011-layer1-threshold-calibrated-by-premiere.md
 9710370865fa18f29af2e3160ee9b71233a53ae4a26f12d747b3bc0c172a76bc  ADR-20261011-recopy-must-equal-the-gene-set.md
 aa44c14c404efebee71da67882d5ec965d5167ad47ec28f20fc3a8369b2512bd  ADR-20261011-replay-per-revisit-period.md
-# rebaseline ADR-20261011-replay-per-revisit-period.md 理由: 2026-10-11：$var 紧跟中文的扫修（本仓自有 ADR 的判据，第四次同族）
 bd5748b5962269e14cf187b5aa8a266b580731caa7961f5071c4772edee009bd  ADR-20261011-supersede-must-be-paired.md
 0fb2a114de74309f3a9b09d4465a8703d206cccd297dea740f4be2d58c2a782d  ADR-99999999-injected-predecessor.md
