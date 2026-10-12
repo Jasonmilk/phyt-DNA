@@ -17,12 +17,16 @@ DIR="${1:-decisions}"
 BASE="$(basename "$DIR")"; cd "$(dirname "$DIR")"
 files=$(ls "$BASE"/ADR-*.md 2>/dev/null | LC_ALL=C tr '\n' ' ')
 n=$(printf '%s' "$files" | wc -w | tr -d ' ')
-payload=$(python3 - "$@" <<'PY'
-import json,sys
-paths=[p for p in (' '.join(sys.argv[1:])).split() if p]
+
+# ★ 2026-10-12（G）：池扫描原先只喂 ADR ⇒ 受管文档（README 等）的 post 闸门仍落在盲区里（G 的登记）。
+extra=""
+if [ "$BASE" = decisions ]; then for d in README.md README.zh-CN.md; do [ -f "$d" ] && extra="$extra $d"; done; fi
+payload=$(POOL_PATHS="$files $extra" python3 - <<'PY'
+import json,os,sys
+paths=[p for p in (os.environ.get('POOL_PATHS') or '').split() if p]
 print(json.dumps({"tool":"Write","paths":paths}))
 PY
 )
 if [ -z "$files" ]; then echo "OK: 目录 $DIR 下没有 ADR（无可扫）"; exit 0; fi
 out=$(PHYT_DECISIONS="$BASE" PHYT_QUIET=1 bash "$ROOT/tools/validate.sh" --timing post 2>&1 <<< "$payload"); rc=$?
-echo "OK: 全池 $n 份 ADR（目录 ${DIR}）一致 —— 扫描面 = **全部 timing:post 闸门**（不止 pair # 见各 ADR 的 applies-to）"
+echo "OK: 全池 $n 份 ADR + 受管文档${extra:-（无）}（目录 ${DIR}）一致 —— 扫描面 = **全部 timing:post 闸门**（不止 pair # 见各 ADR 的 applies-to）"

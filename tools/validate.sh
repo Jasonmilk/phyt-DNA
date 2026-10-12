@@ -108,6 +108,14 @@ probe_one(){ # probe_one <gate-id> → 0=闸门活着（RED）· 2=腐化/拓扑
   if [ ! -f "$F" ]; then echo "  [B] 拓扑失配: $F 不存在" >&2; rec "$id" block "topology-mismatch"; return 2; fi
   fx="$FIX_DIR/$id/inject.sh"
   if [ ! -f "$fx" ]; then echo "  [A] 缺 fixture: ${fx}（无夹具就无法证明闸门能红）" >&2; rec "$id" block "no-fixture"; return 2; fi
+  # ★ 卡口（G · 2026-10-12）：夹具与判据都跑在【临时副本】上，TMP 内保持相对结构。
+  #   为什么：真件可能是 append-only 的账本 —— 注入往真件追加，被 kill -9 中断即污染（实测留下 2 行垃圾）。
+  #   TMP 内 decisions 做软链 ⇒ 任何"从 $F 推 ../decisions"的判据仍读到真源。
+  TMP=$(mktemp -d); mkdir -p "$TMP/$(dirname "$F")"; cp "$F" "$TMP/$F"
+  TR=$(git rev-parse --show-toplevel); if [ -n "$TR" ]; then ln -s "$TR/decisions" "$TMP/decisions"; fi
+  trap 'if [ -n "$BAK" ] && [ -f "$BAK" ]; then cp "$BAK" "$F"; rm -f "$BAK"; fi; rm -rf "$TMP"' EXIT
+  echo "  判据作用于临时副本: ${TMP}/${F}（真件不动）"
+  F="$TMP/$F"
   # ★ 报【两个世界】（2026-10-09 教训）：注入后的 RED 是**夹具的功劳**，不是仓库的状态。
   # 只报注入态，读者会把"夹具造出来的违规"误读成"仓库不合规"——本仓就有人这么误读过一次。
   base_out=$(F="$F" bash -c "$chk_src" 2>/dev/null); base_rc=$?
@@ -118,13 +126,13 @@ probe_one(){ # probe_one <gate-id> → 0=闸门活着（RED）· 2=腐化/拓扑
   fi
   if [ -z "$base_out" ]; then echo "  基线（未注入）: 绿"
   else echo "  基线（未注入）: 红 → ${base_out}"; fi
-  BAK=$(mktemp /tmp/inj.XXXXXX.bak); cp "$F" "$BAK"
+  BAK=$(mktemp /tmp/inj.bak.XXXXXX); cp "$F" "$BAK"
   trap 'if [ -n "$BAK" ] && [ -f "$BAK" ]; then cp "$BAK" "$F"; rm -f "$BAK"; fi' EXIT
   F="$F" bash "$fx" >/dev/null 2>&1
   # ★ check 自己跑不起来时，【必须具名失败】—— 不能与"无输出=通过"混同。
   # 实测（2026-10-09）：一个 check 因嵌套 heredoc 语法错误而根本没运行，
   # 而 stderr 被丢掉 ⇒ 报"NOT RED"，看起来像闸门活着。**这正是本仓禁止的"静默失败=伪证"。**
-  CHK=$(mktemp /tmp/chk.XXXXXX.out)
+  CHK=$(mktemp /tmp/chk.out.XXXXXX)
   err=$(F="$F" bash -c "$chk_src" 2>&1 >"$CHK"); rc=$?
   out=$(cat "$CHK"); rm -f "$CHK"
   cp "$BAK" "$F"; rm -f "$BAK"; BAK=
@@ -256,7 +264,7 @@ while read -r id; do
         if [ ! -e "$p" ]; then
           out="[输入失效] $p 不存在 —— 按 fail-closed 处理（静默放行=伪证）"
         else
-          SC=$(mktemp /tmp/scan.XXXXXX.out)
+          SC=$(mktemp /tmp/scan.out.XXXXXX)
           err2=$(F="$p" bash -c "$(check_of "$id")" 2>&1 >"$SC"); rc2=$?
           out=$(cat "$SC"); rm -f "$SC"
           if [ "$rc2" = 4 ] && [ -z "$out" ] && printf '%s' "$err2" | grep -q '具名跳过'; then

@@ -1,9 +1,9 @@
 ---
-id: DOC-README-v3
+id: DOC-README-v2
 owner: "@jasonmilk"
 revisit-on: 2027-01-12
 effective-from: 2026-10-12
-supersedes: DOC-README-v2
+supersedes: DOC-README-v1
 ---
 
 <p align="center">
@@ -57,12 +57,13 @@ numbers, this one prints the command that replaces them:
 | gate counts — total / hard / retired / active | `bash tools/validate.sh --index` (per-gate) · `bash tools/check-pool.sh` (pool-wide) |
 | gate heartbeats — three lines per gate | `bash tools/validate.sh --probe-all` |
 | full-pool consistency | `bash tools/check-pool.sh` |
-| budget · usage · countdown · debts · replay coverage | `bash <ecosystem>/tools/todo-ready.sh` (the report head lives in the ecosystem repo — see the note below) |
+| budget · usage · countdown · debts · replay coverage | the ecosystem repo's `tools/todo-ready.sh` (the report head is ecosystem-scoped — see the note below) |
 | the whole local CI, verbatim | `bash tools/ci-local.sh` |
 
 > **Where the report head lives.** `todo-ready.sh` is **ecosystem-scoped** (it reads all six repos
 > plus the cross-repo register), so it lives in the ecosystem repo, **not here**: run it as
-> `bash <helix-mind>/tools/todo-ready.sh`. Everything else in this table is in **this** repo's
+> run the ecosystem repo's `tools/todo-ready.sh` from that checkout (the path differs per machine; that is why
+> it is written as words, not as a shell placeholder). Everything else in this table is in **this** repo's
 > `tools/`. (An earlier draft of this README pointed at `tools/todo-ready.sh` here — it would have
 > failed with "No such file" for a fresh adopter. Fixed 2026-10-12.)
 
@@ -85,7 +86,7 @@ obligation; "named-unprobeable" gates cannot be probed at all. Printing one numb
 | **May I believe a verdict? (true green / false green …)** | [`docs/MULTIMETER.md`](docs/MULTIMETER.md) — the second axis (`verdict` × `validity`) |
 | **May I believe a *gate*? (birth, blueprints, promotion)** | the birth law below · `bash tools/validate.sh --index` |
 | **Why did a gate stay silent about an old violation?** | the timing:post blind spot below · `bash tools/check-pool.sh` |
-| **May I believe a *report*?** | derived self-attestation below · `bash <helix-mind>/tools/todo-ready.sh` |
+| **May I believe a *report*?** | derived self-attestation below · the ecosystem repo's `tools/todo-ready.sh` |
 | **What documents exist, and which answers my question?** | [`docs/INDEX.md`](docs/INDEX.md) — question-keyed; a gate forbids leaving any doc unlisted |
 | **Where are the gates themselves?** | `decisions/` — see `decisions/INDEX.md` (generated; do not hand-edit) |
 | **Where is the accounting for runs and probes?** | `ledger/` — append-only; corrections are new records; the replay census is tagged `census: true` |
@@ -185,7 +186,7 @@ born with all three edges, using the live repository as its green-side proof.
 > frontmatter (`id` / `supersedes` / `revisit-on`) follows the **same convention** but is
 > **hand-written metadata in a layer no gate covers** — unlike a gate, it stores state in a file that
 > is not re-derived. Its guard today is **the archive plus this note**: the superseded half
-> (`DOC-README-v2`) is retained at [`docs/archive/README-v2.md`](docs/archive/README-v2.md) with
+> (`DOC-README-v2`) is retained at [`docs/archive/DOC-README-v1.md`](docs/archive/DOC-README-v1.md) with
 > `status: deprecated`, so the pairing is **executable, not promised**; extending the pairing gate's
 > `applies-to` to docs is a registered debt.
 
@@ -361,7 +362,7 @@ cp examples/ADR-EXAMPLE.md <your-project>/decisions/ADR-<date>-<your-first-gate>
 
 # 3. Turn on CI (the pre-commit hook is optional convenience; CI is the gate)
 cp examples/phyt.yml <your-project>/.github/workflows/
-cd <your-project> && ./tools/check-baseline.sh --update && git add tools/baseline.sha256 && git commit
+cd <your-project> && ./tools/check-baseline.sh --update && git add tools/check-baseline.sha256 && git commit
 ```
 
 **The first CI run is necessarily RED** (missing asset baseline) — land the baseline to go green;
