@@ -12,7 +12,7 @@ redtest: "validate --probe ADR-20261009-readme-must-be-a-truthful-entry"
 revisit-on: 2027-04-09
 expires-on: null
 owner: "@jason"
-origin: "2026-10-09：README 是唯一的入口，而入口的价值不在'内容全'，在'能指向唯一的那一份'（按需加载）。全生态六仓已对齐同一形状，故把它钉成闸门而不是只写进规范。"
+origin: "2026-10-09：README 是唯一的入口，而入口的价值不在'内容全'，在'能指向唯一的那一份'（按需加载）。全生态六仓已对齐同一形状，故把它钉成闸门而不是只写进规范。 ｜三要素：事件=2026-10-12 立本门 · 证据行=ledger/hits-2026.jsonl（该门的 probe 记录）· 提交=b224278"
 risk: normal
 check: |
   [ -f "$F" ] || { echo "输入失效: $F 不存在（静默失败=伪证）"; }

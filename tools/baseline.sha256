@@ -23,11 +23,11 @@ cd064ea0f72a80e2b99e0c451548e2c17598b716d85973dcf5353f1f246c35c8  decisions/ADR-
 444b0a9b5c79cb5aa3d9b20944f036c4200c16581f68e4cb2b2bf887c8839229  decisions/ADR-20261009-ledger-must-be-valid-utf8.md
 bca5a3094c351a4f5182a73815258a4534623f9d2b3b2657086a1e2ba97bd364  decisions/ADR-20261009-lesson-must-be-replayed.md
 a13c8e1f768d6733b2ecc642288cc4bafb5d3cf48e4658b79ae4dcb531d63c51  decisions/ADR-20261009-lesson-must-land-in-artifact.md
-53229d6ed814694f79f84cb771575ce0732dbc7b14aba28ce6c8ed94324f3d03  decisions/ADR-20261009-readme-must-be-a-truthful-entry.md
+f240fe84604504d95d5f3874063d24d81f02b7d8b946b785025758d72d482fd9  decisions/ADR-20261009-readme-must-be-a-truthful-entry.md
 cbc5b3eb78fb1fdb56a5e1600dfc13046fdef6e23d711dc8df4ef0d2cabb96cb  decisions/ADR-20261009-readme-must-carry-the-on-demand-pointer-block.md
 f9c9013c3a6c7fee9f0336d3bdd05f7a2b92817d4bc765ab72ec7904b65faf10  decisions/ADR-20261009-shell-var-before-cjk-must-brace.md
 e2693f257f8e9512848e01c932078e4d687f34d6b19ca3bffac4e7cbe24f74e1  decisions/ADR-20261009-upstream-manifest-threat-model.md
-6b36bc0378ebd5e0eda2ddefaa70b0786614d2e057315e4203467237344025d1  decisions/ADR-20261011-derivation-must-carry-origin.md
+4a8fcfb7e0eefb5cc5cf0426f737258e79512fe292679450811506a0c7be09a3  decisions/ADR-20261011-derivation-must-carry-origin.md
 6fcffa675afc20f0c814cde54e9e44da4f9e287010d5b9d14592f2371f0f701b  decisions/ADR-20261011-dna-modification-first-exercise.md
 f5a8aafd9f3c875211a000e600ea74646790cbcfb5fd9c9f1e6d520f57c48516  decisions/ADR-20261011-failure-must-be-named-where-machines-can-read.md
 cd2764f4753ce264827cb4b2a4447c7b3b5fe32294214d63c3a8a1b5204c97f9  decisions/ADR-20261011-frozen-body-immutable.md
@@ -36,9 +36,9 @@ e447785ae3d66188431ac3a7be04f711afa67ee379c079de6716c862d2787499  decisions/ADR-
 643e1f3d15d616fadbcbffbf2d390a53349e74b055e8be6ef5b5f106fddca588  decisions/ADR-20261011-recopy-must-equal-the-gene-set.md
 6ad949dfd6faf0d9f66c12237cbe13a2b3645dd92fbce4bcebe89fd45bc74b3a  decisions/ADR-20261011-replay-per-revisit-period.md
 aaaae14de6264a9d007766082994472b420271d933ae63f9d42054c4e0720d99  decisions/ADR-20261011-supersede-must-be-paired.md
-c7e25039f95208294f58761fa6409d6a11b805f726328094664122b01d72cbcb  decisions/ADR-20261012-ledger-new-lines-parseable-and-referenced.md
+3dc894cb26540cb6585375ed9bf5002c582e18c5cb02a573cf5133721324993c  decisions/ADR-20261012-ledger-new-lines-parseable-and-referenced.md
 505b5a7bc132297f0ab54ce1802e0248d0baf21caa2e4feb51d894fb82993590  decisions/ADR-20261012-pool-consistency-must-be-checked.md
-0b662780489dedf404f23ac95f5d633a70cdf64b9fe001b8fdd1e732f8a85d7c  decisions/ADR-20261013-probe-scope-must-be-tagged.md
+86d66f6bd9003a64e16f6a50d0da052c30fbb4b69c5cc435a520a2ded68642eb  decisions/ADR-20261013-probe-scope-must-be-tagged.md
 260fcf73cab2b6763802d805b752adcaa36b80126db238afa3d67ca0b3491f22  decisions/INDEX.md
 ae99c70970cb254c3dbe46567a8213027490b738cdd58b19a499fbb35c75ef7a  decisions/README.md
 13719c5e56f033bbb61ccc9fea6913845b3385e640a260da846c431d53f0c388  docs/DNA-GATE-DIAGNOSIS.md

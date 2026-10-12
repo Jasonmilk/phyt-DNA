@@ -13,12 +13,25 @@ owner: "@jason"
 origin: "DNA「派生律的住址」六律之一「派生必带 origin」—— 取证时发现它是六律中【唯一无人守】的一条；而实测 hard:true 18/18 全有 origin ⇒ 可零红上线（立号，见本 ADR）"
 risk: normal
 check: |
+  ROOT=$(git rev-parse --show-toplevel) || { echo "输入失效: 不在 git 工作区，出生日不可量"; exit 4; }
   [ -f "$F" ] || { echo "输入失效: $F 不存在（静默失败=伪证）"; }
   grep -q '^hard: true$' "$F" || exit 0
   o=$(sed -n 's/^origin: *//p' "$F" | head -1)
   case "$o" in
     ""|'""'|null) echo "派生缺 origin（$(basename "$F")）—— 没有出处的闸门无法追溯：它凭什么长出来？（派生必带 origin）" ;;
   esac
+  # ★ 0（2026-10-13 · 阻断项修复）：**第 4 边没有进执行面** —— 原判据只查 origin 非空
+  #   ⇒ 实测：一个 **origin 是散文**的假 ADR **一路绿灯**（"我觉得应该这样"也算出处 ⇒ 等于没出处）。
+  #   ⇒ 现在：**出生日在【本条生效日】之后的 ADR**，origin 必须带【三要素】事件=/证据行=/提交=（证据必须可核）。
+  #   边界【派生】而来：生效日读本条自己的 effective-from（政策锚在本 ADR）；出生日由 git 量（--diff-filter=A）。
+  SELF="$ROOT/decisions/ADR-20261011-derivation-must-carry-origin.md"
+  EFF=$(grep -m1 '^effective-from:' "$SELF" | sed 's/^effective-from: *//')
+  BIRTH=$(cd "$ROOT" && git log --diff-filter=A -1 --format=%cs -- "$F")
+  if [ -n "$BIRTH" ] && [ -n "$EFF" ] && [ "$BIRTH" \> "$EFF" ]; then
+    for k in '事件=' '证据行=' '提交='; do
+      grep -q -- "$k" "$F" || echo "④ origin 缺三要素（${k}）（$(basename "$F")）—— 第 4 边：**证据必须可核**（形如 事件=… · 证据行=… · 提交=…）"
+    done
+  fi
 last-hit: null
 hit-count: 0
 supersedes: null

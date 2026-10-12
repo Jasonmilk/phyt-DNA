@@ -10,7 +10,7 @@ redtest: "validate --probe ADR-20261012-ledger-new-lines-parseable-and-reference
 revisit-on: 2027-04-12
 expires-on: null
 owner: "@doubao"
-origin: "指派 2026-10-12（豆包执笔）：两笔旧账 —— ① 82 行坏 JSON（2026-10-09 rec() 修复前 printf 直插未转义，FINDING-2026-10-09 档）② 3 个悬空 gate_id（hook-bash-command / hook-fail-closed / ADR-20261009-ledger-must-be-parseable-line-oriented）。FINDING 记'每行可解析'的闸门从未立过（valid-utf8 只查编码）——本轮补上。"
+origin: "指派 2026-10-12（豆包执笔）：两笔旧账 —— ① 82 行坏 JSON（2026-10-09 rec() 修复前 printf 直插未转义，FINDING-2026-10-09 档）② 3 个悬空 gate_id（hook-bash-command / hook-fail-closed / ADR-20261009-ledger-must-be-parseable-line-oriented）。FINDING 记'每行可解析'的闸门从未立过（valid-utf8 只查编码）——本轮补上。 ｜三要素：事件=2026-10-12 立本门 · 证据行=ledger/hits-2026.jsonl（该门的 probe 记录）· 提交=a589c2e"
 risk: normal
 check: |
   [ -f "$F" ] || { echo "输入失效: $F 不存在（静默失败=伪证）"; }

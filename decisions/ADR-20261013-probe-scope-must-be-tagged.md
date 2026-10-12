@@ -9,7 +9,7 @@ effective-from: 2026-10-13
 revisit-on: 2027-01-13
 expires-on: null
 owner: "@jasonmilk"
-origin: "2026-10-13 人类裁定（本轮）：先写设计稿定【标签语义】，不实现；与'短路绿必须打标签'同批；周期全量保留。"
+origin: "事件=2026-10-13 人类裁定（probe-touched 设计稿：先定标签语义、不实现、周期全量保留） · 证据行=ledger/hits-2026.jsonl（本轮 probe 记录） · 提交=75e942b"
 risk: normal
 check: |
   :   # 设计稿：hard:false ⇒ 引擎 gates() 不收它；实现与判据在下一轮（先定语义，再落机器）。
