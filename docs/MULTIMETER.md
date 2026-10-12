@@ -257,15 +257,37 @@ awk '/^check: \|/{f=1;next} f&&/^[a-z-]+:/{f=0} f{print}' decisions/ADR-*.md   #
 
 **每门的恢复命令**：`bash tools/validate.sh --probe ADR-…`（把 `ADR-…` 换成真实门名）（三态齐 = 基线绿 · 注入红 · 反例守住）
 
-### ② 在执行面 · 会红未证 = 0 门
+### ② 在执行面 · 会红未证 = **0 门**（读数来自引擎，不是自证）
 
-（无：所有进执行面的门都过了三态。**边④"能绿"由探针的基线态承担** ⇒ 基线一旦红，该门即落此类。）
+```
+bash tools/validate.sh --probe-all > /tmp/pa2.out 2>&1
+grep -c '基线（未注入）: 红' /tmp/pa2.out     # _bl（基线红）
+grep -c '闸门已腐化'        /tmp/pa2.out     # _rot（腐化）
+```
+
+**本次读数**：`_bl = 0` · `_rot = 0` ⇒ **本类 = 0 门**（若 `_rot>0`：那些门的名字已被 `[${id}]` 前缀落在同一文件里，
+`grep -B3 腐化` 即可取出；**每门恢复命令** = `bash tools/validate.sh --probe ADR-…`）。
+**定义**：门在**执行面**里、且**会红已被证**，但**此刻是红的**（腐化）或**基线红** ⇒ 与"绿"不同的一类。
+**（旧文本"边④由基线态承担"是我自证的理由 ⇒ 已删：这类必须由 `_bl/_rot` 读数说话。）**
 
 ### ③ 不在执行面 · 待夹具 = 0 门（门级）
 
 · **门级 = 0**（无夹具且未声明 `probe: none` 的 hard 门 ⇒ 无）
 · **步骤级 = 1 处**：`4b · 全池一致性（check-pool.sh）` —— 它是**池形状判据**（对象是整池，不是某个文件）
   ⇒ 单文件夹具无法证明 ⇒ CI 输出里已如实标 `unproven · 待夹具：能红未证`。
-· **具名不可 probe（另一类）**：`ADR-20261009-dangerous-action-shapes-must-be-blocked` —— 其对象是**任意输入字符串**
+· **具名不可 probe（另一类 · 三要素）**：**仪器 = `examples/claude-code/hooks/hook_test.sh`** ·
+  **读数 = 9 例，其中「必须拦」（= 注入后必须红）3 例：`rm -rf 形状` · `git push --force` · `写 DNA.md（权威卷）`，全部 ok** ·
+  **最近读取时刻 = 2026-10-13 03:2x**（命令：`bash examples/claude-code/hooks/hook_test.sh | grep 必须拦`）
+  ⇒ **它的红由另一件仪器证（不是"未证"）**；对象是**任意输入字符串**
   （命令形状）与它要禁的路径本身 ⇒ 门级 probe 不适用；回归判据 = `examples/claude-code/hooks/hook_test.sh`（**9 例**，接在 ci-local 步 5a）
   ⇒ **红由另一件仪器证**（不是"未证"）。
+
+## c · DNA 门苏醒后的扫描判定（2026-10-13）
+
+```
+printf '{"tool":"Write","paths":["decisions/ADR-20261009-DNA-is-immutable.md"]}\n' | ./tools/validate.sh --timing post
+```
+
+**读数**：`{"verdict":"pass","scanned":4,"hits":0}` ⇒ **绿**。
+**为什么绿**：① 判据体现在**完整执行**（顶格行断言 `GRN` 守着）；② 真仓满足它 —— `DNA.md` **确在**资产基线 scope 内
+（`bash tools/check-baseline.sh --scope | grep -x DNA.md` ⇒ 命中）。**⇒ 绿是"真绿"，不是沉默。**
