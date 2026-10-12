@@ -37,16 +37,13 @@ check: |
   # ② 可执行：bash 命令块里不许有 <…> 占位符（读者会照抄 ⇒ 跑不通）
   PL=$(grep -nE '`bash [^`]*<[^`]*`' "$F" | head -3)
   [ -n "$PL" ] && echo "bash 命令块含占位符 <…>（照抄跑不通）: $(printf '%s' "$PL" | tr '\n' ' ')"
-  # ③ 路径真：声明过的仓内路径必须存在（跨仓的报告头具名豁免）
-  while read -r p; do
+  # ③ 路径真：README 声明的【本仓】路径必须存在；跨仓引用必须写成 <repo>/… 形状（自定义原则：形状要能自我说明归属）
+  #   ★ 单行实现（不用续行、不用多行管道）：实测本判据曾因续行/多行管道【整段不跑】⇒ 绿是静默腐化。
+  for p in $(grep -oE '(^|[^A-Za-z0-9_./-])((tools|docs|decisions|examples)/[A-Za-z0-9_./-]+|(README\.zh-CN|VISION|DNA|SPEC|RNA|PLAN|GROWTH|DEPRECATE)\.md)([^A-Za-z0-9_./*-]|$)' "$F" | sed -E -e 's|^[^A-Za-z0-9_./-]||' -e 's|[^A-Za-z0-9_./-]$||' | grep -E '\.(md|sh|py|jsonl|json|sha256|txt|ya?ml)$' | sort -u); do
     [ -n "$p" ] || continue
-    case "$p" in tools/todo-ready.sh) continue ;; esac   # 具名豁免：生态仓的报告头（README 以文字指代）
-    [ -e "$ROOT/$p" ] || echo "README 指向 ${p}：本仓不存在它 ⇒ 要么是断链，要么是【跨仓引用的形状错了】—— 跨仓必须写成 <repo>/… 形状（自定义原则：路径形状要能自我说明归属）"
-  #   ★ 只认【本仓】路径：形如 `helix-mind/docs/…` 的跨仓引用不得被当成本仓路径（实测假阳一次）。
-  #   ★ trailer 白名单：紧跟 `*` 的片段不算路径（`decisions/ADR-*.md` 这种【模式】不得被读成路径 —— 实测假阳一次）。
-  done < <(grep -oE '(^|[^A-Za-z0-9_./-])((tools|docs|decisions|examples)/[A-Za-z0-9_./-]+|(README\.zh-CN|VISION|DNA|SPEC|RNA|PLAN|GROWTH|DEPRECATE)\.md)([^A-Za-z0-9_./*-]|$)' "$F" \
-           | sed -E 's/^[^A-Za-z0-9_./-]//; s/[^A-Za-z0-9_./-]$//' | grep -E '\\.(md|sh|py|jsonl|json|sha256|txt|ya?ml)$' | sort -u)   # ★ 必须是【具体文件名】（带扩展名）—— 散文里的 `decisions/ADR-` 这类【前缀/模式】不得当路径
-           | sed -E 's/^[^A-Za-z0-9_./-]//' | sort -u)
+    case "$p" in tools/todo-ready.sh) continue ;; esac
+    [ -e "$ROOT/$p" ] || echo "README 指向 ${p}：本仓不存在它 ⇒ 要么断链，要么【跨仓引用形状错】—— 跨仓必须写成 <repo>/… 形状"
+  done
   # ④ 版本真值源 = 分支（**不存版本号**：分支是物理事实，存下来的数过期时从不响）
   # ★ 真值源必须是【物理锚点】（园丁 0′）：HEAD 是**可移动指针**（谁 checkout 都变）⇒ 不用它。
   #   优先级：远端默认分支 symref（origin/HEAD → origin/v2） > 版本次第 tag（vN）；都取不到 ⇒ **复用 skip()**（exit 4）。

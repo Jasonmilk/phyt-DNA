@@ -16,7 +16,7 @@ cd064ea0f72a80e2b99e0c451548e2c17598b716d85973dcf5353f1f246c35c8  decisions/ADR-
 444b0a9b5c79cb5aa3d9b20944f036c4200c16581f68e4cb2b2bf887c8839229  decisions/ADR-20261009-ledger-must-be-valid-utf8.md
 bca5a3094c351a4f5182a73815258a4534623f9d2b3b2657086a1e2ba97bd364  decisions/ADR-20261009-lesson-must-be-replayed.md
 ace7bf03604ecec0fdfa46ee10e1c88c37d2ec6665816a0974c028bbf0bc788c  decisions/ADR-20261009-lesson-must-land-in-artifact.md
-7afa0c9f3989880d369595c1e9e4244f23871ee2ee0e404e9c4feeb24ddaf578  decisions/ADR-20261009-readme-must-be-a-truthful-entry.md
+c360528bc4f654e6787676fe1b085c19b4a7552ec5e5bc14839c7e36236873c8  decisions/ADR-20261009-readme-must-be-a-truthful-entry.md
 cbc5b3eb78fb1fdb56a5e1600dfc13046fdef6e23d711dc8df4ef0d2cabb96cb  decisions/ADR-20261009-readme-must-carry-the-on-demand-pointer-block.md
 7c577e1eef65164f23352b1cca872e5763f15d31fd5f659a1a8f6e302d9c2e66  decisions/ADR-20261009-shell-var-before-cjk-must-brace.md
 e2693f257f8e9512848e01c932078e4d687f34d6b19ca3bffac4e7cbe24f74e1  decisions/ADR-20261009-upstream-manifest-threat-model.md

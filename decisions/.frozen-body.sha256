@@ -15,8 +15,8 @@ c0f8776c05330751daf785983d808d3890453e91c68ea47df5820aff983f1023  ADR-20261009-l
 e2b7dc3e564a7c495902fbdd10e1f508814c690cb752d905457874c008457782  ADR-20261009-ledger-must-be-valid-utf8.md
 38fd2f8a9b72ac9c0d9df3309334c4d67b98da195e3a897b773a547633df6aa6  ADR-20261009-lesson-must-be-replayed.md
 7fac7ab5ec85a026a6cbe12ac2b51af0783be8d1562430aa644d47fcbaf11ae9  ADR-20261009-lesson-must-land-in-artifact.md
-aa8fcacc7efa1036abbe904ac721ddcedd53f653afc266486a9ae15a30fe2868  ADR-20261009-readme-must-be-a-truthful-entry.md
-# rebaseline ADR-20261009-readme-must-be-a-truthful-entry.md 理由: 1：③ 形状判据；存根正文修复
+7e94e96495418d09f69717f5763016cdd05e93908962064cb9216091bdd2db3b  ADR-20261009-readme-must-be-a-truthful-entry.md
+# rebaseline ADR-20261009-readme-must-be-a-truthful-entry.md 理由: ③ 区域整体重写为单行（去残骸）
 71b0014c70a913ab47d97680544fa639c2ce8d7c6a0227ccd2db1e123b4738de  ADR-20261009-readme-must-carry-the-on-demand-pointer-block.md
 e1c8f26008594eda1462da27cd4b38ac97e354871a39fee4c8bcbcb42ec60299  ADR-20261009-shell-var-before-cjk-must-brace.md
 7fd4bc72b6899850df248c66170bc0427a2a9c8a3b546c7c42a5aff0bf3c689d  ADR-20261009-upstream-manifest-threat-model.md

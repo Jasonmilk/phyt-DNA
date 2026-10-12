@@ -362,7 +362,7 @@ cp examples/ADR-EXAMPLE.md <your-project>/decisions/ADR-<date>-<your-first-gate>
 
 # 3. Turn on CI (the pre-commit hook is optional convenience; CI is the gate)
 cp examples/phyt.yml <your-project>/.github/workflows/
-cd <your-project> && ./tools/check-baseline.sh --update && git add tools/check-baseline.sha256 && git commit
+cd <your-project> && ./tools/check-baseline.sh --update && git add tools/baseline.sha256 && git commit
 ```
 
 **The first CI run is necessarily RED** (missing asset baseline) — land the baseline to go green;
