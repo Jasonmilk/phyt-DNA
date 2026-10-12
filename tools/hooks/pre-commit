@@ -29,6 +29,15 @@ staged=$(git diff --cached --name-only 2>/dev/null | grep -E '^(decisions/|tools
 changed=0
 if ! bash tools/validate.sh --index > /tmp/.idx.$$ 2>/dev/null; then rm -f /tmp/.idx.$$; exit 0; fi
 if ! cmp -s /tmp/.idx.$$ decisions/INDEX.md 2>/dev/null; then mv /tmp/.idx.$$ decisions/INDEX.md; git add decisions/INDEX.md; changed=1; else rm -f /tmp/.idx.$$; fi
-if bash tools/check-baseline.sh --update >/dev/null 2>&1; then git add tools/baseline.sha256 2>/dev/null || true; fi
+# ★ 3（2026-10-12 园丁裁定）：**同批重记基线，且不许静默失败** ——
+#   原先这行是 `>/dev/null 2>&1` ⇒ 重记失败被吞掉 ⇒ "基线没更新"可以悄悄进提交（**实测我推过一笔红**）。
+#   ⇒ 改：rc 必须被尊重；失败即阻断提交（不可逆的红不许溜出本机）。
+cb_out=$(bash tools/check-baseline.sh --update 2>&1); cb_rc=$?
+printf '%s\n' "$cb_out" | tail -2
+if [ "$cb_rc" != 0 ]; then
+  echo "⛔ 资产基线重记失败（rc=$cb_rc）⇒ 拒绝提交：不许把'基线没更新'悄悄带进去" >&2
+  exit 1
+fi
+git add tools/baseline.sha256
 [ "$changed" = 1 ] && echo "  [pre-commit] 闸门资产变了 ⇒ decisions/INDEX.md 已自动重生（不依赖记得）"
 exit 0

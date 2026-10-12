@@ -174,6 +174,11 @@ for aid in $(git grep -hoE 'ADR-[0-9]{8}-[a-z0-9]+(-[a-z0-9]+)*' -- '*.md' 2>/de
 done
 if [ -n "$dangling" ]; then red "引用了【不存在】的 ADR id（悬空引用）:$dangling"; else grn "所有被引用的 ADR id 都有落地文件"; fi
 
+# ★ 1（2026-10-12 · 净 0）：**读数器由判据器守着** —— 清点器 `--selftest` 不过 ⇒ 判据器红
+#   （否则它给出的 A/B 两数与"无样本清单"没有任何人担保 ⇒ 那是"无人担保的读数"）。
+census_out=$(tools/regex-census.sh --selftest 2>&1); census_rc=$?
+if [ "$census_rc" = 0 ]; then grn "正则清点器自检通过（12/12）"; else red "正则清点器自检未过（12/12）⇒ 它的 A/B 两数应标 unproven: $(printf '%s' "$census_out" | tail -1)"; fi
+
 [ "$fail" = 0 ] && { echo "spec-lint: PASS"; exit 0; }
 echo "spec-lint: BLOCK（规范自身未过闸门）" >&2
 exit 2
