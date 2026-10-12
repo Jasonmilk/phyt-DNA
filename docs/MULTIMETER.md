@@ -70,3 +70,30 @@ world:    仓库态 | 注入态        ← ★ 第二根轴之外，还必须说
 | P3（零闸门具名） | 本条的**特例**：无夹具集合上的"绿" |
 | P6/P7（账本结构化 + 环境探测） | 本条的**输入**；但**不能替代**本条 |
 | P10（gate 的输入必须是产物） | 同族：都在治"判据依赖了不该依赖的东西" |
+
+---
+
+## 账本双轨读数（2026-10-12 立 · YB：只报后者，"82"会从记忆里消失）
+
+**同一个"坏行"有两个数，必须同时报 —— 否则读数会骗人：**
+
+| 读数 | 值 | 语义 | 能否下沉 |
+|---|---|---|---|
+| **物理不可解析** | **82** | 因为 append-only，**旧行物理不可改** ⇒ 这个数**永不下沉** | ✗ |
+| **无旁证** | **0** | 82 行各有 1 条 `verdict: correction` 旁证（`ref_line` 指向它）⇒ 可下沉到 0 | ✓ |
+
+自证命令（1:1 映射，0 孤儿 / 0 重复 / 0 指向非坏行）：
+```
+python3 -c "import io,json,collections;bad=[];corr=[];[ (corr.append(json.loads(l)['ref_line']) if json.loads(l).get('verdict')=='correction' and 'ref_line' in json.loads(l) else None) if _try(l) else bad.append(i) for i,l in enumerate(io.open('ledger/hits-2026.jsonl',encoding='utf-8'),1)]"
+```
+（等价形式：坏行=逐行 `json.loads` 失败的行号集合；旁证=带 `ref_line` 的 correction 行的 `ref_line` 集合 ⇒ 两集合相等即为 1:1。）
+
+**⇒ 只报"0"会让人以为账本干净了；只报"82"会让人以为旁证没做。两个都报才是事实。**
+
+## 口径钉死（2026-10-12）
+
+- **人口 = 活 ADR 28 + tools 15（含 `tools/hooks/` 下的文件）** —— 二元组定死，**不许只报其一**；
+- 账本 `kind` 分布是**次级读数**（probe 847 · replay 21 · correction 85 · selftest 3 · **task 1**）；
+- **`--cull` 冻结 = 硬约束，不是待办**：减法只能由**人类显式下令**执行（不可逆操作走授权三级守则第③级）。
+  替代鉴别器（不改行为面）：用**已有的** `dangerous-action-*` 门当减法池首个被告 ——
+  INDEX 实测它 `inject=NO · counter=NO`（**三边一条没证**）⇒ 它是唯一"连夹具都没有还活着"的门。
