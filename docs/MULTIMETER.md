@@ -117,7 +117,7 @@ cd <phyt-DNA> && git log origin/v1 -1 --format="分支 v1 · tip %h · %ad · %s
 **它回答的问题**：本仓是不是**自足**的（把仓单独拿走，还跑得动吗）？
 
 ```
-git clone . /tmp/orphan && cd /tmp/orphan && bash tools/ci-local.sh
+git clone . /tmp/orphan && cd /tmp/orphan && git remote remove origin && bash tools/ci-local.sh
 ```
 
 **只写命令，不写结论** —— 结论会腐烂（依赖会变），命令每次给当下的事实。
