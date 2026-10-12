@@ -59,8 +59,11 @@ step "2 · spec-lint";  if ./tools/spec-lint.sh docs/PROTECTION.md >/dev/null 2>
 #   ⇒ 这里把"基线红"变成**会失败的检查**（并把红的闸门具名列出）。
 step "3b · 基线红必须作数（红要具名）"
 _bl=$(bash tools/validate.sh --probe-all 2>&1 | grep -c '基线（未注入）: 红')
-if [ "${_bl:-0}" = "0" ]; then echo OK; else
-  echo "★ RED ($_bl 条闸门基线红)"; bash tools/validate.sh --probe-all 2>&1 | grep -B2 '基线（未注入）: 红' | grep -E '^\s*[0-9]+:[A-Za-z]|红 →' | head -6 | sed 's/^/       /'; fail=1
+# ★ 0*（2026-10-13）：**"腐化"也算红** —— 此前只数"基线红" ⇒ **夹具跨不过阈值的死门对本步隐形**
+#   （实测：recopy 门 probe 报「腐化」，而本步报 OK）。死门 = 门不在工作 ⇒ 与基线红同等严重。
+_rot=$(bash tools/validate.sh --probe-all 2>&1 | grep -c '闸门已腐化')
+if [ "${_bl:-0}" = "0" ] && [ "${_rot:-0}" = "0" ]; then echo OK; else
+  echo "★ RED ($_bl 条闸门基线红 · ${_rot:-0} 条闸门腐化)"; bash tools/validate.sh --probe-all 2>&1 | grep -B4 -E '基线（未注入）: 红|闸门已腐化' | grep -E '^\s*[0-9]+:[A-Za-z]|红 →|腐化' | grep -E '^\s*[0-9]+:[A-Za-z]|红 →' | head -6 | sed 's/^/       /'; fail=1
 fi
 
 step "3 · 全部闸门能力心跳"

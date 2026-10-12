@@ -20,7 +20,10 @@ check: |
   ROOT=$(git rev-parse --show-toplevel) || skip "非 git 工作区，归档载体不可定位"
   n=$(grep -c '^## 年轮 ·' "$F")
   if [ "$n" -gt 3 ]; then
-    a=$(ls -1 "$ROOT/archive/growth" | grep -v '^\.gitkeep$' | grep -c .)
+    # ★ 0**d（2026-10-13）：**只数【年轮型】归档** —— 原先数"目录里任何文件" ⇒ 我搬进去的 `PLAN-gaps` 文档
+    #   被误算成"已归档年轮" ⇒ 注入第 4 条时判据不再红（**腐化**）。口径精度 = 判据的生死。
+    a=0
+    for g in "$ROOT"/archive/growth/*.md; do [ -e "$g" ] || continue; grep -q '^## 年轮' "$g" && a=$((a+1)); done
     need=$((n - 3))
     if [ "$a" -lt "$need" ]; then
       echo "GROWTH 年轮 ${n} 条 > 3，而 archive/growth/ 只有 ${a} 条 ⇒ 溢出 ${need} 条必须真归档（纸面纪律 → 机器纪律）"

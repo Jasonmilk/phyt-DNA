@@ -133,8 +133,8 @@ probe_one(){ # probe_one <gate-id> → 0=闸门活着（RED）· 2=腐化/拓扑
     echo "  具名跳过: 判据拒绝在【缺历史】的场景下判（浅克隆/非 git 工作区）—— 不算绿也不算红" >&2
     rec "$id" skip "named skip: anchor not derivable (shallow clone / no history)"; return 0
   fi
-  if [ -z "$base_out" ]; then echo "  基线（未注入）: 绿"
-  else echo "  基线（未注入）: 红 → ${base_out}"; fi
+  if [ -z "$base_out" ]; then echo "  [${id}] 基线（未注入）: 绿"
+  else echo "  [${id}] 基线（未注入）: 红 → ${base_out}"; fi
   BAK=$(mktemp /tmp/inj.bak.XXXXXX); cp "$F" "$BAK"
   # ★ 2：trap **合一**（原先 BAK 的 trap 会覆盖 TMP 清理 ⇒ 临时目录泄漏；夹具纪律无例外）
   trap 'if [ -n "$BAK" ] && [ -f "$BAK" ]; then cp "$BAK" "$F"; rm -f "$BAK"; fi; if [ -n "$BAK2" ] && [ -f "$BAK2" ]; then cp "$BAK2" "$F"; rm -f "$BAK2"; fi; rm -rf "$TMP"' EXIT
@@ -158,7 +158,7 @@ probe_one(){ # probe_one <gate-id> → 0=闸门活着（RED）· 2=腐化/拓扑
     echo "  [check 失败] 判据自己没能运行：$(printf '%s' "$err" | head -1)" >&2
     rec "$id" block "check did not run: $(printf '%s' "$err" | head -1)"; return 2
   fi
-  if [ -z "$out" ]; then echo "  注入后: NOT RED — 闸门已腐化（夹具没能越过阈值）" >&2
+  if [ -z "$out" ]; then echo "  [${id}] 注入后: NOT RED — 闸门已腐化（夹具没能越过阈值）" >&2
     rec "$id" block "corrupted: fixture did not cross the threshold"; return 2; fi
   # ★ 夹具必须【真的改变了结论】（2026-10-09）。若注入前后的结论一字不差，那么这次"RED"
   # 不是夹具的功劳：要么它没越过阈值，要么**判据对这个文件的内容不敏感**（例如只断言文件名）。
@@ -169,7 +169,7 @@ probe_one(){ # probe_one <gate-id> → 0=闸门活着（RED）· 2=腐化/拓扑
     echo "             结论: ${out}" >&2
     rec "$id" block "ineffective fixture: identical conclusion before/after injection"; return 2
   fi
-  echo "  注入后: RED — 检出: ${out}"
+  echo "  [${id}] 注入后: RED — 检出: ${out}"
   # 反例：内容不变的改动【必须不】触发判据。
   # 只有正例时，一个读时钟的判据照样能红（inject 追加字节同时改了内容与 mtime）⇒ 退化无人发现。
   cf="$FIX_DIR/$id/counter.sh"
@@ -191,7 +191,7 @@ probe_one(){ # probe_one <gate-id> → 0=闸门活着（RED）· 2=腐化/拓扑
     echo "          判据在'变了'与'没变'两个世界给出不同结论 ⇒ 按 Ω 是装饰品" >&2
     rec "$id" block "false-positive: conclusion changed on a content-preserving edit"; return 2
   fi
-  echo "  反例守住 — 内容未变时不红 ✅"
+  echo "  [${id}] 反例守住 — 内容未变时不红 ✅"
   rec "$id" pass "probe: ${out}; counter: not tripped"; return 0
 }
 

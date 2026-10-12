@@ -1,6 +1,7 @@
 7c79730413bf226add3608edfe5d39f07c2ef3161c065534a150ba225d752b06  ADR-20261009-DEPRECATE-must-exist.md
-efc5b591dd48365da3ccf22c72c64245efa6172045cc194f96d12d3e8b3808df  ADR-20261009-DNA-is-immutable.md
-ce3c589f737d34ef3f5f4235a5c9f0b2c1b3e0aa35e760b34786d71920fed7ff  ADR-20261009-GROWTH-max-3-entries.md
+599d69330128af83e76c53ae46aed1ec365732cb867300309dc5423a1df6008f  ADR-20261009-DNA-is-immutable.md
+# rebaseline ADR-20261009-DNA-is-immutable.md 理由: 具名不可 probe（结构原因）
+6082c45abdc07105208a41f76f3fc52d4634dcc0cfe6ac508713972f78e8a4bf  ADR-20261009-GROWTH-max-3-entries.md
 b1694a130fda5b1abdf0e2b514eddb221e0243e8ec7c16ebdd799d28956088ba  ADR-20261009-PLAN-must-exist.md
 a40e67f17e5d556553458fb9f5e4fc2346cea765977cf207ae4b1a7202578782  ADR-20261009-PLAN-must-stay-under-150-lines.md
 5d8300acd49afa5306cbdb719feb32879f15b741bd69701dc1259605fc5ed6c7  ADR-20261009-README-must-carry-the-one-command.md
@@ -29,6 +30,5 @@ bbd12d8b7b22bbf4c91cbc339571a08cf0b48972ffbc58f7c40a54e69e17a626  ADR-20261011-l
 94f27a7ce634d2d8e16a01b74913c20e7f735e02aeeac0542be45bcaad470670  ADR-20261011-replay-per-revisit-period.md
 bd5748b5962269e14cf187b5aa8a266b580731caa7961f5071c4772edee009bd  ADR-20261011-supersede-must-be-paired.md
 16aa011167f43f56b6d646f2f50cad254b7eb75d6c6cf49b5e763d8b514107b6  ADR-20261012-ledger-new-lines-parseable-and-referenced.md
-# rebaseline ADR-20261012-ledger-new-lines-parseable-and-referenced.md 理由: 0‴″b：证据值规范化为裸 path:line
 e69afe4c22b78925b52743b3ec3c5d0ea08ec70c334e97fa03d0ebe684efc964  ADR-20261012-pool-consistency-must-be-checked.md
 0bceae24296fe1a66a83e4d4bd974eea5c46f4b028a0acb0e5f91938fb48855a  ADR-20261013-probe-scope-must-be-tagged.md

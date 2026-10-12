@@ -6,6 +6,8 @@ hard: true
 applies-to: ["tools/check-baseline.sh"]
 effective-from: 2026-10-09
 timing: pre
+probe: none
+probe-why: "判据问的是【工具的真实 scope 输出】（bash tools/check-baseline.sh --scope）⇒ 探针把 $F 复制到临时目录，改副本它看不见 ⇒ 结构上跨不过阈值。回归判据 = 直接在仓里跑该工具。"
 redtest: "validate --probe ADR-20261009-DNA-is-immutable"
 revisit-on: 2027-04-09
 expires-on: null
