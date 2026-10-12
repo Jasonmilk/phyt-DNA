@@ -226,3 +226,5 @@ awk '/^check: \|/{f=1;next} f&&/^[a-z-]+:/{f=0} f{print}' decisions/ADR-*.md   #
 夹具的注入点在 `名目重抄` 行，但它改的那处被判据的 `norm()`（去空格/尾 `·`）**归一化掉了** ⇒ 判据看不见。
 ★ 而 `ci-local` 的**心跳仍报 OK**（33 门）—— **两者不一致**，这本身值得记（心跳的"腐化"判定与单门 probe 不同径）。
 恢复点：`bash tools/validate.sh --probe ADR-20261011-recopy-must-equal-the-gene-set`（须恢复 基线绿·注入红·反例守住）
+
+```
