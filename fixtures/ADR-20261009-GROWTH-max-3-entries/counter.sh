@@ -1,12 +1,6 @@
 #!/usr/bin/env bash
-# counter.sh — THE NEGATIVE FIXTURE: a CONTENT-PRESERVING change must not change the verdict.
-#
-# `inject.sh` proves "the bad thing goes red". It cannot prove "the good thing stays green":
-# inject.sh writes bytes, which changes content AND mtime, so a criterion that reads a clock would
-# still go red and its regression would go unnoticed. This fixture changes ONLY the mtime.
-# The criterion compared is "did the conclusion CHANGE", not "is it red" — this gate may already be
-# red for its own reasons (e.g. PLAN.md is over its own 150-line cap).
+# 反例（与判据同形）：**内容改动但不加年轮条目** ⇒ 结论必须不变。
+# 只测"内容不变"是不够的：判据对"条数"敏感，反例就必须证明"改内容不改条数 ⇒ 不红"。
 set -eu
 : "${F:?fixture needs $F (the file under test)}"
-cp "$F" /tmp/_counter_backup 2>/dev/null || true
-if touch -t 202001010000 "$F" 2>/dev/null; then :; else touch "$F"; fi
+printf '\n<!-- counter: 一次内容改动，不新增年轮条目 -->\n' >> "$F"

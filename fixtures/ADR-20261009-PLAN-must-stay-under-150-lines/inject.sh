@@ -1,3 +1,5 @@
 #!/usr/bin/env bash
-# 注入：PLAN 追加 151 行，越过 150 阈值
-printf 'x\n%.0s' $(seq 1 151) >> "$F"
+# 正例：往 PLAN 里塞一条"已完成" ⇒ 必须变红（计划只放未完成）
+set -eu
+: "${F:?fixture needs $F (the file under test)}"
+printf '\n| **X9** | 夹具注入的已完成条目 | ✅ 完成 |\n' >> "$F"

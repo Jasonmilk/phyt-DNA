@@ -14,8 +14,18 @@ origin: "README 硬约束：年轮只保留最近 3 条（GROWTH 头注，v2.1 �
 risk: normal
 check: |
   [ -f "$F" ] || { echo "输入失效: $F 不存在（静默失败=伪证）"; }
+  # ★ H#1（2026-10-12 折进本门，不生面）：条数 > 3 时，**溢出必须真的归档**。
+  #   原判据只数条数 ⇒ "说了要归档"与"归档了"在它眼里一样 —— 那是【纸面纪律】。载体 `archive/growth/` 已在位 ⇒ 判据可落。
+  skip(){ echo "具名跳过: $1（不判 —— 没有真值源就没有判据）" >&2; exit 4; }
+  ROOT=$(git rev-parse --show-toplevel) || skip "非 git 工作区，归档载体不可定位"
   n=$(grep -c '^## 年轮 ·' "$F")
-  [ "$n" -gt 3 ] && echo "GROWTH 年轮条目 $n > 3（只保留最近 3 条，更早移入 archive/）"
+  if [ "$n" -gt 3 ]; then
+    a=$(ls -1 "$ROOT/archive/growth" | grep -v '^\.gitkeep$' | grep -c .)
+    need=$((n - 3))
+    if [ "$a" -lt "$need" ]; then
+      echo "GROWTH 年轮 ${n} 条 > 3，而 archive/growth/ 只有 ${a} 条 ⇒ 溢出 ${need} 条必须真归档（纸面纪律 → 机器纪律）"
+    fi
+  fi
 last-hit: null
 hit-count: 0
 supersedes: null

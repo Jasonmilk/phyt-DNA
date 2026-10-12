@@ -29,4 +29,17 @@ PY
 )
 if [ -z "$files" ]; then echo "OK: 目录 $DIR 下没有 ADR（无可扫）"; exit 0; fi
 out=$(PHYT_DECISIONS="$BASE" PHYT_QUIET=1 bash "$ROOT/tools/validate.sh" --timing post 2>&1 <<< "$payload"); rc=$?
+# ★ H#3（2026-10-12 · 生长轴结构判据）：**退休要可见于一处** —— 每个 status: deprecated 的 ADR
+#   必须在 archive/deprecated/ 留【指针记录】。这是【池形状】判据（对象是整个池，不是某一个文件）
+#   ⇒ 按已立纪律住进池扫描（红侧用隔离目录证明，不进"unproven"）。
+miss=""
+for f in "$BASE"/ADR-*.md; do
+  grep -q '^status: deprecated' "$f" || continue
+  id=$(basename "$f" .md)
+  [ -e "archive/deprecated/$id.md" ] || miss="$miss $id"
+done
+if [ -n "$miss" ]; then
+  echo "★ RED: 已废弃 ADR 未在 archive/deprecated/ 留指针记录:$miss" >&2
+  exit 2
+fi
 echo "OK: 全池 $n 份 ADR + 受管文档${extra:-（无）}（目录 ${DIR}）一致 —— 扫描面 = **全部 timing:post 闸门**（不止 pair # 见各 ADR 的 applies-to）"
