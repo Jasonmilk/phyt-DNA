@@ -23,11 +23,17 @@ check: |
     [ "$b" = "INDEX.md" ] && continue
     grep -q "$b" "$F" || miss="$miss $b"
   done
+  skip(){ echo "具名跳过: $1（不判 —— 没有真值源就没有判据）" >&2; exit 4; }
+  # ★ 0a 顺手治根因（2026-10-12）：本门 check **一直没有 ROOT 定义** ⇒ 根目录循环的 `[ -e "$ROOT/$d" ] || continue`
+  #   静默跳过一切（判据"跑得到却什么都没判"）。**不报错的判据 ≠ 在工作。**
+  ROOT=$(git rev-parse --show-toplevel) || skip "非 git 工作区，受管文档不可定位"
   [ -n "$miss" ] && echo "未被 INDEX 收录的知识文档:${miss} ⇒ 补进 docs/INDEX.md（按【问题】写一行）"  # ★ 0b（2026-10-12 园丁裁定 · 净 0 · 只扩作用域）：索引门原先只管 `docs/*.md` ⇒ **根目录受管文档无人读**
   #   （实测：`position.md` 落盘后没有任何入口指向它）。扩到根目录受管文档 ⇒ "存在但没人读"变成红。
   for d in README.zh-CN.md VISION.md DNA.md SPEC.md RNA.md PLAN.md GROWTH.md DEPRECATE.md position.md; do
     [ -e "$ROOT/$d" ] || continue
     grep -q "$d" "$ROOT/docs/INDEX.md" || echo "根目录受管文档 ${d} 未被 docs/INDEX.md 收录（存在但没人读 = 等于没有）"
+    # ★ 0a（净 0）：**第二跳** —— 索引入了还不够，**前门 README.md 必须指向它**（有分类，还得有门牌）。
+    grep -q "$d" "$ROOT/README.md" || echo "根目录受管文档 ${d} 在 docs/INDEX.md 里，但 README.md 没指向它（第二跳断）"
   done
 
 last-hit: null

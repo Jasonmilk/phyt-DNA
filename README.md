@@ -435,3 +435,20 @@ Evolution goes by **diff, not rewrite** — and the debt column hides nothing.
 - Docs by question: [`docs/INDEX.md`](docs/INDEX.md) · gates: [`decisions/INDEX.md`](decisions/INDEX.md)
 - The full protection spec: [`docs/PROTECTION.md`](docs/PROTECTION.md)
 - Cross-repo register: `helix-mind/docs/helixECO/KNOWN_ISSUES.md` · ecosystem entry point: `helix-mind/docs/helixECO/HANDOFF.md`
+
+## Governed documents at the root
+
+The root of this repo **is** the template an adopter copies. These files are **governed**: a gate checks they exist,
+are listed in [`docs/INDEX.md`](docs/INDEX.md), and are **reachable from this README** (the second hop).
+
+| The question you are asking | Read this |
+|---|---|
+| Where do I start, in Chinese? | [`README.zh-CN.md`](README.zh-CN.md) |
+| Where is this going, and what is out of bounds? | [`VISION.md`](VISION.md) |
+| Which genes may never be deleted? | [`DNA.md`](DNA.md) |
+| What does the spec look like? | [`SPEC.md`](SPEC.md) |
+| What is the working protocol? | [`RNA.md`](RNA.md) |
+| What stage are we at, and what is left? | [`PLAN.md`](PLAN.md) |
+| How did it grow? | [`GROWTH.md`](GROWTH.md) |
+| How does something die here? | [`DEPRECATE.md`](DEPRECATE.md) |
+| Where is this repo, and what does it *not* do? | [`position.md`](position.md) |

@@ -13,13 +13,13 @@
 | **"一条闸门怎么会变成恒红装饰品（V=0）？"** —— 真实案例：`check` 只断言文件名 ⇒ 恒真 ⇒ 恒红；以及怎么诊断 | `docs/DNA-GATE-DIAGNOSIS.md` |
 | **"账本怎么会读不出来？按行读为什么会读错？"** —— 实测 334 行 / 1069 条记录 ⇒ 不是 JSONL；以及"声明代替检查"长在闸门自己身上（只查编码、不查解析） | `docs/FINDING-2026-10-09-ledger-is-not-jsonl.md` |
 
-## 根目录受管文档（索引门 0b 要求：存在就必须有人读）
+## 根目录受管文档（按问题取用 · 索引门要求"存在就必须有人读"）
 
-- [`README.zh-CN.md`](../README.zh-CN.md) — 根目录受管文档
-- [`VISION.md`](../VISION.md) — 根目录受管文档
-- [`DNA.md`](../DNA.md) — 根目录受管文档
-- [`SPEC.md`](../SPEC.md) — 根目录受管文档
-- [`PLAN.md`](../PLAN.md) — 根目录受管文档
-- [`GROWTH.md`](../GROWTH.md) — 根目录受管文档
-- [`DEPRECATE.md`](../DEPRECATE.md) — 根目录受管文档
-- [`position.md`](../position.md) — 根目录受管文档
+- [`README.zh-CN.md`](../README.zh-CN.md) — **中文读者从哪里开始读**
+- [`VISION.md`](../VISION.md) — **这个生态要往哪走、边界在哪**
+- [`DNA.md`](../DNA.md) — **不可删的基因是哪十条**
+- [`SPEC.md`](../SPEC.md) — **规范长什么样（采用者照抄什么）**
+- [`PLAN.md`](../PLAN.md) — **现在阶段是什么、还剩哪些未完成**
+- [`GROWTH.md`](../GROWTH.md) — **它怎么长大的（年轮）**
+- [`DEPRECATE.md`](../DEPRECATE.md) — **一个东西怎么死（三种终点）**
+- [`position.md`](../position.md) — **本仓在哪里、不做什么**

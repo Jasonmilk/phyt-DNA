@@ -2,15 +2,15 @@
 efc5b591dd48365da3ccf22c72c64245efa6172045cc194f96d12d3e8b3808df  ADR-20261009-DNA-is-immutable.md
 ce3c589f737d34ef3f5f4235a5c9f0b2c1b3e0aa35e760b34786d71920fed7ff  ADR-20261009-GROWTH-max-3-entries.md
 b1694a130fda5b1abdf0e2b514eddb221e0243e8ec7c16ebdd799d28956088ba  ADR-20261009-PLAN-must-exist.md
-9e89e6db332f9ba308153a87ce9d06f1c06aa5f1afa5e41b4bdcb2a730e663cd  ADR-20261009-PLAN-must-stay-under-150-lines.md
-# rebaseline ADR-20261009-PLAN-must-stay-under-150-lines.md 理由: 跨文件核对补 ROOT（此前静默退化）
+c3f15f97b056c1a1bd815756a461d98a6a2e2b0bf33153cecabc5a55c27c9fd7  ADR-20261009-PLAN-must-stay-under-150-lines.md
+# rebaseline ADR-20261009-PLAN-must-stay-under-150-lines.md 理由: 0a/3：第二跳+ROOT 补全 · 归档条目数比对
 5d8300acd49afa5306cbdb719feb32879f15b741bd69701dc1259605fc5ed6c7  ADR-20261009-README-must-carry-the-one-command.md
 3aa73190cbc62efade71d33635aae6bad058dc4b37437cc588943ac9c49a3924  ADR-20261009-VISION-must-exist-and-be-a-seed.md
 8937b9019cb86f01fe7921a048679e0950f3446b05b596811cecb854fdbb3aee  ADR-20261009-appeals-must-be-parseable.md
 9f7e437a307ffd12d6a437684fdb962e9d973451f1874a6bbbce3be864d5de89  ADR-20261009-claim-needs-redtest.md
 337405710b208bb206f94e4ed5afe60bb0f6ba240c1ef5aa2413a59e34f792f5  ADR-20261009-cull-after-20-misses.md
 51f361101a27fb7903cfd6f69b2832ba2552a2bb97f2a84669d58d896cb064b7  ADR-20261009-dangerous-action-shapes-must-be-blocked.md
-6292e9b7c1857e5e5d80aa2bea3e3bb749e031d952767a3fe7516e9ea80f568d  ADR-20261009-docs-must-be-indexed.md
+d3ce1736f153869ca20be19de6e80e987f15a7681ffd2de1e53681774a6e3bf5  ADR-20261009-docs-must-be-indexed.md
 f112e0b3e39a2bb271d84169c2df6c07566a0063ae06313aaf33d8c499866255  ADR-20261009-index-must-be-regenerated.md
 c0f8776c05330751daf785983d808d3890453e91c68ea47df5820aff983f1023  ADR-20261009-layer1-total-under-280-lines.md
 e2b7dc3e564a7c495902fbdd10e1f508814c690cb752d905457874c008457782  ADR-20261009-ledger-must-be-valid-utf8.md

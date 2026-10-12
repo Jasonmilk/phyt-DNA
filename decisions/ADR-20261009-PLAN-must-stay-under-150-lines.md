@@ -24,6 +24,11 @@ check: |
   n_arch=$(ls "$ROOT"/archive/deprecated/PLAN-done-*.md | grep -c .)
   if [ "$n_arch" -gt 0 ]; then
     grep -q 'archive/deprecated/PLAN-done-' "$F" || echo "有归档 ${n_arch} 份，但 $F 里没有指向它的指针（移出必须留指针：移出 ≠ 删除）"
+    said=$(grep -oE '移出 [0-9]+ 条' "$F" | head -1 | grep -oE '[0-9]+')
+    if [ -n "$said" ]; then
+      rows=$(grep -c '^|' "$(ls "$ROOT"/archive/deprecated/PLAN-done-*.md | head -1)")
+      [ "$rows" -ge "$said" ] || echo "归档档条目数 ${rows} < 声明移出的 ${said} 条 ⇒ 移出没落全（移出 ≠ 删除，但也 ≠ 丢）"
+    fi
   fi
 
 last-hit: null

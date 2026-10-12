@@ -3,14 +3,14 @@
 30a24ff6b6de661fdf95e70e28aea5c5c09c1ab758a6dceeb731cb41da0cc5bb  decisions/ADR-20261009-DNA-is-immutable.md
 15631d5208c32d952bdb63f68d864552ac8bea03daa87ca419e2230a9bdbc250  decisions/ADR-20261009-GROWTH-max-3-entries.md
 cc96db7f01fc5adddf739210b99798c9a33cc341307164c545e79220cff3f78c  decisions/ADR-20261009-PLAN-must-exist.md
-0a9bdb087de553a26d764ac8514980a1e162a1bc4c7b935719050dd3ff12a9d0  decisions/ADR-20261009-PLAN-must-stay-under-150-lines.md
+84a9e7c267832e21c6bfc975229eb54dcbcff490cc0fa25de9419bb04685ada9  decisions/ADR-20261009-PLAN-must-stay-under-150-lines.md
 9fde0507b8745b5807f7b71764240248b8d0afa627b222e9531d2fc7d41b5ce4  decisions/ADR-20261009-README-must-carry-the-one-command.md
 2b0cdae7ca41c80491d1bb8a8ddf39632032d0868eec961e2bdf077ba42e4e93  decisions/ADR-20261009-VISION-must-exist-and-be-a-seed.md
 4f63c089b6d4906485f1f1efe2faaa6da88874c6f307160f7a5740ec5988c350  decisions/ADR-20261009-appeals-must-be-parseable.md
 31436b07e3f41c3d7ebe30174ef94f988a8d568b1c605ef3010e85df6e9e04c2  decisions/ADR-20261009-claim-needs-redtest.md
 2aa2843fe7062f605a1b6d0212bd9eb9fc771943eb6da011173c1efd0f1f946c  decisions/ADR-20261009-cull-after-20-misses.md
 884a3850621e2f3ba0eef8c74e2b875f9fcf3092290a5f177b6bfe50a420ffec  decisions/ADR-20261009-dangerous-action-shapes-must-be-blocked.md
-1d1bc025dc6353df28615dab66b234b06640a3438a0dff9f65c915b0385cd564  decisions/ADR-20261009-docs-must-be-indexed.md
+ee6d5399bc3201dc7ca4c25b986d278aa1735e850f5efe5a5490dcc7c7dc6f7c  decisions/ADR-20261009-docs-must-be-indexed.md
 b010774f1301c63c24778d33ec9a59f9f0a3ffab37e1c3e947612bcb4d67c4d8  decisions/ADR-20261009-index-must-be-regenerated.md
 cd064ea0f72a80e2b99e0c451548e2c17598b716d85973dcf5353f1f246c35c8  decisions/ADR-20261009-layer1-total-under-280-lines.md
 444b0a9b5c79cb5aa3d9b20944f036c4200c16581f68e4cb2b2bf887c8839229  decisions/ADR-20261009-ledger-must-be-valid-utf8.md

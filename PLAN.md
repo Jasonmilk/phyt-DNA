@@ -24,7 +24,7 @@
 
 | 波 | 内容 | 状态 |
 |---|---|---|
-> **已完成的历史条目已按生长轴移出**（W0 与 G1–G4）⇒ `archive/deprecated/PLAN-done-2026-10-12.md`。**计划只放未完成**（判据在 `ADR-…-PLAN-must-stay-under-150-lines` 的正文范围里）。
+> **已完成的历史条目已按生长轴移出**（W0 与 G1–G4 · 移出 5 条）⇒ `archive/deprecated/PLAN-done-2026-10-12.md`。**计划只放未完成**（判据在 `ADR-…-PLAN-must-stay-under-150-lines` 的正文范围里）。
 | **W1** | adopt 到真实项目，挂上 decisions/ledger/tools | ⏳ **当前** |
 | W2 | 注入接入（UserPromptSubmit + additionalContext） | 待办 |
 | W3 | 任务系统（task-gen / claim / verify / board-gen） | 待办 |
