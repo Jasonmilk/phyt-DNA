@@ -27,7 +27,14 @@ exit 0
 staged=$(git diff --cached --name-only 2>/dev/null | grep -E '^(decisions/|tools/|DNA\.md)' || true)
 [ -z "$staged" ] && exit 0
 changed=0
-if ! bash tools/validate.sh --index > /tmp/.idx.$$ 2>/dev/null; then rm -f /tmp/.idx.$$; exit 0; fi
+idx_out=$(bash tools/validate.sh --index 2>&1); idx_rc=$?
+if [ "$idx_rc" != 0 ]; then echo "⛔ INDEX 重生失败 ⇒ 拒绝提交: $(printf '%s' "$idx_out" | tail -1)" >&2; exit 1; fi
+printf '%s' "$idx_out" > /tmp/.idx.$$
+# ★ 3b（2026-10-12 同族）：**引擎清单**也必须同批重生 —— 我实测"清单陈旧"照样被推了出去（ci-local step 0 红）。
+#   与 INDEX 一样：重生 + git add ⇒ 从"记得做"变成"不可能忘"；重生失败即阻断。
+um_out=$(bash tools/upstream-manifest.sh --write 2>&1); um_rc=$?
+if [ "$um_rc" != 0 ]; then echo "⛔ 引擎清单重生失败 ⇒ 拒绝提交: $(printf '%s' "$um_out" | tail -1)" >&2; exit 1; fi
+git add tools/upstream-manifest.sha256 2>/dev/null || git add -A $(printf '%s' "$um_out" | grep -oE 'tools/[A-Za-z0-9_.-]+' | head -1) 2>/dev/null || true
 if ! cmp -s /tmp/.idx.$$ decisions/INDEX.md 2>/dev/null; then mv /tmp/.idx.$$ decisions/INDEX.md; git add decisions/INDEX.md; changed=1; else rm -f /tmp/.idx.$$; fi
 # ★ 3（2026-10-12 园丁裁定）：**同批重记基线，且不许静默失败** ——
 #   原先这行是 `>/dev/null 2>&1` ⇒ 重记失败被吞掉 ⇒ "基线没更新"可以悄悄进提交（**实测我推过一笔红**）。
