@@ -223,6 +223,14 @@ PYDC
 then grn "钩子里没有 exit 之后的死代码（深度感知）"; else red "钩子里的 exit 之后仍有可执行行（死代码 ⇒ 你以为它在工作）"; fi
 grn "死代码断言：hooks/（**局限具名**：tools/*.sh 未覆盖 —— 它们内有 heredoc 嵌 python/awk，逐行深度追踪必然漂移；真覆盖需解析器）"
 
+# ★ 2026-10-13（实测机制）：**判据体不得有顶格行** —— 正文提取的 awk 以"非空格开头"为结束条件
+#   ⇒ 一行顶格 ⇒ 引擎**只看到它前面的部分**（实测：全文 40 行，引擎只跑前 10 行 ⇒ 判据静默）。
+chk=""; for f in decisions/ADR-*.md; do
+  grep -q '^check: |' "$f" || continue
+  awk '/^check: \|/{f=1;next} f&&/^[^ ]/{f=0} f&&NF{print}' "$f" | grep -q '^[^ ]' && chk="$chk $(basename "$f")"
+done
+if [ -n "$chk" ]; then red "判据体里有顶格行（引擎只看到它之前的部分）:$chk"; else grn "判据体没有顶格行（正文提取完整）"; fi
+
 [ "$fail" = 0 ] && { echo "spec-lint: PASS"; exit 0; }
 echo "spec-lint: BLOCK（规范自身未过闸门）" >&2
 exit 2

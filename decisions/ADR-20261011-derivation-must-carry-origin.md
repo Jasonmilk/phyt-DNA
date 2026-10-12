@@ -13,42 +13,39 @@ owner: "@jason"
 origin: "DNA「派生律的住址」六律之一「派生必带 origin」—— 取证时发现它是六律中【唯一无人守】的一条；而实测 hard:true 18/18 全有 origin ⇒ 可零红上线（立号，见本 ADR）"
 risk: normal
 check: |
-  ROOT=$(git rev-parse --show-toplevel) || { echo "输入失效: 不在 git 工作区（出生日/证据提交不可量）"; exit 4; }
+  [ -f "$F" ] || { echo "输入失效: $F 不存在（静默失败=伪证）"; }
+  ROOT=$(git rev-parse --show-toplevel) || { echo "输入失效: 不在 git 工作区（出生日/证据不可量）"; exit 4; }
   grep -q '^hard: true$' "$F" || exit 0
-  # ★ 0′（2026-10-13）：三要素必须【不可自证】—— 锚定 ^origin: · 提交≠出生提交 · 事件须真 · 证据行须有行号/event_id
-  o=$(grep -m1 '^origin:' "$F" | sed 's/^origin: *//')          # ★ 锚定到 ^origin:（禁全文裸匹配）
+  o=$(grep -m1 '^origin:' "$F" | sed 's/^origin: *//')          # ★ 锚定 ^origin:（禁全文裸匹配）
   case "$o" in ""|'""'|null) echo "派生缺 origin（$(basename "$F")）—— 没有出处的闸门无法追溯" ;; esac
   SELF="$ROOT/decisions/ADR-20261011-derivation-must-carry-origin.md"
-  [ -f "$SELF" ] || { echo "输入失效: 本门自身不在（SELF 缺失）⇒ 生效日不可读"; exit 4; }   # ★ SELF 缺失 ⇒ exit 4（不静默跳过）
+  [ -f "$SELF" ] || { echo "输入失效: 本门自身不在（SELF 缺失）⇒ 生效日不可读"; exit 4; }
   EFF=$(grep -m1 '^effective-from:' "$SELF" | sed 's/^effective-from: *//')
   BIRTH=$(cd "$ROOT" && git log --diff-filter=A -1 --format=%cs -- "$F")
   BSHA=$(cd "$ROOT" && git log --diff-filter=A -1 --format=%h -- "$F")
-  if [ -n "$BIRTH" ] && [ -n "$EFF" ] && [ "$BIRTH" \> "$EFF" ]; then
-    for k in '事件=' '证据行=' '提交='; do
-      printf '%s' "$o" | grep -q -- "$k" || echo "④ origin 缺三要素（${k}）（$(basename "$F")）—— 形如 事件=… · 证据行=… · 提交=…"
-    done
-    c=$(printf '%s' "$o" | sed -n 's/.*提交=\([0-9a-f]\{7,\}\).*/\1/p')
-    #   稳健性（同轮补）：引用【全长 40 位 sha】时，取前 7 位与出生 sha 比（7 vs 40 的错位会造成漏判）。
+  #   只审【生效后出生】的门：出生 ≤ 生效日 ⇒ 老门（历史遗产）不追。★ 我第一版把比较写反了（实测三条全静默）
+  if [ -z "$BIRTH" ] || [ -z "$EFF" ] || [ ! "$BIRTH" \> "$EFF" ]; then exit 0; fi
+  # 三要素（事件=/证据行=/提交=）· 不可自证（0′）· 证据须外证（0″）· 锚点=文件:行号（0‴′）
+  for k in '事件=' '证据行=' '提交='; do
+    printf '%s' "$o" | grep -q -- "$k" || echo "④ origin 缺三要素（${k}）（$(basename "$F")）—— 形如 事件=… · 证据行=file:line · 提交=…"
+  done
+  c=$(printf '%s' "$o" | sed -n 's/.*提交=\([0-9a-f]\{7,\}\).*/\1/p')
   case "$BSHA" in "$c"*|"${c:0:7}"*) [ -n "$c" ] && echo "④ origin 自证（提交=${c} 就是本 ADR 的出生提交）⇒ 那不是证据，是自己证明自己" ;; esac
-    if printf '%s' "$o" | grep -qE '事件=[^·]*(立本门|本轮|我觉得|我认为)'; then
+  if printf '%s' "$o" | grep -qE '事件=[^·]*(立本门|本轮|我觉得|我认为)'; then
     echo "④ origin 的 事件= 是自造事件（立本门/本轮/我觉得不算）⇒ 须指 task / 真实事故 / 采用 / 园丁裁定"
   fi
-    if ! printf '%s' "$o" | grep -qE '证据行=[^·]*(第 ?[0-9]+ ?行|event_id=|task-)'; then
-    echo "④ origin 的 证据行= 没有【行号或 event_id】（只给文件名不算证据）"
-  fi
-  # ★ 0″（2026-10-13 插队）：**证据行不得指向 probe（自签）** —— probe 是本仓【自己跑的】记录，
-  #   用它当"出处"= 自己证明自己（与 0′ 的"提交=出生提交"同族）。**按行号取 kind**，probe ⇒ 具名红。
-  ln=$(printf '%s' "$o" | sed -n 's/.*证据行=[^0-9]*\([0-9]\{1,\}\).*/\1/p')
-  if [ -n "$ln" ]; then
-    #   ★ 0‴：账本路径**不写死年份**（H0）⇒ 由 LED 目录 glob 派生；取不到 ⇒ exit 4
-    LEDF=$(ls "$ROOT"/ledger/hits-*.jsonl | tail -1)
-    [ -n "$LEDF" ] || { echo "输入失效: ledger/ 下没有 hits-*.jsonl（账本不可定位）"; exit 4; }
-    kk=$(sed -n "${ln}p" "$LEDF" | sed -n 's/.*"kind": *"\([a-z]*\)".*/\1/p')
+  ref=$(printf '%s' "$o" | sed -n 's/.*证据行=\([^ ·（）]*\)[:：]\([0-9]\{1,\}\).*/\1|\2/p')
+  lf=${ref%%|*}; ln=${ref##*|}
+  if [ -z "$lf" ] || [ -z "$ln" ]; then
+    echo "④ origin 的 证据行= 必须是【文件:行号】（如 ledger/hits-2026.jsonl:1018）—— 只给文件名或散文不算证据"
+  elif [ ! -f "$ROOT/$lf" ]; then
+    echo "④ 证据行=${lf} 指向的文件不存在 ⇒ 那不是证据"
+  else
+    kk=$(sed -n "${ln}p" "$ROOT/$lf" | sed -n 's/.*"kind": *"\([a-z]*\)".*/\1/p')
     case "$kk" in
-      "")   echo "④ 证据行=${ln} 在账本里【不存在或不可解析】⇒ 那不是证据" ;;
-      probe) echo "④ 证据行=${ln} 指向的是 **probe 记录（自签）** ⇒ 自证不算证据；须 task / 真实事故 / 采用 / 裁定" ;;
+      "")   echo "④ 证据行=${lf}:${ln} 在账本里【不存在或不可解析】⇒ 那不是证据" ;;
+      probe) echo "④ 证据行=${lf}:${ln} 指向的是 **probe 记录（自签）** ⇒ 自证不算证据；须 task / 真实事故 / 采用 / 裁定" ;;
     esac
-  fi
   fi
 last-hit: null
 hit-count: 0

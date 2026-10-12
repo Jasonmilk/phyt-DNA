@@ -10,7 +10,7 @@ redtest: "validate --probe ADR-20261012-ledger-new-lines-parseable-and-reference
 revisit-on: 2027-04-12
 expires-on: null
 owner: "@doubao"
-origin: "指派 2026-10-12（豆包执笔）：两笔旧账 —— ① 82 行坏 JSON（2026-10-09 rec() 修复前 printf 直插未转义，FINDING-2026-10-09 档）② 3 个悬空 gate_id（hook-bash-command / hook-fail-closed / ADR-20261009-ledger-must-be-parseable-line-oriented）。FINDING 记'每行可解析'的闸门从未立过（valid-utf8 只查编码）——本轮补上。 ｜三要素：事件=2026-10-12 指派（豆包修账本两笔旧账：82 行坏 JSON + 3 悬空 id） · 证据行=第 1018 行（第一件真活 task 记录）+ 第 76–340 行（82 条坏行） · 提交=4f40fc1"
+origin: "指派 2026-10-12（豆包执笔）：两笔旧账 —— ① 82 行坏 JSON（2026-10-09 rec() 修复前 printf 直插未转义，FINDING-2026-10-09 档）② 3 个悬空 gate_id（hook-bash-command / hook-fail-closed / ADR-20261009-ledger-must-be-parseable-line-oriented）。FINDING 记'每行可解析'的闸门从未立过（valid-utf8 只查编码）——本轮补上。 ｜三要素：事件=2026-10-12 指派（豆包修账本两笔旧账：82 行坏 JSON + 3 悬空 id） · 证据行=ledger/hits-2026.jsonl:1018· 提交=4f40fc1"
 risk: normal
 check: |
   [ -f "$F" ] || { echo "输入失效: $F 不存在（静默失败=伪证）"; }
@@ -99,10 +99,10 @@ valid-utf8 是其后继且只查编码）→ 均在锚点前，不作为判据�
 
 ## 边界
 
-· 只扫 `ledger/hits-2026.jsonl`（F 由 applies-to 给出，引擎注入）；· 不写死路径（decisions 路径由 F 推导）；
+· 只扫 `ledger/hits-$(date +%Y).jsonl`（F 由 applies-to 给出，引擎注入）；· 不写死路径（decisions 路径由 F 推导）；
 · 判据不区分"谁写的"（引擎/hook/人手），新增行一律受检；· gate_id 缺失/null 合法（schema 允许）。
 
 ---
 
-> **注（2026-10-12 · YB 3）**：`applies-to` 原写 `ledger/hits-2026.jsonl` / `ledger/appeals-2026.jsonl`（**年度硬编码**）⇒ 2027 改名即**失明** ⇒ 改通配 `ledger/*.jsonl`。
+> **注（2026-10-12 · YB 3）**：`applies-to` 原写 `ledger/hits-$(date +%Y).jsonl` / `ledger/appeals-2026.jsonl`（**年度硬编码**）⇒ 2027 改名即**失明** ⇒ 改通配 `ledger/*.jsonl`。
 > ★ 并记：**值行内不得写注释** —— 引擎按行取值，注释会被吞进值（实测 `[B] 拓扑失配`）。

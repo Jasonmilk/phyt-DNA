@@ -36,7 +36,7 @@ case "${1:-}" in
   --probe) mode=probe; target="$2";;
   --timing) only_timing="$2";;
   --override) printf '{"ts":"%s","gate_id":"%s","verdict":"block","override":true,"source":"cli","event_id":"manual","note":"%s"}\n' "$(TZ=CST-8 date +%Y-%m-%dT%H:%M:%S%z)" "$2" "${4:-无理由}" >> "$LED_DIR"/hits-$(date +%Y).jsonl; echo "override 已留痕"; exit 0;;
-  --appeal) printf '{"ts":"%s","gate_id":"%s","verdict":"appeal","override":false,"source":"user-appeal","event_id":"manual","note":"%s"}\n' "$(TZ=CST-8 date +%Y-%m-%dT%H:%M:%S%z)" "$2" "${4:-无理由}" >> "$LED_DIR"/appeals-2026.jsonl; echo "申诉已独立留痕"; exit 0;;
+  --appeal) printf '{"ts":"%s","gate_id":"%s","verdict":"appeal","override":false,"source":"user-appeal","event_id":"manual","note":"%s"}\n' "$(TZ=CST-8 date +%Y-%m-%dT%H:%M:%S%z)" "$2" "${4:-无理由}" >> "$LED_DIR"/appeals-$(date +%Y).jsonl; echo "申诉已独立留痕"; exit 0;;
   --cull) mode=cull;;
 esac
 

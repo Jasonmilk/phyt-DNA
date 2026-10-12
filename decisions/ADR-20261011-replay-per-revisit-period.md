@@ -13,7 +13,7 @@ owner: "@jason"
 origin: "园丁 2026-10-11 拍板（选 A 带牙 + 普查）：判据改为【按期重放】；窗口概念废除；不变式类闸门可豁免；普查入覆盖、时钟今日起算"
 risk: normal
 check: |
-  LED="${PHYT_LEDGER:-ledger}/hits-2026.jsonl"; TODAY=$(date +%F)
+  LED="${PHYT_LEDGER:-ledger}/hits-$(date +%Y).jsonl"; TODAY=$(date +%F)
   # ★ 判据（取代旧「窗口覆盖」）：**每个活跃硬闸门，必须在自己的 `revisit-on` 之前被重放至少一次**。
   #   未到期且未重放 ⇒ 仅【看板读数】（进度，不是违规）；**已过期仍未重放 ⇒ 具名硬红**。
   #   豁免：`replay-exempt: true` 的不变式类闸门（活性由 CI run 证明，重放不合身）。
