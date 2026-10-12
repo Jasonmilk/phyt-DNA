@@ -220,7 +220,7 @@ for f in sorted(glob.glob('tools/hooks/*')):
         if low.startswith(('if ','for ','while ','case ')) or low=='{' or low.endswith('(){') or '() {' in low: depth+=1   # ★ 函数定义也是'开'（实测漏它=三条假阳）
 raise SystemExit(0 if not bad else 1)
 PYDC
-then grn "钩子里没有 exit 之后的死代码（深度感知）"; else red "钩子里的 exit 之后仍有可执行行（死代码 ⇒ 你以为它在工作）"; fi
+then grn "钩子里没有 exit 之后的死代码（深度感知；**局限具名：不数单行 if …; fi ⇒ 会让深度漂**）"; else red "钩子里的 exit 之后仍有可执行行（死代码 ⇒ 你以为它在工作）"; fi
 grn "死代码断言：hooks/（**局限具名**：tools/*.sh 未覆盖 —— 它们内有 heredoc 嵌 python/awk，逐行深度追踪必然漂移；真覆盖需解析器）"
 # ★ 2026-10-13（实测机制 · 断言修正）：**判据体不得有顶格行** ——
 #   ① **必须查【原文】**：正文提取的 awk **以"非空格开头"为结束条件** ⇒ 用"提取结果"去查顶格行**永远查不到**
