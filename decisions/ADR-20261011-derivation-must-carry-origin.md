@@ -40,7 +40,10 @@ check: |
   #   用它当"出处"= 自己证明自己（与 0′ 的"提交=出生提交"同族）。**按行号取 kind**，probe ⇒ 具名红。
   ln=$(printf '%s' "$o" | sed -n 's/.*证据行=[^0-9]*\([0-9]\{1,\}\).*/\1/p')
   if [ -n "$ln" ]; then
-    kk=$(sed -n "${ln}p" "$ROOT/ledger/hits-2026.jsonl" | sed -n 's/.*"kind": *"\([a-z]*\)".*/\1/p')
+    #   ★ 0‴：账本路径**不写死年份**（H0）⇒ 由 LED 目录 glob 派生；取不到 ⇒ exit 4
+    LEDF=$(ls "$ROOT"/ledger/hits-*.jsonl | tail -1)
+    [ -n "$LEDF" ] || { echo "输入失效: ledger/ 下没有 hits-*.jsonl（账本不可定位）"; exit 4; }
+    kk=$(sed -n "${ln}p" "$LEDF" | sed -n 's/.*"kind": *"\([a-z]*\)".*/\1/p')
     case "$kk" in
       "")   echo "④ 证据行=${ln} 在账本里【不存在或不可解析】⇒ 那不是证据" ;;
       probe) echo "④ 证据行=${ln} 指向的是 **probe 记录（自签）** ⇒ 自证不算证据；须 task / 真实事故 / 采用 / 裁定" ;;

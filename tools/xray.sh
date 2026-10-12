@@ -63,7 +63,7 @@ done < <(ls "$DEC"/ADR-*.md 2>/dev/null | sort)
 for f in decisions/INDEX.md; do report "$f" "✅ A·$(grep -l 'index-must-be-regenerated' "$DEC"/*.md >/dev/null 2>&1 && echo 'ADR-index-must-be-regenerated')"; done
 for f in docs/INDEX.md;     do report "$f" "✅ A·ADR-docs-must-be-indexed"; done
 # 4. 账本
-for f in "$LED_DIR"/hits-2026.jsonl "$LED_DIR"/appeals-2026.jsonl; do
+for f in "$LED_DIR"/hits-*.jsonl "$LED_DIR"/appeals-*.jsonl; do
   [ -f "$f" ] || continue
   report "$f" "✅ A·ADR-ledger/appeals-must-be-*（可解析性）"
 done

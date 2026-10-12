@@ -14,7 +14,7 @@ set -uo pipefail
 # ⚠️ 第一版我改成 PHYT_LEDGER=<临时目录> —— 那是错的：**判据读临时账本，而夹具仍写 ${F}（真实账本）**
 # ⇒ **注入目标 ≠ 检测目标**（第 29 条 / P5 —— 我一直在拿这条管别人）。实测它让 replay 闸门假红。
 # ⇒ 正确做法与本仓夹具的惯例一致：**备份 + 还原**，不改读取路径。
-LED="ledger/hits-2026.jsonl"
+LED="ledger/hits-$(date +%Y).jsonl"
 LED_BAK="$(mktemp)"
 cp "$LED" "$LED_BAK" 2>/dev/null || true
 trap 'cp "$LED_BAK" "$LED" 2>/dev/null; rm -f "$LED_BAK"' EXIT

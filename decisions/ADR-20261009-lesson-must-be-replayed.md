@@ -16,7 +16,7 @@ origin: "真实经历：DNA.md:7-8 定义 G2 = 经历→记账→结晶→重放
 risk: normal
 replay-window: 10
 check: |
-  LED="${PHYT_LEDGER:-ledger}/hits-2026.jsonl"
+  LED="${PHYT_LEDGER:-ledger}/hits-$(date +%Y).jsonl"
   N=$(grep -h '^replay-window:' decisions/ADR-*.md | head -1 | awk '{print $2}')
   [ -z "$N" ] && N=10
   recent=$(grep -h '"kind"[[:space:]]*:[[:space:]]*"replay"' "$LED" | tail -n "$N")

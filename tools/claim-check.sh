@@ -2,7 +2,7 @@
 # claim-check.sh —— 报告自查：每个"已实测"断言，账本里有记录吗？
 # 这是把审查者的方法论对准我们自己：规范天天查 agent，谁查规范？
 set -uo pipefail
-DOC="${1:-}"; LED="${2:-ledger/hits-2026.jsonl}"
+DOC="${1:-}"; LED="${2:-ledger/hits-$(date +%Y).jsonl}"
 [ -f "$DOC" ] || { echo "用法: claim-check.sh <报告.md> [ledger]" >&2; exit 2; }
 [ -f "$LED" ] || { echo "缺账本: $LED" >&2; exit 2; }
 

@@ -35,7 +35,7 @@ case "${1:-}" in
   --probe-all) mode=probe; target="";;
   --probe) mode=probe; target="$2";;
   --timing) only_timing="$2";;
-  --override) printf '{"ts":"%s","gate_id":"%s","verdict":"block","override":true,"source":"cli","event_id":"manual","note":"%s"}\n' "$(TZ=CST-8 date +%Y-%m-%dT%H:%M:%S%z)" "$2" "${4:-无理由}" >> "$LED_DIR"/hits-2026.jsonl; echo "override 已留痕"; exit 0;;
+  --override) printf '{"ts":"%s","gate_id":"%s","verdict":"block","override":true,"source":"cli","event_id":"manual","note":"%s"}\n' "$(TZ=CST-8 date +%Y-%m-%dT%H:%M:%S%z)" "$2" "${4:-无理由}" >> "$LED_DIR"/hits-$(date +%Y).jsonl; echo "override 已留痕"; exit 0;;
   --appeal) printf '{"ts":"%s","gate_id":"%s","verdict":"appeal","override":false,"source":"user-appeal","event_id":"manual","note":"%s"}\n' "$(TZ=CST-8 date +%Y-%m-%dT%H:%M:%S%z)" "$2" "${4:-无理由}" >> "$LED_DIR"/appeals-2026.jsonl; echo "申诉已独立留痕"; exit 0;;
   --cull) mode=cull;;
 esac
@@ -101,7 +101,7 @@ rec = {"ts": time.strftime("%Y-%m-%dT%H:%M:%S%z", time.localtime()),
        "event_id": "probe-%s-%s-%s" % (sys.argv[1], int(time.time()), os.getpid()),
        "kind": "probe", "note": note}
 sys.stdout.write(json.dumps(rec, ensure_ascii=False) + "\n")
-' "$1" "$2" "$3" >> "$LED_DIR"/hits-2026.jsonl
+' "$1" "$2" "$3" >> "$LED_DIR"/hits-$(date +%Y).jsonl
 }
 probe_one(){ # probe_one <gate-id> → 0=闸门活着（RED）· 2=腐化/拓扑失配/假阳性
   local id="$1" F fx out cf out2 chk_src

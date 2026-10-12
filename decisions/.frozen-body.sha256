@@ -13,14 +13,14 @@ d3ce1736f153869ca20be19de6e80e987f15a7681ffd2de1e53681774a6e3bf5  ADR-20261009-d
 f112e0b3e39a2bb271d84169c2df6c07566a0063ae06313aaf33d8c499866255  ADR-20261009-index-must-be-regenerated.md
 c0f8776c05330751daf785983d808d3890453e91c68ea47df5820aff983f1023  ADR-20261009-layer1-total-under-280-lines.md
 e2b7dc3e564a7c495902fbdd10e1f508814c690cb752d905457874c008457782  ADR-20261009-ledger-must-be-valid-utf8.md
-38fd2f8a9b72ac9c0d9df3309334c4d67b98da195e3a897b773a547633df6aa6  ADR-20261009-lesson-must-be-replayed.md
+c7096fc2d678df92396a1d3ba35b5ac39aa3fa8a68b44f5e3767366d3918e11f  ADR-20261009-lesson-must-be-replayed.md
 9794a7acfdbe4fdc680fd62b9fb53a444641c43c65b50fef3e04ef392fb09593  ADR-20261009-lesson-must-land-in-artifact.md
 ea8ee6c29d7bd32a4bc6760bbe4ce6fc61449d91ba07f2cf35bd1e43453de1e7  ADR-20261009-readme-must-be-a-truthful-entry.md
-# rebaseline ADR-20261009-readme-must-be-a-truthful-entry.md 理由: 证据换为外部需求 task 行
 71b0014c70a913ab47d97680544fa639c2ce8d7c6a0227ccd2db1e123b4738de  ADR-20261009-readme-must-carry-the-on-demand-pointer-block.md
 f26a98a3cb04497b3c4334ddbb4f0b6dd3f68547dde45ca54f4d544a3c297fad  ADR-20261009-shell-var-before-cjk-must-brace.md
 7fd4bc72b6899850df248c66170bc0427a2a9c8a3b546c7c42a5aff0bf3c689d  ADR-20261009-upstream-manifest-threat-model.md
-3f2d33629cc7d31ad49eca53ea34dc425253024af5c684505f00fc993ed53954  ADR-20261011-derivation-must-carry-origin.md
+e09ddfe94f2350015bc9baff2ba80e44e62fe5d4d71ad5358951a8157ab33ad7  ADR-20261011-derivation-must-carry-origin.md
+# rebaseline ADR-20261011-derivation-must-carry-origin.md 理由: 0‴：账本路径去年度硬编码
 67af532f9e29ef5b580273cd56e9e2855b52fb02cffffca8de031959eb9194f9  ADR-20261011-dna-modification-first-exercise.md
 18c6f8f2e55cfffaa048f889094db16d47ab3e09a596b89434729a622b22c207  ADR-20261011-failure-must-be-named-where-machines-can-read.md
 bafc8a095eb14a4975e9dd861454f87e750e2ed57e8d3132a582fb0859bdfe03  ADR-20261011-frozen-body-immutable.md
