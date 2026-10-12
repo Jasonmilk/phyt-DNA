@@ -13,7 +13,7 @@
 | `ADR-20261009-index-must-be-regenerated` | `["decisions/INDEX.md"]` | yes | yes | post |
 | `ADR-20261009-ledger-must-be-valid-utf8` | `["ledger/*.jsonl"]` | yes | yes | post |
 | `ADR-20261009-lesson-must-land-in-artifact` | `["examples/phyt.yml", ".github/workflows/**"]` | yes | yes | post |
-| `ADR-20261009-readme-must-be-a-truthful-entry` | `["README.md", "README.zh-CN.md"]` | yes | yes | post |
+| `ADR-20261009-readme-must-be-a-truthful-entry` | `["README.md", "README.zh-CN.md", "VISION.md", "DNA.md", "SPEC.md", "RNA.md", "PLAN.md", "GROWTH.md", "DEPRECATE.md", "position.md", "docs/*.md"]` | yes | yes | post |
 | `ADR-20261009-shell-var-before-cjk-must-brace` | `["**/*.sh", "decisions/ADR-*.md"]` | yes | yes | post |
 | `ADR-20261011-derivation-must-carry-origin` | `["decisions/ADR-*.md"]` | yes | yes | post |
 | `ADR-20261011-frozen-body-immutable` | `["decisions/ADR-*.md"]` | yes | yes | post |

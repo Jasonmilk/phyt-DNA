@@ -62,7 +62,7 @@ wc -l              ledger/hits-2026.jsonl   ⇒ 334 行
 
 ## 处置
 
-* 闸门已写为 **`status: proposed`**（`decisions/ADR-20261009-ledger-must-be-parseable-line-oriented.md`）
+* 闸门已写为 **`status: proposed`**（`ADR-20261009-ledger-must-be-valid-utf8（**当时想立的"每行可解析"门从未落盘** —— 它只查编码；2026-10-12 才由 ADR-20261012-ledger-new-lines-parseable-and-referenced 补上）.md`）
   —— **缺口必须具名，但不该由 agent 单方面把 CI 变红**（"门是【授权】，不是【不可能】"）。
 * 修复**不能**重写既有账本（append-only：修正 = 追加新记录）。
   可选：① 追加一份**行规范化的**新账本并从旧账本迁移（以新记录声明迁移点）；

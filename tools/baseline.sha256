@@ -16,7 +16,7 @@ cd064ea0f72a80e2b99e0c451548e2c17598b716d85973dcf5353f1f246c35c8  decisions/ADR-
 444b0a9b5c79cb5aa3d9b20944f036c4200c16581f68e4cb2b2bf887c8839229  decisions/ADR-20261009-ledger-must-be-valid-utf8.md
 bca5a3094c351a4f5182a73815258a4534623f9d2b3b2657086a1e2ba97bd364  decisions/ADR-20261009-lesson-must-be-replayed.md
 a13c8e1f768d6733b2ecc642288cc4bafb5d3cf48e4658b79ae4dcb531d63c51  decisions/ADR-20261009-lesson-must-land-in-artifact.md
-3fc3d41e7f366dd2b1d2435a2a86b97fc10649cda63c3ef8c129a35b58c18e4b  decisions/ADR-20261009-readme-must-be-a-truthful-entry.md
+00cf334e592b0dadbcfc4eab23dc73dcb2f31c9ab40d18db4bd7a187c796fdf5  decisions/ADR-20261009-readme-must-be-a-truthful-entry.md
 cbc5b3eb78fb1fdb56a5e1600dfc13046fdef6e23d711dc8df4ef0d2cabb96cb  decisions/ADR-20261009-readme-must-carry-the-on-demand-pointer-block.md
 f9c9013c3a6c7fee9f0336d3bdd05f7a2b92817d4bc765ab72ec7904b65faf10  decisions/ADR-20261009-shell-var-before-cjk-must-brace.md
 e2693f257f8e9512848e01c932078e4d687f34d6b19ca3bffac4e7cbe24f74e1  decisions/ADR-20261009-upstream-manifest-threat-model.md
@@ -31,7 +31,7 @@ e447785ae3d66188431ac3a7be04f711afa67ee379c079de6716c862d2787499  decisions/ADR-
 aaaae14de6264a9d007766082994472b420271d933ae63f9d42054c4e0720d99  decisions/ADR-20261011-supersede-must-be-paired.md
 c7e25039f95208294f58761fa6409d6a11b805f726328094664122b01d72cbcb  decisions/ADR-20261012-ledger-new-lines-parseable-and-referenced.md
 505b5a7bc132297f0ab54ce1802e0248d0baf21caa2e4feb51d894fb82993590  decisions/ADR-20261012-pool-consistency-must-be-checked.md
-a5f5925104ac4cb0736ed8815ce96230c34997c116c221c6f773073670e07f7a  decisions/INDEX.md
+260fcf73cab2b6763802d805b752adcaa36b80126db238afa3d67ca0b3491f22  decisions/INDEX.md
 2b6ec735f00b7dbf3057c9fd4fe81cb808b5aedd8bd8e95984529a3eccfe3387  decisions/README.md
 42e24e0dc81dc4b6ef232d13b94e041b6cab81ffe3aa0dda8995631a2d6a3ab3  tools/check-baseline.sh
 64ab8edc7d53987979adc62bbe077ca414bac4f5341d9142d5a91c424158858f  tools/check-pool.sh

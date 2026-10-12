@@ -5,7 +5,7 @@ id: ADR-20261009-readme-must-be-a-truthful-entry
 seq: 9021
 status: accepted
 hard: true
-applies-to: ["README.md", "README.zh-CN.md"]
+applies-to: ["README.md", "README.zh-CN.md", "VISION.md", "DNA.md", "SPEC.md", "RNA.md", "PLAN.md", "GROWTH.md", "DEPRECATE.md", "position.md", "docs/*.md"]
 effective-from: 2026-10-09
 timing: post
 redtest: "validate --probe ADR-20261009-readme-must-be-a-truthful-entry"
@@ -16,57 +16,54 @@ origin: "2026-10-09：README 是唯一的入口，而入口的价值不在'内�
 risk: normal
 check: |
   [ -f "$F" ] || { echo "输入失效: $F 不存在（静默失败=伪证）"; }
-  # ── 四判据（2026-10-12 折进门面门 · G）：指针块 · 可执行 · 路径真 · 版本同源 ──
-  # 为什么折进【已存在】的门而不是新立：出生律"不许凭空长面"。这道门本来就是"README 的入口质量"，判据变多而已。
+  # ── 四判据（2026-10-12 折进门面门 · G）· ★ 作用域分派（2026-10-12 裁定 1）：
+  #   ① 按需指针块 与 ④ 版本同源 = **README 专属**（只有 README 带 DOC-README-* id / 指针块）；
+  #   ② 可执行 与 ③ 路径真 = **通用**（权威卷 + docs/ 一律适用）。
   skip(){ echo "具名跳过: $1（不判 —— 没有真值源就没有判据）" >&2; exit 4; }
   ROOT=$(git rev-parse --show-toplevel) || skip "非 git 工作区，版本真值源不可得"
-  # ① 按需指针块 —— **按语言分叉**（同一判据、两种形态：园丁 2026-10-12；名 ⊇ 判据见 body 的职责表）
   case "$F" in
     *README.zh-CN.md)
       grep -qE '^## ▸ 从这里开始|^## 从这里开始' "$F" || echo "① README.zh-CN.md 缺【从这里开始】段（中文入口会退化成目录）"
       grep -qE '^\| *我要回答的问题 *\|' "$F" || echo "① README.zh-CN.md 缺【问题 → 读这个】表头"
       grep -q 'docs/INDEX.md' "$F" || echo "① README.zh-CN.md 未指向 docs/INDEX.md"
       ;;
-    *)
+    *README.md)
       grep -qE '^## Start here' "$F" || echo "① README.md 缺【Start here】段（入口会退化成目录）"
       grep -qE '^\| *The question you are asking *\|' "$F" || echo "① README.md 缺【question → read this】表头（读者无法按需取用）"
       grep -q 'docs/INDEX.md' "$F" || echo "① README.md 未指向 docs/INDEX.md（按问题索引的唯一入口）"
       if LC_ALL=C grep -qE '^\| *我要回答的问题' "$F"; then echo "① README.md 混入了中文块（应放在 README.zh-CN.md）"; fi
       ;;
   esac
-  # ② 可执行：bash 命令块里不许有 <…> 占位符（读者会照抄 ⇒ 跑不通）
   PL=$(grep -nE '`bash [^`]*<[^`]*`' "$F" | head -3)
   [ -n "$PL" ] && echo "② bash 命令块含占位符 <…>（照抄跑不通）: $(printf '%s' "$PL" | tr '\n' ' ')"
-  # ③ 路径真：README 声明的【本仓】路径必须存在；跨仓引用必须写成 <repo>/… 形状（自定义原则：形状要能自我说明归属）
-  #   ★ 单行实现（不用续行、不用多行管道）：实测本判据曾因续行/多行管道【整段不跑】⇒ 绿是静默腐化。
-  #   ★ 3'c（一正则一编号）：原先一条 153 字正则同时管两类路径 ⇒ 拆成 ③a（本仓目录路径）与 ③b（根目录受管文档）。
-  #     理由：**失败集合更小 = 确定性更高**（一条正则管两件事时，红了不知道是哪一件）。
   PAT_A='(^|[^A-Za-z0-9_./-])(tools|docs|decisions|examples)/[A-Za-z0-9_./-]+([^A-Za-z0-9_./*-]|$)'      # ③a
-  PAT_B='(^|[^A-Za-z0-9_./-])(README\.zh-CN|VISION|DNA|SPEC|RNA|PLAN|GROWTH|DEPRECATE)\.md([^A-Za-z0-9_./*-]|$)'   # ③b
+  PAT_B='(^|[^A-Za-z0-9_./-])(README\.zh-CN|VISION|DNA|SPEC|RNA|PLAN|GROWTH|DEPRECATE|position)\.md([^A-Za-z0-9_./*-]|$)'   # ③b
   for p in $( { grep -oE "$PAT_A" "$F"; grep -oE "$PAT_B" "$F"; } | sed -E -e 's|^[^A-Za-z0-9_./-]||' -e 's|[^A-Za-z0-9_./-]$||' | grep -E '\.(md|sh|py|jsonl|json|sha256|txt|ya?ml)$' | sort -u); do
     [ -n "$p" ] || continue
     case "$p" in tools/todo-ready.sh) continue ;; esac
-    [ -e "$ROOT/$p" ] || echo "③ README 指向 ${p}：本仓不存在它 ⇒ 要么断链，要么【跨仓引用形状错】—— 跨仓必须写成 <repo>/… 形状"
+    [ -e "$ROOT/$p" ] && continue
+    # ③ 的两类【正当缺席】（2026-10-12 实测：扩作用域后先抓到的正是这两类，不是断链）：
+    #   a) 重定向目标：`cmd > $p` —— 读者【当场创建】的文件，不是"声明必须存在的路径"（复核配方常这么写）；
+    #   b) 带删除/历史标记的行：年轮与归档**记录过去**（"已删/已移除/历史"）⇒ 那类路径缺席是事实，不是断链。
+    if grep -qE ">[[:space:]]*${p}([[:space:]]|$)" "$F"; then continue; fi
+    if grep -E "${p}" "$F" | grep -qE '已删|已移除|已废弃|历史|deleted|removed'; then continue; fi
+    echo "③ ${F} 指向 ${p}：本仓不存在它 ⇒ 要么断链，要么【跨仓引用形状错】—— 跨仓必须写成 <repo>/… 形状"
   done
-  # ④ 版本真值源 = 分支（**不存版本号**：分支是物理事实，存下来的数过期时从不响）
-  # ★ 真值源必须是【物理锚点】（园丁 0′）：HEAD 是**可移动指针**（谁 checkout 都变）⇒ 不用它。
-  #   优先级：远端默认分支 symref（origin/HEAD → origin/v2） > 版本次第 tag（vN）；都取不到 ⇒ **复用 skip()**（exit 4）。
-  #   优先级（园丁 2026-10-12）：**版本次第 tag > 远端默认分支 symref > skip()** —— tag 是显式放行标记。
-  TAG=$(git tag --list 'v[0-9]*' --sort=-creatordate | head -1)
-  # ★ 1（2026-10-12）：tag 若【陈旧】（不是 HEAD 的祖先）⇒ 具名响，不许拿它当真值源还判绿。
-  if [ -n "$TAG" ]; then
-    git merge-base --is-ancestor "$TAG" HEAD || echo "④ 真值源 tag ${TAG} 不是 HEAD 的祖先（陈旧）⇒ 版本判据失真"
-  fi
-  BR="$TAG"
-  if [ -z "$BR" ]; then BR=$(git symbolic-ref -q --short refs/remotes/origin/HEAD | sed 's|^origin/||'); fi
-  [ -n "$BR" ] || skip "版本次第 tag 与远端默认分支 symref 都取不到 ⇒ 版本真值源不可得"
-  case "$BR" in v[0-9]*) ;; *) skip "真值源 ${BR} 非版本次第（vN）形态 ⇒ 不判" ;; esac
-  ID=$(grep -m1 '^id: ' "$F" | sed 's/^id: *//')
-  [ "$ID" = "DOC-README-${BR}" ] || echo "④ 版本不一致：真值源 ${BR} ⇒ id 应为 DOC-README-${BR}，实为 ${ID}"
-  SUP=$(grep -m1 '^supersedes: ' "$F" | sed 's/^supersedes: *//')
-  if [ -n "$SUP" ]; then
-    grep -q "^status: deprecated" "$ROOT/docs/archive/${SUP}.md" || echo "④ supersedes: ${SUP} 无真源（docs/archive/${SUP}.md 缺失或缺 status: deprecated）⇒ 配对不可执行"
-  fi
+  case "$F" in *README.md)
+    TAG=$(git tag --list 'v[0-9]*' --sort=-creatordate | head -1)
+    if [ -n "$TAG" ]; then git merge-base --is-ancestor "$TAG" HEAD || echo "④ 真值源 tag ${TAG} 不是 HEAD 的祖先（陈旧）⇒ 版本判据失真"; fi
+    BR="$TAG"
+    if [ -z "$BR" ]; then BR=$(git symbolic-ref -q --short refs/remotes/origin/HEAD | sed 's|^origin/||'); fi
+    [ -n "$BR" ] || skip "版本次第 tag 与远端默认分支 symref 都取不到 ⇒ 版本真值源不可得"
+    case "$BR" in v[0-9]*) ;; *) skip "真值源 ${BR} 非版本次第（vN）形态 ⇒ 不判" ;; esac
+    ID=$(grep -m1 '^id: ' "$F" | sed 's/^id: *//')
+    [ "$ID" = "DOC-README-${BR}" ] || echo "④ 版本不一致：真值源 ${BR} ⇒ id 应为 DOC-README-${BR}，实为 ${ID}"
+    SUP=$(grep -m1 '^supersedes: ' "$F" | sed 's/^supersedes: *//')
+    if [ -n "$SUP" ]; then
+      grep -q "^status: deprecated" "$ROOT/docs/archive/${SUP}.md" || echo "④ supersedes: ${SUP} 无真源（docs/archive/${SUP}.md 缺失或缺 status: deprecated）⇒ 配对不可执行"
+    fi
+  ;; esac
+
 last-hit: null
 hit-count: 0
 supersedes: ADR-20261009-readme-must-carry-the-on-demand-pointer-block
