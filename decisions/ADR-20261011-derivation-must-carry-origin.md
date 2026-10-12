@@ -28,7 +28,8 @@ check: |
       printf '%s' "$o" | grep -q -- "$k" || echo "④ origin 缺三要素（${k}）（$(basename "$F")）—— 形如 事件=… · 证据行=… · 提交=…"
     done
     c=$(printf '%s' "$o" | sed -n 's/.*提交=\([0-9a-f]\{7,\}\).*/\1/p')
-    case "$BSHA" in "$c"*) [ -n "$c" ] && echo "④ origin 自证（提交=${c} 就是本 ADR 的出生提交）⇒ 那不是证据，是自己证明自己" ;; esac
+    #   稳健性（同轮补）：引用【全长 40 位 sha】时，取前 7 位与出生 sha 比（7 vs 40 的错位会造成漏判）。
+  case "$BSHA" in "$c"*|"${c:0:7}"*) [ -n "$c" ] && echo "④ origin 自证（提交=${c} 就是本 ADR 的出生提交）⇒ 那不是证据，是自己证明自己" ;; esac
     if printf '%s' "$o" | grep -qE '事件=[^·]*(立本门|本轮|我觉得|我认为)'; then
     echo "④ origin 的 事件= 是自造事件（立本门/本轮/我觉得不算）⇒ 须指 task / 真实事故 / 采用 / 园丁裁定"
   fi

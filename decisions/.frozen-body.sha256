@@ -19,8 +19,8 @@ e2b7dc3e564a7c495902fbdd10e1f508814c690cb752d905457874c008457782  ADR-20261009-l
 71b0014c70a913ab47d97680544fa639c2ce8d7c6a0227ccd2db1e123b4738de  ADR-20261009-readme-must-carry-the-on-demand-pointer-block.md
 f26a98a3cb04497b3c4334ddbb4f0b6dd3f68547dde45ca54f4d544a3c297fad  ADR-20261009-shell-var-before-cjk-must-brace.md
 7fd4bc72b6899850df248c66170bc0427a2a9c8a3b546c7c42a5aff0bf3c689d  ADR-20261009-upstream-manifest-threat-model.md
-b5a795b5c69a6f99b99a4f02e5b6439182e461a24d102838a8ee5b8b9431db95  ADR-20261011-derivation-must-carry-origin.md
-# rebaseline ADR-20261011-derivation-must-carry-origin.md 理由: 判据形状改 if（去 presence 形状）
+9fbb2453e2651a157cabb2bad87d66f41bd38dbac04f7bfe5ee202ce60247e5d  ADR-20261011-derivation-must-carry-origin.md
+# rebaseline ADR-20261011-derivation-must-carry-origin.md 理由: 自证判据补全长 sha 的比对
 67af532f9e29ef5b580273cd56e9e2855b52fb02cffffca8de031959eb9194f9  ADR-20261011-dna-modification-first-exercise.md
 18c6f8f2e55cfffaa048f889094db16d47ab3e09a596b89434729a622b22c207  ADR-20261011-failure-must-be-named-where-machines-can-read.md
 bafc8a095eb14a4975e9dd861454f87e750e2ed57e8d3132a582fb0859bdfe03  ADR-20261011-frozen-body-immutable.md

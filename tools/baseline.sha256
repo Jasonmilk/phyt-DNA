@@ -27,7 +27,7 @@ a13c8e1f768d6733b2ecc642288cc4bafb5d3cf48e4658b79ae4dcb531d63c51  decisions/ADR-
 cbc5b3eb78fb1fdb56a5e1600dfc13046fdef6e23d711dc8df4ef0d2cabb96cb  decisions/ADR-20261009-readme-must-carry-the-on-demand-pointer-block.md
 f9c9013c3a6c7fee9f0336d3bdd05f7a2b92817d4bc765ab72ec7904b65faf10  decisions/ADR-20261009-shell-var-before-cjk-must-brace.md
 e2693f257f8e9512848e01c932078e4d687f34d6b19ca3bffac4e7cbe24f74e1  decisions/ADR-20261009-upstream-manifest-threat-model.md
-51a276867a849d5a99f85fb73dd2e3895ace18319a9fef798623527787147d6a  decisions/ADR-20261011-derivation-must-carry-origin.md
+a1c65c52dca7ea5b24b69858fc719db97e38140df06a39ddb6fc9add319c2af9  decisions/ADR-20261011-derivation-must-carry-origin.md
 6fcffa675afc20f0c814cde54e9e44da4f9e287010d5b9d14592f2371f0f701b  decisions/ADR-20261011-dna-modification-first-exercise.md
 f5a8aafd9f3c875211a000e600ea74646790cbcfb5fd9c9f1e6d520f57c48516  decisions/ADR-20261011-failure-must-be-named-where-machines-can-read.md
 cd2764f4753ce264827cb4b2a4447c7b3b5fe32294214d63c3a8a1b5204c97f9  decisions/ADR-20261011-frozen-body-immutable.md
