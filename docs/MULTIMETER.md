@@ -229,13 +229,43 @@ awk '/^check: \|/{f=1;next} f&&/^[a-z-]+:/{f=0} f{print}' decisions/ADR-*.md   #
 
 ```
 
-## 闸门三分类读数（2026-10-13 · 命令产出）
+## 闸门三分类读数（2026-10-13 · **带轴名** · 命令产出）
 
-    for f in decisions/ADR-*.md; do grep -q '^hard: true$' "$f" || continue; grep -q '^status: deprecated' "$f" && continue; basename "$f" .md; done
-    # 对每个 id：有 fixtures/<id>/inject.sh ⇒ 已 probe · 有 probe: none ⇒ 具名不可 probe · 其余 ⇒ unproven
+**轴**：① 三态过（边②能红 · 边③不错红 · 边④能绿）· ② 在执行面 · 会红未证（②③ 已证 · ④ 未证）· ③ 不在执行面 · 待夹具。
 
-**读数**：**已 probe = 19** · **具名不可 probe = 2** · **unproven（无夹具）= 0**
+### ① 已 probe 三态过 = 19 门
 
-**两条腐化门的处置与恢复命令**：
-· `ADR-20261009-GROWTH-max-3-entries` —— 口径精度（归档计数**只数年轮型**）⇒ 恢复点：`bash tools/validate.sh --probe ADR-20261009-GROWTH-max-3-entries`
-· `ADR-20261009-DNA-is-immutable` —— **结构上不可 probe**（判据问工具的真实 scope 输出）⇒ 已声明 `probe: none` + `probe-why:`；**单门与全跑同声** ⇒ 恢复点：`bash tools/validate.sh --probe ADR-20261009-DNA-is-immutable`
+  1. `ADR-20261009-DEPRECATE-must-exist`
+  2. `ADR-20261009-DNA-is-immutable`
+  3. `ADR-20261009-GROWTH-max-3-entries`
+  4. `ADR-20261009-PLAN-must-exist`
+  5. `ADR-20261009-PLAN-must-stay-under-150-lines`
+  6. `ADR-20261009-README-must-carry-the-one-command`
+  7. `ADR-20261009-VISION-must-exist-and-be-a-seed`
+  8. `ADR-20261009-appeals-must-be-parseable`
+  9. `ADR-20261009-docs-must-be-indexed`
+  10. `ADR-20261009-index-must-be-regenerated`
+  11. `ADR-20261009-ledger-must-be-valid-utf8`
+  12. `ADR-20261009-lesson-must-land-in-artifact`
+  13. `ADR-20261009-readme-must-be-a-truthful-entry`
+  14. `ADR-20261009-shell-var-before-cjk-must-brace`
+  15. `ADR-20261011-derivation-must-carry-origin`
+  16. `ADR-20261011-frozen-body-immutable`
+  17. `ADR-20261011-layer1-threshold-calibrated-by-premiere`
+  18. `ADR-20261011-supersede-must-be-paired`
+  19. `ADR-20261012-ledger-new-lines-parseable-and-referenced`
+
+**每门的恢复命令**：`bash tools/validate.sh --probe ADR-…`（把 `ADR-…` 换成真实门名）（三态齐 = 基线绿 · 注入红 · 反例守住）
+
+### ② 在执行面 · 会红未证 = 0 门
+
+（无：所有进执行面的门都过了三态。**边④"能绿"由探针的基线态承担** ⇒ 基线一旦红，该门即落此类。）
+
+### ③ 不在执行面 · 待夹具 = 0 门（门级）
+
+· **门级 = 0**（无夹具且未声明 `probe: none` 的 hard 门 ⇒ 无）
+· **步骤级 = 1 处**：`4b · 全池一致性（check-pool.sh）` —— 它是**池形状判据**（对象是整池，不是某个文件）
+  ⇒ 单文件夹具无法证明 ⇒ CI 输出里已如实标 `unproven · 待夹具：能红未证`。
+· **具名不可 probe（另一类）**：`ADR-20261009-dangerous-action-shapes-must-be-blocked` —— 其对象是**任意输入字符串**
+  （命令形状）与它要禁的路径本身 ⇒ 门级 probe 不适用；回归判据 = `examples/claude-code/hooks/hook_test.sh`（**9 例**，接在 ci-local 步 5a）
+  ⇒ **红由另一件仪器证**（不是"未证"）。

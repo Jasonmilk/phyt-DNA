@@ -6,8 +6,6 @@ hard: true
 applies-to: ["tools/check-baseline.sh"]
 effective-from: 2026-10-09
 timing: pre
-probe: none
-probe-why: "判据问的是【工具的真实 scope 输出】（bash tools/check-baseline.sh --scope）⇒ 探针把 $F 复制到临时目录，改副本它看不见 ⇒ 结构上跨不过阈值。回归判据 = 直接在仓里跑该工具。"
 redtest: "validate --probe ADR-20261009-DNA-is-immutable"
 revisit-on: 2027-04-09
 expires-on: null
@@ -17,7 +15,7 @@ risk: normal
 check: |
   # 元闸门（P9 第一例）：断言"DNA 的不可变性【由机制守着】"，**不断言 DNA 的内容**。
   # 必须问工具的【真实 scope 输出】—— 不得 grep 源码文本（否则又盯错对象，第 29 条同源）。
-  s=$(bash tools/check-baseline.sh --scope)
+  s=$(bash "$F" --scope)   # ★ 0****b：判据必须包含【被测文件 ${F}】本身（写死工具 ⇒ 副本改动看不见 ⇒ 结构上跨不过阈值）
   printf '%s\n' "$s" | grep -qx 'DNA.md' || echo "元闸门失守: DNA.md 不在资产基线 scope 内 ⇒ 改基因将无人拦"
 last-hit: null
 replay-exempt: true   # 不变式类：活性由 CI run 证明，重放不合身（园丁 2026-10-11）
