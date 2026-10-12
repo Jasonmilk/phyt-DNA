@@ -14,7 +14,7 @@ origin: "真实经历：v4 教训'别用 git diff --exit-code'只写进文档，
 risk: normal
 check: |
   [ -f "$F" ] || { echo "输入失效: $F 不存在（静默失败=伪证）"; }
-  grep -qE '^\s+git diff --exit-code' "$F" && echo "装饰性检查残留（教训未落地到工件）: $F"
+  grep -qE '^[[:space:]]+git diff --exit-code' "$F" && echo "装饰性检查残留（教训未落地到工件）: $F"
 last-hit: null
 hit-count: 0
 supersedes: null

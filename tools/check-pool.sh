@@ -42,25 +42,11 @@ if [ -n "$miss" ]; then
   echo "★ RED: 已废弃 ADR 未在 archive/deprecated/ 留指针记录:$miss" >&2
   exit 2
 fi
-# ★ 3'a（2026-10-12 · 净 0）：正则必须有【已知会命中的正样本】—— 复用夹具（夹具就是那个样本）。
-#   无样本 ⇒ **unproven**（不当绿）：具名列出，不致命 —— 与 4b 的"unproven · 待夹具"同一形态。
-REG_TOT=$(python3 - "$BASE" <<'PY'
-import glob, io, os, re, subprocess, sys
-base=sys.argv[1]; tot=0; bad=[]
-for f in sorted(glob.glob(base+'/ADR-*.md')):
-    s=io.open(f,encoding='utf-8').read()
-    if 'check: |' not in s: continue
-    gid=os.path.basename(f)[:-3]; fx=os.path.join('fixtures',gid)
-    if not os.path.isdir(fx): continue
-    body=subprocess.run(['bash','-c',"awk '/^check: \\|/{f=1;next} f&&/^[^ ]/{f=0} f&&NF{print}' '%s' | sed 's/^  //'" % f],capture_output=True,text=True).stdout
-    for pat in set(re.findall(r"(?:grep|sed)[^\n']*?'([^']+)'", body)):
-        if not re.search(r'[\\\[\]\(\)\|\*\+\?\^\{\}\$]', pat): continue
-        tot+=1
-        ok=subprocess.run(['bash','-c','grep -qE -- "$1" "$2"/*', '_', pat, fx]).returncode==0
-        if not ok: bad.append(gid)
-print('%d %d %s' % (tot, len(bad), ' '.join(sorted(set(bad)))))
-PY
-)
-echo "正则样本：共 ${REG_TOT%% *} 条；其中【未证（无已知命中样本）】$(printf '%s' "$REG_TOT" | cut -d' ' -f2) 条 ⇒ unproven，不当绿"
-[ "$(printf '%s' "$REG_TOT" | cut -d' ' -f2)" != "0" ] && echo "  未证正则所在门: $(printf '%s' "$REG_TOT" | cut -d' ' -f3-)" >&2
+# ★ 3'（2026-10-12 · 口径修正）：正则按【调用形状】清点，并分两栏 ——
+#   presence 型（`|| echo "缺…"` 形状）= spec-lint 的【自命断言】覆盖（零夹具）；
+#   violation 型（`&& echo "…残留"` / 管道形状）= 需要红测夹具；已有夹具的 = 已证。
+#   自检：计数器本身有正样本（tools/regex-census.sh --selftest，12 条样本里 10 条正则 ⇒ 必须数到 10）。
+REG=$(tools/regex-census.sh | tail -1 | grep -oE '[0-9]+' | head -1)
+tools/regex-census.sh --selftest >/dev/null 2>&1 || { echo "★ RED: 正则在清点脚本的【自检】没过 ⇒ 它自己的样本集不对" >&2; exit 2; }
+echo "正则判据：调用 ${REG:-?} 次（形状口径）· 分两栏 —— presence 由 spec-lint 自命断言覆盖（零夹具）· violation 须夹具证"
 echo "OK: 全池 $n 份 ADR + 受管文档${extra:-（无）}（目录 ${DIR}）一致 —— 扫描面 = **全部 timing:post 闸门**（不止 pair # 见各 ADR 的 applies-to）"

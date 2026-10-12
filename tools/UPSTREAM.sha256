@@ -1,5 +1,5 @@
 aa74b25f6bcda8735cf07ba195d430080efe46e5  tools/check-baseline.sh
-518eadf8ea1d060b17baa8e3222b7e6587487d87  tools/check-pool.sh
+582f6dbb63c2e29df2cd4dd3ac2577903b36e553  tools/check-pool.sh
 5128f96561db872351ecfc52142350d6508bfe4b  tools/ci-local.sh
 4df8f65eec977293d4b03f91d47aaeb9efa21100  tools/ci-matrix.sh
 8ce6f9b17962ef0fc73606d35988ca9f3a34e817  tools/claim-check.sh
@@ -8,7 +8,8 @@ aa74b25f6bcda8735cf07ba195d430080efe46e5  tools/check-baseline.sh
 5ce6126bc36ca8e9fa02883e7e25fd14a05c4b23  tools/frozen-body.sh
 a32713ad18b2cc66437402a08048428918915a51  tools/probe.sh
 e98364dc156d1ec865218fe76cbdb1b356ebd748  tools/redrate.sh
-22ac9537d799ddd758a3236d112b29193c157635  tools/spec-lint.sh
+418a0a73afaf72a2ecdd2e7e1a868f0733913310  tools/regex-census.sh
+b75790aa9664884c28894064f24dc225af966a45  tools/spec-lint.sh
 1a29eef48923128bd715923b8b9edd06728c8657  tools/sync-upstream.sh
 ad7625816a4f75b32810a1f3e4d7d499767bbd3d  tools/validate.sh
 28beabce5d9041e5c04aff2a72a02dfd46cc10a9  tools/xray.sh

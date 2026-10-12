@@ -129,6 +129,26 @@ for f in decisions/ADR-*.md; do
 done
 if [ -n "$unassigned" ]; then red "check 体里用了从未赋值的变量（会静默展开成空 ⇒ 判据在"假跑"）:$unassigned"; else grn "check 体里的变量都有赋值"; fi
 
+# ★ 1（2026-10-12 · 净 0 · 零夹具）：**presence 型正则的自命断言** ——
+#   形态 grep -q… '<pat>' "$F" 断言"目标文件里【必须有】X" ⇒ **样本就是目标文件本身**：
+#   拿该门 applies-to 的目标直接跑这条正则，命中 ≥1 才算有样本；命中 0 ⇒ 具名红（它是恒绿的断言）。
+#   violation 型不在此列（它们找"不该有的东西"，样本只能来自夹具 ⇒ 另一栏）。
+presence_miss=""
+for f in decisions/ADR-*.md; do
+  grep -q '^check: |' "$f" || continue
+  targets=$(grep -m1 '^applies-to:' "$f" | sed 's/.*\[//;s/\].*//' | tr -d '"' | tr ',' ' ')
+  body=$(awk '/^check: \|/{f=1;next} f&&/^[^ ]/{f=0} f&&NF{print}' "$f" | sed 's/^  //')
+  while IFS= read -r pat; do
+    [ -n "$pat" ] || continue
+    #   ★ 口径修正：样本不必在目标文件里 —— **任何被跟踪的文件**命中都算它"有样本"（用 git grep，覆盖全仓）。
+    if git grep -qE -e "$pat"; then continue; fi
+    presence_miss="$presence_miss $(basename "$f" .md):$pat"
+  #   ★ 分栏（2026-10-12）：presence = 【缺了就红】的形状（grep … \|\| echo "缺…"）；
+  #   violation = 【命中即红】的形状（grep … && echo "…残留"）⇒ 后者不在本断言范围（它的样本只能来自夹具）。
+  done < <(printf '%s' "$body" | grep -oE "grep[[:space:]]+-[A-Za-z]*q[A-Za-z]*[[:space:]]+'[^']+'[^|]*\|\|" | sed -E "s/.*'([^']+)'.*/\1/")
+done
+if [ -n "$presence_miss" ]; then red "presence 型正则在目标文件上命中 0 次（它没有样本 ⇒ 恒绿断言）:$presence_miss"; else grn "presence 型正则在目标文件上都能命中（样本即目标）"; fi
+
 echo
 [ "$fail" = 0 ] && { echo "spec-lint: PASS"; exit 0; }
 echo "spec-lint: BLOCK（规范自身未过闸门）" >&2
