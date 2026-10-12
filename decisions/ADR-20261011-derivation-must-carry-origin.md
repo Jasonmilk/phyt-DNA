@@ -36,6 +36,16 @@ check: |
     if ! printf '%s' "$o" | grep -qE '证据行=[^·]*(第 ?[0-9]+ ?行|event_id=|task-)'; then
     echo "④ origin 的 证据行= 没有【行号或 event_id】（只给文件名不算证据）"
   fi
+  # ★ 0″（2026-10-13 插队）：**证据行不得指向 probe（自签）** —— probe 是本仓【自己跑的】记录，
+  #   用它当"出处"= 自己证明自己（与 0′ 的"提交=出生提交"同族）。**按行号取 kind**，probe ⇒ 具名红。
+  ln=$(printf '%s' "$o" | sed -n 's/.*证据行=[^0-9]*\([0-9]\{1,\}\).*/\1/p')
+  if [ -n "$ln" ]; then
+    kk=$(sed -n "${ln}p" "$ROOT/ledger/hits-2026.jsonl" | sed -n 's/.*"kind": *"\([a-z]*\)".*/\1/p')
+    case "$kk" in
+      "")   echo "④ 证据行=${ln} 在账本里【不存在或不可解析】⇒ 那不是证据" ;;
+      probe) echo "④ 证据行=${ln} 指向的是 **probe 记录（自签）** ⇒ 自证不算证据；须 task / 真实事故 / 采用 / 裁定" ;;
+    esac
+  fi
   fi
 last-hit: null
 hit-count: 0
