@@ -277,3 +277,28 @@ grep -n 'symbolic-ref' decisions/ADR-20261009-readme-must-be-a-truthful-entry.md
 
 **读数**：判据第 65 行读 **`git symbolic-ref -q --short refs/remotes/origin/HEAD`**（**物理锚点 symref**），
 **不是本地 `HEAD`**（`rev-parse --abbrev-ref HEAD` 早已替换）⇒ **读数来自判据自己跑的那条命令** ⇒ **无需改判据**。
+
+## 分母实测（2026-10-13 · **所有"五分类"读数的分母**）
+
+    ls decisions/ADR-*.md | wc -l                     # 总 33
+    grep -c '^hard: true$'  decisions/ADR-*.md        # 活 20（∧ ¬deprecated）
+    grep -c '^hard: false'   decisions/ADR-*.md        # 图纸 9（∧ ¬deprecated）
+    grep -l '^status: deprecated' decisions/ADR-*.md | wc -l   # 4
+
+**总 33 = 活 20 + 图纸 9 + deprecated 4**（自检：不等即具名红）
+
+## ⑥ 图纸单列（9 扇 · **清单 2 的输入**）
+
+| 图纸门 | promote-when | revisit-on | 登记/并发/日落 |
+|---|---|---|---|
+| claim-needs-redtest | **无** | 2027-04-09 | 未登记 · 9 扇 ⇒ **并发 > 3（违律）** · 无日落 |
+| cull-after-20-misses | **无** | 2027-04-09 | 同上（且  已冻结 ⇒ 它只能做蓝图） |
+| upstream-manifest-threat-model | **无** | 2027-04-09 | 同上 |
+| dna-modification-first-exercise | **无** | 2027-04-11 | 同上 |
+| failure-must-be-named-where-machines-can-read | **无** | 2027-04-11 | 同上 |
+| recopy-must-equal-the-gene-set | **无** | 2027-04-11 | 同上 |
+| replay-per-revisit-period | **无** | 2027-04-11 | 同上 |
+| pool-consistency-must-be-checked | **无** | 2027-04-12 | 同上 |
+| probe-scope-must-be-tagged | **无** | 2027-01-13 | 同上 |
+
+**★ 一句话**：**9 扇图纸无一处有 ，也无一处登记** ⇒ 图纸三律（登记 · 并发 ≤3 · promote-when + 日落）**全部未落**。

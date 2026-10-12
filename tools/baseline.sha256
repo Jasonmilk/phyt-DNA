@@ -7,7 +7,7 @@ f46e0b0623578c398c5cc8b847f909195d70bfe0ca39ecdd7e48565c44a75b49  PLAN.md
 71ee0ae907657449c382d38abe2960aebc0f76ecf8729dab5a0e3b4f6687e57e  SPEC.md
 d58177369e60d567b6064f1c9a006a90a249fe7e4509ee0199253a8dbee25fb0  VISION.md
 079178c937a8dbef6c8ab867ace11c6b787b3664909103c80982d405735ec4cf  decisions/ADR-20261009-DEPRECATE-must-exist.md
-c43fbd61b670a91ba9765aeddc602341a2aed8c2d2749129a29723aa715dcffd  decisions/ADR-20261009-DNA-is-immutable.md
+b12be957c738ce40a95ba103ad658a34fc19d0c295aef3797655d55c371d26fc  decisions/ADR-20261009-DNA-is-immutable.md
 56147a6dce3133be1516e0e5b8dc4cd2e9b0a524e0a5265270c02e5743745270  decisions/ADR-20261009-GROWTH-max-3-entries.md
 cc96db7f01fc5adddf739210b99798c9a33cc341307164c545e79220cff3f78c  decisions/ADR-20261009-PLAN-must-exist.md
 df0fd79c8886395f579f47abde8f9bfe990c0f34e7627b2547549de0d3146a5c  decisions/ADR-20261009-PLAN-must-stay-under-150-lines.md
@@ -23,7 +23,7 @@ cd064ea0f72a80e2b99e0c451548e2c17598b716d85973dcf5353f1f246c35c8  decisions/ADR-
 444b0a9b5c79cb5aa3d9b20944f036c4200c16581f68e4cb2b2bf887c8839229  decisions/ADR-20261009-ledger-must-be-valid-utf8.md
 6abb770588cbd9439e08571a40d4848b9546383620034c9dca2292a418904c58  decisions/ADR-20261009-lesson-must-be-replayed.md
 a13c8e1f768d6733b2ecc642288cc4bafb5d3cf48e4658b79ae4dcb531d63c51  decisions/ADR-20261009-lesson-must-land-in-artifact.md
-1620559854000d7e59e159a8921e6992542c7ba72892d83fc2f8d395258eba83  decisions/ADR-20261009-readme-must-be-a-truthful-entry.md
+b6fb1e128fcd1cd37ed8add04884b4bcef53e919f59eebb9a904a008eb952663  decisions/ADR-20261009-readme-must-be-a-truthful-entry.md
 cbc5b3eb78fb1fdb56a5e1600dfc13046fdef6e23d711dc8df4ef0d2cabb96cb  decisions/ADR-20261009-readme-must-carry-the-on-demand-pointer-block.md
 f9c9013c3a6c7fee9f0336d3bdd05f7a2b92817d4bc765ab72ec7904b65faf10  decisions/ADR-20261009-shell-var-before-cjk-must-brace.md
 e2693f257f8e9512848e01c932078e4d687f34d6b19ca3bffac4e7cbe24f74e1  decisions/ADR-20261009-upstream-manifest-threat-model.md
@@ -45,7 +45,7 @@ a5946f24e845c32e8f81240aedf7bb6972625ab1ce4a3c04de0873c702310a14  docs/DNA-GATE-
 9c1d3ad0b5c3f7cab2a82ab6b38e110a2885fcbc6be282eb8a3aa2b088f6dbb4  docs/EXECUTION-DISCIPLINE.md
 5b4de58da5e799c7556df965dfee585cba2cc5efc5660539d608efd1fd47fd7f  docs/FINDING-2026-10-09-ledger-is-not-jsonl.md
 cc35f761b6c30c46f33f3cd2bb0418ea56472864f8b4f40a1d586fc13b6a7601  docs/INDEX.md
-b9f9ffa2dc053531034fbace8e073b27d4cdb1b470a1c1508ee70b5394e24427  docs/MULTIMETER.md
+b2d489db0e8c8f922a04cbe6d940f23391ba18988aff88a76354610dd6d76d5d  docs/MULTIMETER.md
 ddc73696824c31b7aa7e3e0945e5ccfc433ac9f399a030d66b4880dd2e57236f  docs/PLAN-GAPS-2026-10-09.md
 f8f4e1e27ac92cce03f0c3243abbe86b57174b9fa3071cac6ede69e8889e57a9  docs/PLAN-PAUSED.md
 ffc6ab0a60f89a2ca5b760eb7c2173ef036ef3ae6f6abc6d1289c22489015feb  docs/PROTECTION.md

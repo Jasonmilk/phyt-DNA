@@ -1,6 +1,5 @@
 7c79730413bf226add3608edfe5d39f07c2ef3161c065534a150ba225d752b06  ADR-20261009-DEPRECATE-must-exist.md
-fbe6b1cbe8e44b5be2706b75c67fe1e81dc9cfc7f403e4dd8daaaabd806ff5b1  ADR-20261009-DNA-is-immutable.md
-# rebaseline ADR-20261009-DNA-is-immutable.md 理由: 家族：$F】 ⇒ ${F}】
+eb9c93302a69c81433273acfe067a9fef7b512f45dfeb412ad9f193e384ec47e  ADR-20261009-DNA-is-immutable.md
 6082c45abdc07105208a41f76f3fc52d4634dcc0cfe6ac508713972f78e8a4bf  ADR-20261009-GROWTH-max-3-entries.md
 b1694a130fda5b1abdf0e2b514eddb221e0243e8ec7c16ebdd799d28956088ba  ADR-20261009-PLAN-must-exist.md
 a40e67f17e5d556553458fb9f5e4fc2346cea765977cf207ae4b1a7202578782  ADR-20261009-PLAN-must-stay-under-150-lines.md
@@ -16,7 +15,8 @@ c0f8776c05330751daf785983d808d3890453e91c68ea47df5820aff983f1023  ADR-20261009-l
 e2b7dc3e564a7c495902fbdd10e1f508814c690cb752d905457874c008457782  ADR-20261009-ledger-must-be-valid-utf8.md
 c7096fc2d678df92396a1d3ba35b5ac39aa3fa8a68b44f5e3767366d3918e11f  ADR-20261009-lesson-must-be-replayed.md
 9794a7acfdbe4fdc680fd62b9fb53a444641c43c65b50fef3e04ef392fb09593  ADR-20261009-lesson-must-land-in-artifact.md
-0e88777402f68cc5b08d1b52d149c3f12f72f828169b28bfbb2adafcaa7e92c0  ADR-20261009-readme-must-be-a-truthful-entry.md
+8941e22c50520038cddd7fd1a6175863061f320e1aa7c945a55d62a00eebbfc9  ADR-20261009-readme-must-be-a-truthful-entry.md
+# rebaseline ADR-20261009-readme-must-be-a-truthful-entry.md 理由: 0*******c：注释放到 $(…) 外（恢复语法）
 71b0014c70a913ab47d97680544fa639c2ce8d7c6a0227ccd2db1e123b4738de  ADR-20261009-readme-must-carry-the-on-demand-pointer-block.md
 f26a98a3cb04497b3c4334ddbb4f0b6dd3f68547dde45ca54f4d544a3c297fad  ADR-20261009-shell-var-before-cjk-must-brace.md
 7fd4bc72b6899850df248c66170bc0427a2a9c8a3b546c7c42a5aff0bf3c689d  ADR-20261009-upstream-manifest-threat-model.md

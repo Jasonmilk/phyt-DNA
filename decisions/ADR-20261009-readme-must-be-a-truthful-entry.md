@@ -62,7 +62,8 @@ check: |
     TAG=$(git tag --list 'v[0-9]*' --sort=-creatordate | head -1)
     if [ -n "$TAG" ]; then git merge-base --is-ancestor "$TAG" HEAD || echo "④ 真值源 tag ${TAG} 不是 HEAD 的祖先（陈旧）⇒ 版本判据失真"; fi
     BR="$TAG"
-    if [ -z "$BR" ]; then BR=$(git symbolic-ref -q --short refs/remotes/origin/HEAD | sed 's|^origin/||'); fi
+    # ★ 0*******c：去 -q（取不到时让 git 出声）—— 下面的具名 skip 负责收尾（不许静默、不许默认）
+    if [ -z "$BR" ]; then BR=$(git symbolic-ref --short refs/remotes/origin/HEAD | sed 's|^origin/||'); fi
     [ -n "$BR" ] || skip "版本次第 tag 与远端默认分支 symref 都取不到 ⇒ 版本真值源不可得"
     case "$BR" in v[0-9]*) ;; *) skip "真值源 ${BR} 非版本次第（vN）形态 ⇒ 不判" ;; esac
     ID=$(grep -m1 '^id: ' "$F" | sed 's/^id: *//')
