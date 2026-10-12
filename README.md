@@ -455,9 +455,15 @@ are listed in [`docs/INDEX.md`](docs/INDEX.md), and are **reachable from this RE
 
 ### Wire the pre-commit hook (a fresh clone does not get it)
 
-Hooks live in `tools/hooks/`, **not** in `.git/hooks/`, and `core.hooksPath` is **per-clone** — so a fresh clone
-runs **no** hook at all (measured 2026-10-12). One line fixes it:
+Hooks live in `tools/hooks/`, **not** in `.git/hooks/To bypass the scan on purpose (mid-state commits), use the **environment variable** — not a `[wip]` tag in the message:
+git cannot see the pending message inside `pre-commit`, so a tag would only reflect the *previous* commit (measured).
 
+```bash
+PHYT_WIP=1 git commit -m "…"
+```
+
+```bash
+git config core.hooksPath tools/hooks
 ```bash
 git config core.hooksPath tools/hooks
 ```

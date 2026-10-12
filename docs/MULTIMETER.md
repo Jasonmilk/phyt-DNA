@@ -163,3 +163,53 @@ git config --get core.hooksPath || echo '未接线 ⇒ 钩子不跑'
 | `tools/*.sh` | **16** |
 | `tools/hooks/*` | **1** |
 | 合计（报数时就报这两个数，不再报"17 个工具"） | **16 + 1** |
+
+## 现存硬编码清单（2026-10-12 · **观测层：不造门、不派活**）
+
+**它就是下一片工作面的地图** —— 改它只在**真活来时**改（按需驱动），不为清单本身开工。
+（生成：各门 `check:` 体里的数字/阈值；命令见本仓 `--index` + 逐门 `check:` 提取。）
+
+| 门 | 常数 |
+|---|---|
+| `ADR-20261009-DEPRECATE-must-exist` | `-lt 3` |
+| `ADR-20261009-DNA-is-immutable` | `字面 29` |
+| `ADR-20261009-GROWTH-max-3-entries` | `-gt 3` |
+| `ADR-20261009-GROWTH-max-3-entries` | `字面 2026` |
+| `ADR-20261009-GROWTH-max-3-entries` | `字面 10` |
+| `ADR-20261009-GROWTH-max-3-entries` | `字面 12` |
+| `ADR-20261009-PLAN-must-exist` | `-lt 3` |
+| `ADR-20261009-PLAN-must-stay-under-150-lines` | `-gt 150` |
+| `ADR-20261009-PLAN-must-stay-under-150-lines` | `-gt 0` |
+| `ADR-20261009-PLAN-must-stay-under-150-lines` | `字面 150` |
+| `ADR-20261009-PLAN-must-stay-under-150-lines` | `字面 2026` |
+| `ADR-20261009-PLAN-must-stay-under-150-lines` | `字面 10` |
+| `ADR-20261009-PLAN-must-stay-under-150-lines` | `字面 12` |
+| `ADR-20261009-README-must-carry-the-one-comma` | `-lt 10` |
+| `ADR-20261009-README-must-carry-the-one-comma` | `字面 10` |
+| `ADR-20261009-VISION-must-exist-and-be-a-seed` | `-lt 5` |
+| `ADR-20261009-docs-must-be-indexed` | `字面 2026` |
+| `ADR-20261009-docs-must-be-indexed` | `字面 10` |
+| `ADR-20261009-docs-must-be-indexed` | `字面 12` |
+| `ADR-20261009-layer1-total-under-280-lines` | `-gt 280` |
+| `ADR-20261009-layer1-total-under-280-lines` | `字面 280` |
+| `ADR-20261009-lesson-must-be-replayed` | `字面 2026` |
+| `ADR-20261009-lesson-must-be-replayed` | `字面 10` |
+| `ADR-20261009-readme-must-be-a-truthful-entry` | `字面 2026` |
+| `ADR-20261009-readme-must-be-a-truthful-entry` | `字面 10` |
+| `ADR-20261009-readme-must-be-a-truthful-entry` | `字面 12` |
+| `ADR-20261009-shell-var-before-cjk-must-brace` | `字面 2026` |
+| `ADR-20261009-shell-var-before-cjk-must-brace` | `字面 10` |
+| `ADR-20261009-shell-var-before-cjk-must-brace` | `字面 09` |
+| `ADR-20261011-layer1-budget-is-attention-not-` | `-gt 280` |
+| `ADR-20261011-layer1-budget-is-attention-not-` | `字面 280` |
+| `ADR-20261011-layer1-threshold-calibrated-by-` | `-gt 320` |
+| `ADR-20261011-layer1-threshold-calibrated-by-` | `字面 320` |
+| `ADR-20261011-recopy-must-equal-the-gene-set` | `字面 2026` |
+| `ADR-20261011-recopy-must-equal-the-gene-set` | `字面 10` |
+| `ADR-20261011-recopy-must-equal-the-gene-set` | `字面 11` |
+| `ADR-20261011-replay-per-revisit-period` | `字面 2026` |
+| `ADR-20261011-replay-per-revisit-period` | `字面 10` |
+| `ADR-20261011-replay-per-revisit-period` | `字面 11` |
+| `ADR-20261012-ledger-new-lines-parseable-and-` | `字面 2026` |
+
+**H0（元律）判定口径**：能回答"由哪条命令派生" ⇒ 是测量；答不出 ⇒ 禁用或 `exit 4`。
