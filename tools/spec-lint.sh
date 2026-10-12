@@ -182,20 +182,45 @@ if [ "$census_rc" = 0 ]; then grn "正则清点器自检通过（12/12）"; else
 # ★ 1（2026-10-12 · 净 0）：**死代码断言**（"死判据"家族第 9 例的机械护栏）——
 #   钩子/工具脚本里出现 `exit` 之后【仍有可执行行】⇒ 那些行永不执行 ⇒ 具名红。
 #   来历：pre-commit 第 26 行的无条件 `exit 0` 让其后 24 行（含我新加的阻断）全是死代码，而我以为它在工作。
-deadcode=""
-for f in tools/hooks/*; do
-  [ -f "$f" ] || continue
-  seen_exit=""
-  ln=0
-  while IFS= read -r line; do
-    ln=$((ln+1))
-    t=$(printf '%s' "$line" | sed 's/^[[:space:]]*//')
-    case "$t" in ''|'#'*|'fi'|'esac'|'}'|'done'|'else'|';;') continue ;; esac
-    if [ -n "$seen_exit" ]; then deadcode="$deadcode $(basename "$f"):第${ln}行（在 ${seen_exit} 之后）"; break; fi
-    case "$t" in exit*) seen_exit="第${ln}行 exit" ;; esac
-  done < "$f"
-done
-if [ -n "$deadcode" ]; then red "exit 之后仍有可执行行（死代码 ⇒ 你以为它在工作）:$deadcode"; else grn "钩子里没有 exit 之后的死代码"; fi
+python3 - <<'PYDC'
+import io, glob, os, sys
+KEYS_OPEN=('if ','for ','while ','case ','{')
+bad=[]
+for f in sorted(glob.glob('tools/hooks/*')):
+    if not os.path.isfile(f): continue
+    depth=0; exit_at=None
+    for n,raw in enumerate(io.open(f,encoding='utf-8').read().split('\n'),1):
+        t=raw.strip()
+        if not t or t.startswith('#'): continue
+        for kw in ('fi','esac','}','done'): 
+            if t==kw or t.startswith(kw+' ') or t.startswith(kw+';'):
+                depth-=1
+        if exit_at is not None and depth==0 and not t.startswith(('fi','esac','}','done',';;')):
+            bad.append('%s:第%d行（在 第%d行 exit 之后 · 深度0 ⇒ 真死代码）' % (os.path.basename(f), n, exit_at)); break
+        if exit_at is None and depth==0 and (t.startswith('exit ') or t=='exit'):
+            exit_at=n
+        if t.startswith(('if ','for ','while ')) or t=='{': depth+=1
+        if t.startswith('case '): depth+=1
+PYDC
+[ -n "${DEADCODE:-}" ] && true
+if python3 - <<'PYDC' 2>/dev/null
+import io, glob, os
+bad=False
+for f in sorted(glob.glob('tools/hooks/*')):
+    if not os.path.isfile(f): continue
+    depth=0; exit_at=None
+    for n,raw in enumerate(io.open(f,encoding='utf-8').read().split('\n'),1):
+        t=raw.strip()
+        if not t or t.startswith('#'): continue
+        low=t
+        if low in ('fi','esac','}','done') or low.startswith(('fi ','esac ','} ','done ')): depth-=1
+        if exit_at is not None and depth==0 and not low.startswith(('fi','esac','}','done',';;')):
+            print('%s:第%d行（第%d行 exit 之后 · 顶层 ⇒ 死代码）' % (os.path.basename(f), n, exit_at)); bad=True; break
+        if exit_at is None and depth==0 and (low=='exit' or low.startswith('exit ')): exit_at=n
+        if low.startswith(('if ','for ','while ','case ')) or low=='{': depth+=1
+raise SystemExit(0 if not bad else 1)
+PYDC
+then grn "钩子里没有 exit 之后的死代码（深度感知）"; else red "钩子里的 exit 之后仍有可执行行（死代码 ⇒ 你以为它在工作）"; fi
 
 [ "$fail" = 0 ] && { echo "spec-lint: PASS"; exit 0; }
 echo "spec-lint: BLOCK（规范自身未过闸门）" >&2
