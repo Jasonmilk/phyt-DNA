@@ -5,7 +5,7 @@ id: ADR-20261009-lesson-must-be-replayed
 seq: 9001
 status: deprecated
 hard: true
-applies-to: ["ledger/*.jsonl"]   # ★ 去年度硬编码（2027 不失明 · YB 3）
+applies-to: ["ledger/*.jsonl"]
 effective-from: 2026-10-09
 timing: post
 redtest: "bash tools/validate.sh --probe ADR-20261009-lesson-must-be-replayed"
@@ -68,3 +68,8 @@ SPEC.md:27 经历 → 记账(ledger) → 结晶(经济门槛+三要件) → 重�
 
 > **已由 `ADR-20261011-replay-per-revisit-period` 取代**（2026-10-11 第三次落定）。
 > ★ 本行被静默回滚两次；第三次的教训：**哨兵串在 check 正文里出现 ⇒ 子串匹配是假判（锚点必须行首）** + **编辑与探针不得同批**。
+
+---
+
+> **注（2026-10-12 · YB 3）**：本门 `applies-to` 原写 `ledger/hits-2026.jsonl`（**年度硬编码**）⇒ 2027 年账本改名即**失明**，故改通配 `ledger/*.jsonl`。
+> ★ 并记：**值行内不得写 YAML 注释** —— 引擎按行取值，注释会被吞进值里（实测 `拓扑失配`）。

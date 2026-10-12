@@ -5,7 +5,7 @@ id: ADR-20261009-appeals-must-be-parseable
 seq: 9009
 status: accepted
 hard: true
-applies-to: ["ledger/*.jsonl"]   # ★ 去年度硬编码（2027 不失明 · YB 3）
+applies-to: ["ledger/*.jsonl"]
 effective-from: 2026-10-09
 timing: post
 redtest: "bash tools/validate.sh --probe ADR-20261009-appeals-must-be-parseable"
@@ -75,3 +75,8 @@ supersedes: null
 
 **不检查内容与合法性判断**（那是人的事）—— 只保证"**它还在、还能被读到**"，
 与 `VISION`/`README`/`DEPRECATE` 那几条同形：**判据只管"存不存在、读不读得到"，不管"内容好不好"。**
+
+---
+
+> **注（2026-10-12 · YB 3）**：本门 `applies-to` 原写 `ledger/hits-2026.jsonl`（**年度硬编码**）⇒ 2027 年账本改名即**失明**，故改通配 `ledger/*.jsonl`。
+> ★ 并记：**值行内不得写 YAML 注释** —— 引擎按行取值，注释会被吞进值里（实测 `拓扑失配`）。

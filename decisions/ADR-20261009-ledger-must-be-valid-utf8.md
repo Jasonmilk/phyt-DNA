@@ -5,7 +5,7 @@ id: ADR-20261009-ledger-must-be-valid-utf8
 seq: 9007
 status: accepted
 hard: true
-applies-to: ["ledger/*.jsonl"]   # ★ 去年度硬编码（2027 不失明 · YB 3）
+applies-to: ["ledger/*.jsonl"]
 effective-from: 2026-10-09
 timing: post
 redtest: "bash tools/validate.sh --probe ADR-20261009-ledger-must-be-valid-utf8"
@@ -38,3 +38,8 @@ bash 把 `F` + 全角括号**首字节**当成变量名 ⇒ 展开为空 ⇒ 剩
 **⇒ 与 `ADR-…-shell-var-before-cjk-must-brace` 的关系**：那条**本就该拦住它**，但它的 `applies-to` 是 `**/*.sh`，
 而那条旧判据住在 `decisions/*.md` 的 `check:` 块里 —— **`check:` 块是 shell 代码，却在 `.md` 文件里** ⇒ 漏扫。
 **⇒ 本 ADR 是那张网的第二层**（第一层补在 shell-var 那条的 scope 上，见其 `applies-to`）。
+
+---
+
+> **注（2026-10-12 · YB 3）**：本门 `applies-to` 原写 `ledger/hits-2026.jsonl`（**年度硬编码**）⇒ 2027 年账本改名即**失明**，故改通配 `ledger/*.jsonl`。
+> ★ 并记：**值行内不得写 YAML 注释** —— 引擎按行取值，注释会被吞进值里（实测 `拓扑失配`）。

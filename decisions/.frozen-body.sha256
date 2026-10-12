@@ -5,15 +5,16 @@ b1694a130fda5b1abdf0e2b514eddb221e0243e8ec7c16ebdd799d28956088ba  ADR-20261009-P
 120f349f07db7ca096c5e315e1167d1e86e3c83cb185389018246bd3ec9c037b  ADR-20261009-PLAN-must-stay-under-150-lines.md
 5d8300acd49afa5306cbdb719feb32879f15b741bd69701dc1259605fc5ed6c7  ADR-20261009-README-must-carry-the-one-command.md
 3aa73190cbc62efade71d33635aae6bad058dc4b37437cc588943ac9c49a3924  ADR-20261009-VISION-must-exist-and-be-a-seed.md
-cf49376a04e709e51c0b02648a44b69eaeac039080f59364d9d1dc81f7c1de88  ADR-20261009-appeals-must-be-parseable.md
+3f25e0fa142b75e6d03b4272604f4d8f3f7fb808392836a4f3fbcf524d79c828  ADR-20261009-appeals-must-be-parseable.md
+# rebaseline ADR-20261009-appeals-must-be-parseable.md 理由: 去年度硬编码：值行只留纯值（注释移正文）—— 引擎按行取值
 9f7e437a307ffd12d6a437684fdb962e9d973451f1874a6bbbce3be864d5de89  ADR-20261009-claim-needs-redtest.md
 337405710b208bb206f94e4ed5afe60bb0f6ba240c1ef5aa2413a59e34f792f5  ADR-20261009-cull-after-20-misses.md
 51f361101a27fb7903cfd6f69b2832ba2552a2bb97f2a84669d58d896cb064b7  ADR-20261009-dangerous-action-shapes-must-be-blocked.md
 73a1188f5fc7a8c17c58b813250ba7ca1926bc59572b83cb2912ebdc4b74cc59  ADR-20261009-docs-must-be-indexed.md
 f112e0b3e39a2bb271d84169c2df6c07566a0063ae06313aaf33d8c499866255  ADR-20261009-index-must-be-regenerated.md
 c0f8776c05330751daf785983d808d3890453e91c68ea47df5820aff983f1023  ADR-20261009-layer1-total-under-280-lines.md
-e947e9d5a1784b187d9c94fbcfe110551aa6716d2c1a975613f104e79cbaf2aa  ADR-20261009-ledger-must-be-valid-utf8.md
-4886631e572f944c18ff0f1e2f43d25efe8bd8ab6a0dd91107bb89d55cfa1d29  ADR-20261009-lesson-must-be-replayed.md
+314d3060910d36190a99884d5cc61e6a484d6c664a0b49df026d9e421d903fce  ADR-20261009-ledger-must-be-valid-utf8.md
+38fd2f8a9b72ac9c0d9df3309334c4d67b98da195e3a897b773a547633df6aa6  ADR-20261009-lesson-must-be-replayed.md
 7fac7ab5ec85a026a6cbe12ac2b51af0783be8d1562430aa644d47fcbaf11ae9  ADR-20261009-lesson-must-land-in-artifact.md
 1b577ab315080126db38f56219ff1af474aa3de3ead90e1110fc7a16d4dcf8c8  ADR-20261009-readme-must-carry-the-on-demand-pointer-block.md
 e1c8f26008594eda1462da27cd4b38ac97e354871a39fee4c8bcbcb42ec60299  ADR-20261009-shell-var-before-cjk-must-brace.md
@@ -27,6 +28,5 @@ bbd12d8b7b22bbf4c91cbc339571a08cf0b48972ffbc58f7c40a54e69e17a626  ADR-20261011-l
 fdba3c3fd94269051505596ccacfcddc5ce6685f71b0e1f365ab461566c35f46  ADR-20261011-recopy-must-equal-the-gene-set.md
 aa44c14c404efebee71da67882d5ec965d5167ad47ec28f20fc3a8369b2512bd  ADR-20261011-replay-per-revisit-period.md
 bd5748b5962269e14cf187b5aa8a266b580731caa7961f5071c4772edee009bd  ADR-20261011-supersede-must-be-paired.md
-e2f963c2c760d4aacf04e1a9b4b58a93798b62336ddab7c3886b0fccd927ca80  ADR-20261012-ledger-new-lines-parseable-and-referenced.md
+f5c45d37f1bacdbe1c547c8f13ea4d1ba806ba838fe90706bdecdc4d8e2d1a73  ADR-20261012-ledger-new-lines-parseable-and-referenced.md
 11c477452e79445beb3cd8ec7cdbc36e3e1af8fccb95d42da633875c8459b657  ADR-20261012-pool-consistency-must-be-checked.md
-# rebaseline ADR-20261012-pool-consistency-must-be-checked.md 理由: YB 2/3：去年度硬编码（2027 不失明）+ origin-amend 补三要素（只增不改）

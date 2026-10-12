@@ -3,7 +3,7 @@ id: ADR-20261012-ledger-new-lines-parseable-and-referenced
 seq: 9020
 status: accepted
 hard: true
-applies-to: ["ledger/*.jsonl"]   # ★ 去年度硬编码（2027 不失明 · YB 3）
+applies-to: ["ledger/*.jsonl"]
 effective-from: 2026-10-12
 timing: post
 redtest: "validate --probe ADR-20261012-ledger-new-lines-parseable-and-referenced"
@@ -76,3 +76,8 @@ valid-utf8 是其后继且只查编码）→ 均在锚点前，不作为判据�
 
 · 只扫 `ledger/hits-2026.jsonl`（F 由 applies-to 给出，引擎注入）；· 不写死路径（decisions 路径由 F 推导）；
 · 判据不区分"谁写的"（引擎/hook/人手），新增行一律受检；· gate_id 缺失/null 合法（schema 允许）。
+
+---
+
+> **注（2026-10-12 · YB 3）**：本门 `applies-to` 原写 `ledger/hits-2026.jsonl`（**年度硬编码**）⇒ 2027 年账本改名即**失明**，故改通配 `ledger/*.jsonl`。
+> ★ 并记：**值行内不得写 YAML 注释** —— 引擎按行取值，注释会被吞进值里（实测 `拓扑失配`）。
