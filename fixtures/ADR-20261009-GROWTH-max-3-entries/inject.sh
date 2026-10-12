@@ -1,8 +1,20 @@
 #!/usr/bin/env bash
-# 正例（2026-10-13 修）：本门判据 = "年轮 n>3 时，**溢出 (n-3) 必须真归档**"。
-# ⇒ 注入**2 条**年轮（n=3+2=5 ⇒ need=2），而 archive/growth/ 现已有 1 个年轮型归档 ⇒ 2 > 1 ⇒ **必须红**。
-# （旧版只注入 1 条 ⇒ 归档正好够 ⇒ 判据不再红 ⇒ probe 报"腐化" —— 夹具必须**越过阈值**，不是"改了就算"。）
+# 正例（2026-10-13 · ②-8）：**注入量由真仓现状派生**，不写死。
+#   判据 = "年轮 n>3 时，溢出 (n-3) 必须真归档" ⇒ 所以要越阈，必须让 **n-3 > 归档数**。
+#   ⇒ 注入到 `3 + 归档 + 1` 条（= 恰好让"溢出比归档多 1"）⇒ **边界样本**（②-7）。
 set -eu
 : "${F:?fixture needs $F (the file under test)}"
-printf '\n## 年轮 · 2026-10-13（夹具注入 A）\n\n占位。\n' >> "$F"
-printf '\n## 年轮 · 2026-10-14（夹具注入 B）\n\n占位。\n' >> "$F"
+live=$(grep -c '^## 年轮 ·' "$F")
+arch=0
+for g in archive/growth/*.md; do
+  [ -e "$g" ] || continue
+  grep -q '^## 年轮' "$g" && arch=$((arch+1))
+done
+target=$(( 3 + arch + 1 ))
+need=$(( target - live ))
+[ "$need" -lt 1 ] && need=1
+i=0
+while [ "$i" -lt "$need" ]; do
+  i=$((i+1))
+  printf '\n## 年轮 · 2026-10-13（夹具派生注入 #%d/%d · live=%d · arch=%d）\n\n派生注入。\n' "$i" "$need" "$live" "$arch" >> "$F"
+done
