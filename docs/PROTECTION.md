@@ -386,7 +386,7 @@ validity: alive | unproven | unattributable | flaky
 | 4 | **闭合清单第五元素**：清单迁移本身就是闭合的一部分（**ADR 落笔 => 同笔或紧邻一笔更新清单**）。 | 尚未（流程） | `KNOWN_ISSUES` §1 头注 |
 | 5 | **每个二分先问第三态**（本轮三个二分各漏一支，且漏的那支先验最高）。 | 尚未（推理） | 同上 `#ask-the-third-state` |
 | 6 | **静音仪器不能当证据**；**静默的腐败机制是"产出零"，而零冒充阴性**。 | 判据须有"能红"证明 | 同上 `#silent-instrument` |
-| 7 | **入口必须带按需指针**（README 的价值不在"内容全"，在"指向唯一的那一份"）。 | 已是闸门 | `ADR-20261009-readme-must-carry-the-on-demand-pointer-block` |
+| 7 | **入口必须带按需指针**（README 的价值不在"内容全"，在"指向唯一的那一份"）。 | 已是闸门 | `ADR-20261009-readme-must-be-a-truthful-entry（2026-10-12 由 ADR-20261009-readme-must-carry-the-on-demand-pointer-block 改名）` |
 
 ## 引擎与工件的分层（2026-10-09 · 实测驱动的解耦）
 
