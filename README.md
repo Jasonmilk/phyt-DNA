@@ -452,3 +452,12 @@ are listed in [`docs/INDEX.md`](docs/INDEX.md), and are **reachable from this RE
 | How did it grow? | [`GROWTH.md`](GROWTH.md) |
 | How does something die here? | [`DEPRECATE.md`](DEPRECATE.md) |
 | Where is this repo, and what does it *not* do? | [`position.md`](position.md) |
+
+### Wire the pre-commit hook (a fresh clone does not get it)
+
+Hooks live in `tools/hooks/`, **not** in `.git/hooks/`, and `core.hooksPath` is **per-clone** — so a fresh clone
+runs **no** hook at all (measured 2026-10-12). One line fixes it:
+
+```bash
+git config core.hooksPath tools/hooks
+```
