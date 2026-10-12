@@ -186,7 +186,7 @@ python3 - <<'PYDC'
 import io, glob, os, sys
 KEYS_OPEN=('if ','for ','while ','case ','{')
 bad=[]
-for f in sorted(glob.glob('tools/hooks/*')):
+for f in sorted(glob.glob('tools/hooks/*') + glob.glob('tools/*.sh')):
     if not os.path.isfile(f): continue
     depth=0; exit_at=None
     for n,raw in enumerate(io.open(f,encoding='utf-8').read().split('\n'),1):
@@ -194,7 +194,7 @@ for f in sorted(glob.glob('tools/hooks/*')):
         if not t or t.startswith('#'): continue
         for kw in ('fi','esac','}','done'): 
             if t==kw or t.startswith(kw+' ') or t.startswith(kw+';'):
-                depth-=1
+                if depth>0: depth-=1   # ★ 钳位：不让"收"多于"开"（bash 自己管不配对；这里只防误报）
         if exit_at is not None and depth==0 and not t.startswith(('fi','esac','}','done',';;')):
             bad.append('%s:第%d行（在 第%d行 exit 之后 · 深度0 ⇒ 真死代码）' % (os.path.basename(f), n, exit_at)); break
         if exit_at is None and depth==0 and (t.startswith('exit ') or t=='exit'):
@@ -206,22 +206,22 @@ PYDC
 if python3 - <<'PYDC' 2>/dev/null
 import io, glob, os
 bad=False
-for f in sorted(glob.glob('tools/hooks/*')):
+for f in sorted(glob.glob('tools/hooks/*') + glob.glob('tools/*.sh')):
     if not os.path.isfile(f): continue
     depth=0; exit_at=None
     for n,raw in enumerate(io.open(f,encoding='utf-8').read().split('\n'),1):
         t=raw.strip()
         if not t or t.startswith('#'): continue
         low=t
-        if low in ('fi','esac','}','done') or low.startswith(('fi ','esac ','} ','done ')): depth-=1
+        if depth>0: depth-=1   # ★ 钳位：不让"收"多于"开"（bash 自己管不配对；这里只防误报）
         if exit_at is not None and depth==0 and not low.startswith(('fi','esac','}','done',';;')):
             print('%s:第%d行（第%d行 exit 之后 · 顶层 ⇒ 死代码）' % (os.path.basename(f), n, exit_at)); bad=True; break
         if exit_at is None and depth==0 and (low=='exit' or low.startswith('exit ')): exit_at=n
-        if low.startswith(('if ','for ','while ','case ')) or low=='{': depth+=1
+        if low.startswith(('if ','for ','while ','case ')) or low=='{' or low.endswith('(){') or '() {' in low: depth+=1   # ★ 函数定义也是'开'（实测漏它=三条假阳）
 raise SystemExit(0 if not bad else 1)
 PYDC
 then grn "钩子里没有 exit 之后的死代码（深度感知）"; else red "钩子里的 exit 之后仍有可执行行（死代码 ⇒ 你以为它在工作）"; fi
-grn "（局限具名）死代码断言只覆盖 hooks/；tools/*.sh 需真解析器 —— 扩过去会假阳（引擎的模式分派实测误报）⇒ **宁可窄而真**"
+grn "死代码断言：hooks/ + tools/*.sh（深度钳位后无假阳；不配对由 bash 自管）"
 
 [ "$fail" = 0 ] && { echo "spec-lint: PASS"; exit 0; }
 echo "spec-lint: BLOCK（规范自身未过闸门）" >&2
