@@ -266,7 +266,7 @@ ring-close** (the single-gate probe is run by hand), and the report head prints 
 which is the point.
 
 **The pre-commit hook** scans staged text with the step-4 rules and rejects the commit on red;
-a `[wip]` message skips the scan but keeps regeneration. `--no-verify` is the shotgun — it kills
+`PHYT_WIP=1` skips the scan but keeps regeneration. `--no-verify` is the shotgun — it kills
 regeneration too; don't. CI remains the only real gate; the hook is convenience, not defense.
 
 *(Registered limitation: the scan must target the **staged snapshot**, not the working tree.)*
@@ -423,7 +423,7 @@ Evolution goes by **diff, not rewrite** — and the debt column hides nothing.
 | Replay | window rule (born unsatisfiable) | per-`revisit-on` periods + one-time **census** (`census: true`) | enforcement gate is a blueprint |
 | Report | hand-typed self-check ✅ | **derived self-attestation** — ✅/✗ computed from the generator's own output | — |
 | Frozen bodies | — | `frozen-body.sh` refuses silent rewrites (`--rebaseline` named) | — |
-| Hook interception | none | `.claude/` hook + **pre-commit staged scan** (`[wip]` escape) | **not observed in a real agent task** (T2); hook must target the staged snapshot |
+| Hook interception | none | `.claude/` hook + **pre-commit staged scan** (`PHYT_WIP` escape) | **not observed in a real agent task** (T2); hook must target the staged snapshot |
 | `--cull` | law only in conversation | judge in place (`validate.sh --cull`, report-only) | **no enforcement yet**: cold-store needs human approval |
 | Growth-ring format | four totals only | three numbers + three categories; the report head adds usage / replay coverage / recent retirements | trend / distribution / override-by-reason fields (T8) |
 | 60-minute parameter | hardcoded | calibratable field | **recalibrate after one year** (revisit-on 2027-04-09) |
@@ -455,15 +455,19 @@ are listed in [`docs/INDEX.md`](docs/INDEX.md), and are **reachable from this RE
 
 ### Wire the pre-commit hook (a fresh clone does not get it)
 
-Hooks live in `tools/hooks/`, **not** in `.git/hooks/To bypass the scan on purpose (mid-state commits), use the **environment variable** — not a `[wip]` tag in the message:
+Hooks live in `tools/hooks/`, **not** in `.git/hooks/`, and `core.hooksPath` is **per-clone** — so a fresh clone
+runs **no** hook at all (measured 2026-10-12). One line fixes it:
+
+```bash
+git config core.hooksPath tools/hooks
+```
+
+To bypass the scan on purpose (mid-state commits), use an **environment variable** — not a `[wip]` tag in the message:
 git cannot see the pending message inside `pre-commit`, so a tag would only reflect the *previous* commit (measured).
 
 ```bash
 PHYT_WIP=1 git commit -m "…"
 ```
-
-```bash
-git config core.hooksPath tools/hooks
 ```bash
 git config core.hooksPath tools/hooks
 ```
