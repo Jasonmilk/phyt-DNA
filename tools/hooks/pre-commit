@@ -6,7 +6,20 @@
 #
 # ★ 2026-10-12 重写（园丁裁定 0）：原版有三处控制流病，导致**新增的阻断是不可达的死代码**：
 #   ① 第 9 行 `cd … ||` 后面接了注释与 if ⇒ **`||` 短路掉整块 wip 判断**（永不执行）；
-#   ② 第 26 行**无条件 `exit 0`** ⇒ 其后的重生/阻断**全是死代码**（"死判据"家族第 9 例）；
+#   ② 第 26 行**无条件 `# ── ③ ci-local 门禁（2026-10-13 · 清单 1 ①）：**提交前必须 ci-local 绿** ─────────────
+#   ★ 为什么在钩子里跑它（而不是再写一套）：`ci-local` 里就有【全仓扫描 + spec-lint + 心跳 + 基线】
+#     ⇒ 钩子与 CI **同款**（这是"断言面移到提交之前"的唯一可靠形态：不是"我记得跑"，是"跑不过就不许提交"）。
+#   ★ [wip]/PHYT_WIP 逃生门只跳这一步（中间态提交需要它），重生照做、CI 兜底。
+if [ "${WIP:-0}" = 0 ]; then
+  ci_out=$(bash tools/ci-local.sh 2>&1); ci_rc=$?
+  if [ "$ci_rc" != 0 ]; then
+    echo "⛔ ci-local 未全绿 ⇒ 拒绝提交（红不许溜出本机；这正是第八/九次红着推的根因）" >&2
+    printf '%s\n' "$ci_out" | grep -E '★ RED|CI-LOCAL|违规' | head -6 | sed 's/^/   /' >&2
+    exit 1
+  fi
+  echo "  [pre-commit] ci-local 全绿（扫描 + spec-lint + 心跳 + 基线 —— 与 CI 同款）"
+fi
+exit 0`** ⇒ 其后的重生/阻断**全是死代码**（"死判据"家族第 9 例）；
 #   ③ 其后一个 `if/else` 缺 `fi`。
 #   ⇒ 现在：**无早退、无死代码**；逃生门（[wip]）只跳【扫描】、**保留【重生】**。
 set -uo pipefail
@@ -28,14 +41,7 @@ if [ "$WIP" = 0 ]; then
     printf '{"tool":"Write","paths":["%s"]}\n' "$f" | bash tools/validate.sh --timing post > /tmp/.hookscan.$$ 2>&1
     if [ $? = 2 ]; then grep -m1 '违规' /tmp/.hookscan.$$ | sed 's/^/  ★ 违规: /'; viol=1; fi
   done
-  # ★ 2026-10-12（六次红着推的根因）：**扫描不含 spec-lint 自判** ⇒ "lint 红"能溜出本机。
-  #   ⇒ 把 spec-lint 也接进钩子（与扫描同一条逃生门：[wip]/PHYT_WIP 时跳过）。
-  sl_out=$(bash tools/spec-lint.sh docs/PROTECTION.md 2>&1); sl_rc=$?
-  if [ "$sl_rc" != 0 ]; then
-    printf '%s\n' "$sl_out" | grep -E 'RED|BLOCK' | head -3 | sed 's/^/  ★ lint: /'
-    echo "  ⇒ spec-lint 红 ⇒ 拒绝提交（把红挡在本机）" >&2; exit 1
-  fi
-  rm -f /tmp/.hookscan.$$
+
   if [ "$viol" = 1 ]; then echo "  ⇒ step 4 扫描有违规 ⇒ 拒绝提交（防线前移到事前）" >&2; exit 1; fi
 else
   echo "  [pre-commit] 提交信息含 [wip] ⇒ 跳过 step-4 扫描（**仍重生** INDEX/清单/基线；CI 兜底）"
