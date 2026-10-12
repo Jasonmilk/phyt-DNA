@@ -29,8 +29,12 @@ check: |
     done
     c=$(printf '%s' "$o" | sed -n 's/.*提交=\([0-9a-f]\{7,\}\).*/\1/p')
     case "$BSHA" in "$c"*) [ -n "$c" ] && echo "④ origin 自证（提交=${c} 就是本 ADR 的出生提交）⇒ 那不是证据，是自己证明自己" ;; esac
-    printf '%s' "$o" | grep -qE '事件=[^·]*(立本门|本轮|我觉得|我认为)' && echo "④ origin 的 事件= 是自造事件（立本门/本轮/我觉得不算）⇒ 须指 task / 真实事故 / 采用 / 园丁裁定"
-    printf '%s' "$o" | grep -qE '证据行=[^·]*(第 ?[0-9]+ ?行|event_id=|task-) ' || printf '%s' "$o" | grep -qE '证据行=[^·]*(第 ?[0-9]+ ?行|event_id=|task-)' || echo "④ origin 的 证据行= 没有【行号或 event_id】（只给文件名不算证据）"
+    if printf '%s' "$o" | grep -qE '事件=[^·]*(立本门|本轮|我觉得|我认为)'; then
+    echo "④ origin 的 事件= 是自造事件（立本门/本轮/我觉得不算）⇒ 须指 task / 真实事故 / 采用 / 园丁裁定"
+  fi
+    if ! printf '%s' "$o" | grep -qE '证据行=[^·]*(第 ?[0-9]+ ?行|event_id=|task-)'; then
+    echo "④ origin 的 证据行= 没有【行号或 event_id】（只给文件名不算证据）"
+  fi
   fi
 last-hit: null
 hit-count: 0

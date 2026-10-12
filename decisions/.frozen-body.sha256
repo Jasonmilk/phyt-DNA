@@ -19,7 +19,8 @@ e2b7dc3e564a7c495902fbdd10e1f508814c690cb752d905457874c008457782  ADR-20261009-l
 71b0014c70a913ab47d97680544fa639c2ce8d7c6a0227ccd2db1e123b4738de  ADR-20261009-readme-must-carry-the-on-demand-pointer-block.md
 f26a98a3cb04497b3c4334ddbb4f0b6dd3f68547dde45ca54f4d544a3c297fad  ADR-20261009-shell-var-before-cjk-must-brace.md
 7fd4bc72b6899850df248c66170bc0427a2a9c8a3b546c7c42a5aff0bf3c689d  ADR-20261009-upstream-manifest-threat-model.md
-fd59c1967916a9c56fb99a2e88322c0b825b1dfed8ed2f59db043c9b8916e815  ADR-20261011-derivation-must-carry-origin.md
+b5a795b5c69a6f99b99a4f02e5b6439182e461a24d102838a8ee5b8b9431db95  ADR-20261011-derivation-must-carry-origin.md
+# rebaseline ADR-20261011-derivation-must-carry-origin.md 理由: 判据形状改 if（去 presence 形状）
 67af532f9e29ef5b580273cd56e9e2855b52fb02cffffca8de031959eb9194f9  ADR-20261011-dna-modification-first-exercise.md
 18c6f8f2e55cfffaa048f889094db16d47ab3e09a596b89434729a622b22c207  ADR-20261011-failure-must-be-named-where-machines-can-read.md
 bafc8a095eb14a4975e9dd861454f87e750e2ed57e8d3132a582fb0859bdfe03  ADR-20261011-frozen-body-immutable.md
@@ -31,4 +32,3 @@ bd5748b5962269e14cf187b5aa8a266b580731caa7961f5071c4772edee009bd  ADR-20261011-s
 3610c9b127903f654f2ba9b2ff684dc154599b22bf2f87939008254b7a6ef7eb  ADR-20261012-ledger-new-lines-parseable-and-referenced.md
 e69afe4c22b78925b52743b3ec3c5d0ea08ec70c334e97fa03d0ebe684efc964  ADR-20261012-pool-consistency-must-be-checked.md
 0bceae24296fe1a66a83e4d4bd974eea5c46f4b028a0acb0e5f91938fb48855a  ADR-20261013-probe-scope-must-be-tagged.md
-# rebaseline ADR-20261013-probe-scope-must-be-tagged.md 理由: 图纸：证据尚未产生
