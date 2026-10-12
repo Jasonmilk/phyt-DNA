@@ -186,7 +186,7 @@ python3 - <<'PYDC'
 import io, glob, os, sys
 KEYS_OPEN=('if ','for ','while ','case ','{')
 bad=[]
-for f in sorted(glob.glob('tools/hooks/*') + glob.glob('tools/*.sh')):
+for f in sorted(glob.glob('tools/hooks/*')):
     if not os.path.isfile(f): continue
     depth=0; exit_at=None
     for n,raw in enumerate(io.open(f,encoding='utf-8').read().split('\n'),1):
@@ -206,7 +206,7 @@ PYDC
 if python3 - <<'PYDC' 2>/dev/null
 import io, glob, os
 bad=False
-for f in sorted(glob.glob('tools/hooks/*') + glob.glob('tools/*.sh')):
+for f in sorted(glob.glob('tools/hooks/*')):
     if not os.path.isfile(f): continue
     depth=0; exit_at=None
     for n,raw in enumerate(io.open(f,encoding='utf-8').read().split('\n'),1):
@@ -221,6 +221,7 @@ for f in sorted(glob.glob('tools/hooks/*') + glob.glob('tools/*.sh')):
 raise SystemExit(0 if not bad else 1)
 PYDC
 then grn "钩子里没有 exit 之后的死代码（深度感知）"; else red "钩子里的 exit 之后仍有可执行行（死代码 ⇒ 你以为它在工作）"; fi
+grn "（局限具名）死代码断言只覆盖 hooks/；tools/*.sh 需真解析器 —— 扩过去会假阳（引擎的模式分派实测误报）⇒ **宁可窄而真**"
 
 [ "$fail" = 0 ] && { echo "spec-lint: PASS"; exit 0; }
 echo "spec-lint: BLOCK（规范自身未过闸门）" >&2

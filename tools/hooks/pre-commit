@@ -28,6 +28,13 @@ if [ "$WIP" = 0 ]; then
     printf '{"tool":"Write","paths":["%s"]}\n' "$f" | bash tools/validate.sh --timing post > /tmp/.hookscan.$$ 2>&1
     if [ $? = 2 ]; then grep -m1 '违规' /tmp/.hookscan.$$ | sed 's/^/  ★ 违规: /'; viol=1; fi
   done
+  # ★ 2026-10-12（六次红着推的根因）：**扫描不含 spec-lint 自判** ⇒ "lint 红"能溜出本机。
+  #   ⇒ 把 spec-lint 也接进钩子（与扫描同一条逃生门：[wip]/PHYT_WIP 时跳过）。
+  sl_out=$(bash tools/spec-lint.sh docs/PROTECTION.md 2>&1); sl_rc=$?
+  if [ "$sl_rc" != 0 ]; then
+    printf '%s\n' "$sl_out" | grep -E 'RED|BLOCK' | head -3 | sed 's/^/  ★ lint: /'
+    echo "  ⇒ spec-lint 红 ⇒ 拒绝提交（把红挡在本机）" >&2; exit 1
+  fi
   rm -f /tmp/.hookscan.$$
   if [ "$viol" = 1 ]; then echo "  ⇒ step 4 扫描有违规 ⇒ 拒绝提交（防线前移到事前）" >&2; exit 1; fi
 else
