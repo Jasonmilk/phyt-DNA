@@ -44,7 +44,15 @@ fi
 #   ⇒ 改为【无条件重算 + 比对】：重算 ≡ 已提交版 ? pass : **拒绝并提示 --update**（基线不许"下一笔补"）。
 um_out=$(bash tools/upstream-manifest.sh --write 2>&1); um_rc=$?
 if [ "$um_rc" != 0 ]; then echo "⛔ 引擎清单重生失败 ⇒ 拒绝提交: $(printf '%s' "$um_out" | tail -1)" >&2; exit 1; fi
-git add tools/upstream-manifest.sha256 2>/dev/null || true
+# ★ 2026-10-12（自伤修复）：**不许静默吞码** —— 原为 `git add tools/upstream-manifest.sha256 2>/dev/null || true`，
+#   而清单真名是 `tools/upstream-manifest.sh` ⇒ 名字错了就被吞掉 ⇒ 清单从未被带进提交（实测：ci-local step 0 反复红，我反复推）。
+git add tools/upstream-manifest.sh
+if ! git diff --cached --quiet -- tools/upstream-manifest.sh; then
+  echo "  [pre-commit] 引擎清单已同批重生并纳入提交"
+fi
+if git diff --quiet -- tools/upstream-manifest.sh; then :; else
+  echo "⛔ 引擎清单重生后仍有未暂存差异 ⇒ 拒绝提交" >&2; exit 1
+fi
 cb_out=$(bash tools/check-baseline.sh --update 2>&1); cb_rc=$?
 printf '%s\n' "$cb_out" | tail -1
 if [ "$cb_rc" != 0 ]; then echo "⛔ 资产基线重算失败（rc=$cb_rc）⇒ 拒绝提交" >&2; exit 1; fi
