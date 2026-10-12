@@ -24,8 +24,8 @@ c3e2b3049e3af6eb7e77101718495b041130baba57478cda25563a5d50c294ea  ADR-20261011-d
 bafc8a095eb14a4975e9dd861454f87e750e2ed57e8d3132a582fb0859bdfe03  ADR-20261011-frozen-body-immutable.md
 ef6c49f99683f565e9cfab22a2e933e912eceab3d3f8a1ee78dcbd816975ac8d  ADR-20261011-layer1-budget-is-attention-not-maintenance.md
 bbd12d8b7b22bbf4c91cbc339571a08cf0b48972ffbc58f7c40a54e69e17a626  ADR-20261011-layer1-threshold-calibrated-by-premiere.md
-9710370865fa18f29af2e3160ee9b71233a53ae4a26f12d747b3bc0c172a76bc  ADR-20261011-recopy-must-equal-the-gene-set.md
+e7919fcd72f60275915931c3b4407d8d60d19b2442d631891602693e7f541d27  ADR-20261011-recopy-must-equal-the-gene-set.md
 aa44c14c404efebee71da67882d5ec965d5167ad47ec28f20fc3a8369b2512bd  ADR-20261011-replay-per-revisit-period.md
 bd5748b5962269e14cf187b5aa8a266b580731caa7961f5071c4772edee009bd  ADR-20261011-supersede-must-be-paired.md
-ab568ab2e2827e8106bdd33efb7fa3217258f7c0a3b3d580dbd7778eae817c31  ADR-20261012-pool-consistency-must-be-checked.md
-0fb2a114de74309f3a9b09d4465a8703d206cccd297dea740f4be2d58c2a782d  ADR-99999999-injected-predecessor.md
+e8d53e4f0140441a945bc0e2a74e455e2bcc1d84ad9b6625d91389303772ea67  ADR-20261012-pool-consistency-must-be-checked.md
+# rebaseline ADR-20261012-pool-consistency-must-be-checked.md 理由: 第 1 轮更正：origin 只增不改 —— 原值逐字恢复 + 追加 origin-amend（含当时测量证据）；依据外挂 ❶

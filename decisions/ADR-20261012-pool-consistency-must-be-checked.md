@@ -10,7 +10,8 @@ redtest: "validate --probe ADR-20261012-pool-consistency-must-be-checked"
 revisit-on: 2027-04-12
 expires-on: null
 owner: "@jason"
-origin: "reviewer ①③（2026-10-11/12）：`check-pool.sh` 此前是**独立脚本、不是 ADR** ⇒ 没有夹具机制 ⇒ 只能永远 unproven；且我最初的隔离临时目录实验**模型本身是错的**（不在 git 索引里，引擎用 git ls-files 解析 glob）"
+origin: "reviewer ①③（2026-10-11/12）据此提炼：`check-pool.sh` 此前是**独立脚本、不是 ADR** ⇒ 没有夹具机制 ⇒ 只能永远 unproven；且我最初的隔离临时目录实验**模型本身是错的**（不在 git 索引里，引擎用 git ls-files 解析 glob）"
+origin-amend: "【第 1 轮更正 · 2026-10-12】上文将本事写成"reviewer ①③"⇒ 本事的物理证据是：pair 断**跨三笔**（5208c23/7a044c8/b210819）而配对闸门静默 = 存量违规按文件判永不被判（当时测量见 GROWTH 同圈"重跑对表/配对回放"）"
 risk: normal
 check: |
   [ -f "$F" ] || { echo "输入失效: $F 不存在（静默失败=伪证）"; }
