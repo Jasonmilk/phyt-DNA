@@ -23,26 +23,26 @@ check: |
   # ① 按需指针块 —— **按语言分叉**（同一判据、两种形态：园丁 2026-10-12；名 ⊇ 判据见 body 的职责表）
   case "$F" in
     *README.zh-CN.md)
-      grep -qE '^## ▸ 从这里开始|^## 从这里开始' "$F" || echo "README.zh-CN.md 缺【从这里开始】段（中文入口会退化成目录）"
-      grep -qE '^\| *我要回答的问题 *\|' "$F" || echo "README.zh-CN.md 缺【问题 → 读这个】表头"
-      grep -q 'docs/INDEX.md' "$F" || echo "README.zh-CN.md 未指向 docs/INDEX.md"
+      grep -qE '^## ▸ 从这里开始|^## 从这里开始' "$F" || echo "① README.zh-CN.md 缺【从这里开始】段（中文入口会退化成目录）"
+      grep -qE '^\| *我要回答的问题 *\|' "$F" || echo "① README.zh-CN.md 缺【问题 → 读这个】表头"
+      grep -q 'docs/INDEX.md' "$F" || echo "① README.zh-CN.md 未指向 docs/INDEX.md"
       ;;
     *)
-      grep -qE '^## Start here' "$F" || echo "README.md 缺【Start here】段（入口会退化成目录）"
-      grep -qE '^\| *The question you are asking *\|' "$F" || echo "README.md 缺【question → read this】表头（读者无法按需取用）"
-      grep -q 'docs/INDEX.md' "$F" || echo "README.md 未指向 docs/INDEX.md（按问题索引的唯一入口）"
-      if LC_ALL=C grep -qE '^\| *我要回答的问题' "$F"; then echo "README.md 混入了中文块（应放在 README.zh-CN.md）"; fi
+      grep -qE '^## Start here' "$F" || echo "① README.md 缺【Start here】段（入口会退化成目录）"
+      grep -qE '^\| *The question you are asking *\|' "$F" || echo "① README.md 缺【question → read this】表头（读者无法按需取用）"
+      grep -q 'docs/INDEX.md' "$F" || echo "① README.md 未指向 docs/INDEX.md（按问题索引的唯一入口）"
+      if LC_ALL=C grep -qE '^\| *我要回答的问题' "$F"; then echo "① README.md 混入了中文块（应放在 README.zh-CN.md）"; fi
       ;;
   esac
   # ② 可执行：bash 命令块里不许有 <…> 占位符（读者会照抄 ⇒ 跑不通）
   PL=$(grep -nE '`bash [^`]*<[^`]*`' "$F" | head -3)
-  [ -n "$PL" ] && echo "bash 命令块含占位符 <…>（照抄跑不通）: $(printf '%s' "$PL" | tr '\n' ' ')"
+  [ -n "$PL" ] && echo "② bash 命令块含占位符 <…>（照抄跑不通）: $(printf '%s' "$PL" | tr '\n' ' ')"
   # ③ 路径真：README 声明的【本仓】路径必须存在；跨仓引用必须写成 <repo>/… 形状（自定义原则：形状要能自我说明归属）
   #   ★ 单行实现（不用续行、不用多行管道）：实测本判据曾因续行/多行管道【整段不跑】⇒ 绿是静默腐化。
   for p in $(grep -oE '(^|[^A-Za-z0-9_./-])((tools|docs|decisions|examples)/[A-Za-z0-9_./-]+|(README\.zh-CN|VISION|DNA|SPEC|RNA|PLAN|GROWTH|DEPRECATE)\.md)([^A-Za-z0-9_./*-]|$)' "$F" | sed -E -e 's|^[^A-Za-z0-9_./-]||' -e 's|[^A-Za-z0-9_./-]$||' | grep -E '\.(md|sh|py|jsonl|json|sha256|txt|ya?ml)$' | sort -u); do
     [ -n "$p" ] || continue
     case "$p" in tools/todo-ready.sh) continue ;; esac
-    [ -e "$ROOT/$p" ] || echo "README 指向 ${p}：本仓不存在它 ⇒ 要么断链，要么【跨仓引用形状错】—— 跨仓必须写成 <repo>/… 形状"
+    [ -e "$ROOT/$p" ] || echo "③ README 指向 ${p}：本仓不存在它 ⇒ 要么断链，要么【跨仓引用形状错】—— 跨仓必须写成 <repo>/… 形状"
   done
   # ④ 版本真值源 = 分支（**不存版本号**：分支是物理事实，存下来的数过期时从不响）
   # ★ 真值源必须是【物理锚点】（园丁 0′）：HEAD 是**可移动指针**（谁 checkout 都变）⇒ 不用它。
@@ -53,10 +53,10 @@ check: |
   [ -n "$BR" ] || skip "版本次第 tag 与远端默认分支 symref 都取不到 ⇒ 版本真值源不可得"
   case "$BR" in v[0-9]*) ;; *) skip "真值源 ${BR} 非版本次第（vN）形态 ⇒ 不判" ;; esac
   ID=$(grep -m1 '^id: ' "$F" | sed 's/^id: *//')
-  [ "$ID" = "DOC-README-${BR}" ] || echo "版本不一致：真值源 ${BR} ⇒ id 应为 DOC-README-${BR}，实为 ${ID}"
+  [ "$ID" = "DOC-README-${BR}" ] || echo "④ 版本不一致：真值源 ${BR} ⇒ id 应为 DOC-README-${BR}，实为 ${ID}"
   SUP=$(grep -m1 '^supersedes: ' "$F" | sed 's/^supersedes: *//')
   if [ -n "$SUP" ]; then
-    grep -q "^status: deprecated" "$ROOT/docs/archive/${SUP}.md" || echo "supersedes: ${SUP} 无真源（docs/archive/${SUP}.md 缺失或缺 status: deprecated）⇒ 配对不可执行"
+    grep -q "^status: deprecated" "$ROOT/docs/archive/${SUP}.md" || echo "④ supersedes: ${SUP} 无真源（docs/archive/${SUP}.md 缺失或缺 status: deprecated）⇒ 配对不可执行"
   fi
 last-hit: null
 hit-count: 0

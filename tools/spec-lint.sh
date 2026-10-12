@@ -67,6 +67,27 @@ else
   grn "测试脚本无全量还原命令"
 fi
 
+# ★ 2026-10-12（YB 3 · 净 0）：两条断言 —— 专治【死判据】与【红不知道是哪一条】
+#   ① 每个 ADR 的 check 体（剥 2 空格后）必须是合法 bash：实测教训 —— 续行/多行管道让一条判据
+#      【整段不跑】，而它照绿（哑失败第 6 类）；`bash -n` 当场抓住。
+#   ② 声明了编号判据的门（正文有 `| ① |` 形状的表）⇒ check 体里必须带同样的编号前缀
+#      （红要能一眼指出是哪一条判据，而不是笼统"README 有问题"）。
+dead=""; unnum=""
+for f in decisions/ADR-*.md; do
+  grep -q '^check: |' "$f" || continue
+  body=$(awk '/^check: \|/{f=1;next} f&&/^[^ ]/{f=0} f&&NF{print}' "$f" | sed 's/^  //')
+  printf '%s' "$body" | bash -n 2>/tmp/bn.$$.err || dead="$dead $(basename "$f")"
+  if grep -q '^| ① |' "$f"; then
+    for n in ① ② ③ ④; do
+      grep -q "^| $n |" "$f" || continue
+      printf '%s' "$body" | grep -q "$n" || unnum="$unnum $(basename "$f"):$n"
+    done
+  fi
+done
+rm -f /tmp/bn.$$.err
+if [ -n "$dead" ]; then red "check 体不是合法 bash（剥 2 空格后 ⇒ 该判据整段不跑＝死判据）:$dead"; else grn "所有 check 体（剥 2 空格后）都是合法 bash"; fi
+if [ -n "$unnum" ]; then red "声明了编号判据但 check 体缺对应编号:$unnum"; else grn "编号判据的 check 体都带编号前缀"; fi
+
 echo
 [ "$fail" = 0 ] && { echo "spec-lint: PASS"; exit 0; }
 echo "spec-lint: BLOCK（规范自身未过闸门）" >&2

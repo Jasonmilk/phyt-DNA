@@ -103,6 +103,10 @@ sys.stdout.write(json.dumps(rec, ensure_ascii=False) + "\n")
 }
 probe_one(){ # probe_one <gate-id> → 0=闸门活着（RED）· 2=腐化/拓扑失配/假阳性
   local id="$1" F fx out cf out2 chk_src
+  if grep -q '^status: deprecated' "$DEC_DIR/$id.md"; then
+    echo "  具名跳过: $id 是 deprecated 存根（引擎 gates() 本就不跑它）—— 不是红，也不是绿" >&2
+    rec "$id" skip "deprecated stub: gates() skips it"; return 0
+  fi
   F=$(glob_first "$id")
   chk_src=$(check_of "$id")   # 判据正文取一次（原先两处各取一次）
   if [ ! -f "$F" ]; then echo "  [B] 拓扑失配: $F 不存在" >&2; rec "$id" block "topology-mismatch"; return 2; fi
