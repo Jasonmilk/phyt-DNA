@@ -14,7 +14,21 @@ origin: "指派 2026-10-12（豆包执笔）：两笔旧账 —— ① 82 行坏
 risk: normal
 check: |
   [ -f "$F" ] || { echo "输入失效: $F 不存在（静默失败=伪证）"; }
-  ANCHOR=932   # 2026-10-12 本闸门生效时 ledger/hits-2026.jsonl 的非空物理行数（append-only ⇒ 文件只增不减，锚点单调；锚点前=存量，锚点后=新增）
+  # ★ 锚点【由 git 派生】—— 不许存"当时是多少"（YB 2026-10-12 裁决）：
+  #   锚点 = $F 在【本门出生提交的父提交】里的非空行数；当时不存在（2027 轮换的新账本 / 后建的小文件）⇒ 0。
+  #   ⇒ 一门一文件一锚点 ⇒ 换年、appeals 这类文件 全部自动正确。
+  #   病理解剖：原 ANCHOR=932 是【相对于 hits-2026.jsonl】的度量。作用域扩到 ledger/*.jsonl 后，
+  #   glob 首个匹配落到 ledger/appeals-2026.jsonl（实测 git ls-files 序）⇒ 整文件 ≤ 锚点 ⇒ 门恒绿且**不出声**。
+  #   元律：**常数只相对于某个作用域成立；作用域一变，常数必须重算。** 存下来的数不会自己更新，过期时也从不响。
+  SELF=decisions/ADR-20261012-ledger-new-lines-parseable-and-referenced.md
+  BIRTH=$(git log --diff-filter=A --format=%H -1 -- "$SELF")
+  LOG="$F"
+  in_tree(){ git ls-tree -r --name-only "$1" -- "$2" | grep -q .; }   # 存在则 0；不存在**不出错也不出声**
+  if [ -n "$BIRTH" ] && ! in_tree "$BIRTH^" "$LOG"; then LOG="ledger/$(basename "$F")"; fi
+  ANCHOR=0
+  if [ -n "$BIRTH" ] && in_tree "$BIRTH^" "$LOG"; then
+    ANCHOR=$(git show "$BIRTH^:$LOG" | awk 'NF{c++} END{print c+0}')
+  fi
   python3 - "$F" "$ANCHOR" <<'PY'
   import json, sys, glob, os
   F = sys.argv[1]; anchor = int(sys.argv[2])
