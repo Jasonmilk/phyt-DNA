@@ -13,6 +13,32 @@
 #   E. 具名的例外（probe: none + probe-why）
 # Usage: bash tools/xray.sh
 set -uo pipefail
+
+# ★ H0 第一应用（2026-10-12 裁定 1）：**这份清单自己也不写死** —— 用命令产出，按三类数报：
+#   会过期（写死的测量）· 不会过期（政策，锚在 ADR）· 已闭合（门已 deprecated）。
+if [ "${1:-}" = "--constants" ]; then
+  python3 - <<'PY'
+import glob, io, os, re, subprocess
+expiring=[]; policy=[]; closed=[]
+POLICY_RE=re.compile(r'(-gt|-ge|-lt|-le|-eq)\s+([0-9]+)')
+for f in sorted(glob.glob('decisions/ADR-*.md')):
+    s=io.open(f,encoding='utf-8').read(); gid=os.path.basename(f)[:-3]
+    if 'check: |' not in s: continue
+    body=subprocess.run(['bash','-c',"awk '/^check: \|/{f=1;next} f&&/^[^ ]/{f=0} f&&NF{print}' '%s' | sed 's/^  //'" % f],capture_output=True,text=True).stdout
+    body='\n'.join(l for l in body.split('\n') if not l.strip().startswith('#'))   # ★ 跳过注释（散文里的历史说明不是常数）
+    if 'status: deprecated' in s.split('---')[1] if s.startswith('---') else False:
+        closed.append(gid); continue
+    for m in POLICY_RE.finditer(body):
+        (policy if m.group(1) in ('-gt','-le','-lt','-ge') else expiring).append('%s: %s' % (gid[:34], m.group(0)))
+    for m in re.finditer(r'=\s*["\']?([0-9]{3,})', body):
+        expiring.append('%s: 字面 %s' % (gid[:34], m.group(1)))
+print('  会过期（写死的测量）: %d 条 —— 这些必须改【派生】或登记例外' % len(expiring))
+for e in expiring[:8]: print('    ·', e)
+print('  不会过期（政策 · 锚在 ADR）: %d 条（阈值型判断；其真值源 = 各自的 ADR）' % len(policy))
+print('  已闭合（门已 deprecated）: %d 个门' % len(set(closed)))
+PY
+  exit 0
+fi
 DEC_DIR="${PHYT_DECISIONS:-decisions}"
 FIX_DIR="${PHYT_FIXTURES:-fixtures}"
 LED_DIR="${PHYT_LEDGER:-ledger}"

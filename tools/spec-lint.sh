@@ -186,7 +186,7 @@ python3 - <<'PYDC'
 import io, glob, os, sys
 KEYS_OPEN=('if ','for ','while ','case ','{')
 bad=[]
-for f in sorted(glob.glob('tools/hooks/*')):
+for f in sorted(glob.glob('tools/hooks/*') + glob.glob('tools/*.sh')):
     if not os.path.isfile(f): continue
     depth=0; exit_at=None
     for n,raw in enumerate(io.open(f,encoding='utf-8').read().split('\n'),1):
@@ -206,7 +206,7 @@ PYDC
 if python3 - <<'PYDC' 2>/dev/null
 import io, glob, os
 bad=False
-for f in sorted(glob.glob('tools/hooks/*')):
+for f in sorted(glob.glob('tools/hooks/*') + glob.glob('tools/*.sh')):
     if not os.path.isfile(f): continue
     depth=0; exit_at=None
     for n,raw in enumerate(io.open(f,encoding='utf-8').read().split('\n'),1):

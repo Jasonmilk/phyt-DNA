@@ -34,6 +34,9 @@ check: |
       if LC_ALL=C grep -qE '^\| *我要回答的问题' "$F"; then echo "① README.md 混入了中文块（应放在 README.zh-CN.md）"; fi
       ;;
   esac
+  # ★ 2（2026-10-12 · 第二次踩）：**代码围栏必须配对** —— 半个围栏会把后面的排版整段吃掉（我实测吃掉过一个块边界）。
+  NF=$(grep -c '^```' "$F")
+  [ $((NF % 2)) = 0 ] || echo "② 代码围栏不配对：${NF} 个 \`\`\`（奇数）⇒ 后面排版会被吃掉"
   PL=$(grep -nE '`bash [^`]*<[^`]*`' "$F" | head -3)
   [ -n "$PL" ] && echo "② bash 命令块含占位符 <…>（照抄跑不通）: $(printf '%s' "$PL" | tr '\n' ' ')"
   PAT_A='(^|[^A-Za-z0-9_./-])(tools|docs|decisions|examples)/[A-Za-z0-9_./-]+([^A-Za-z0-9_./*-]|$)'      # ③a
