@@ -1,14 +1,14 @@
 # ADR-20261009：README 必须带「按需指针」块（否则入口会退化成目录）
 
 ---
-id: ADR-20261009-readme-must-carry-the-on-demand-pointer-block
+id: ADR-20261009-readme-must-be-a-truthful-entry
 seq: 9010
 status: accepted
 hard: true
-applies-to: ["README.md"]
+applies-to: ["README.md", "README.zh-CN.md"]
 effective-from: 2026-10-09
 timing: post
-redtest: "validate --probe ADR-20261009-readme-must-carry-the-on-demand-pointer-block"
+redtest: "validate --probe ADR-20261009-readme-must-be-a-truthful-entry"
 revisit-on: 2027-04-09
 expires-on: null
 owner: "@jason"
@@ -20,11 +20,20 @@ check: |
   # 为什么折进【已存在】的门而不是新立：出生律"不许凭空长面"。这道门本来就是"README 的入口质量"，判据变多而已。
   skip(){ echo "具名跳过: $1（不判 —— 没有真值源就没有判据）" >&2; exit 4; }
   ROOT=$(git rev-parse --show-toplevel) || skip "非 git 工作区，版本真值源不可得"
-  # ① 按需指针块（与工件真实形态一致：README.md 是英文，中文块在 README.zh-CN.md）
-  grep -qE '^## Start here' "$F" || echo "README.md 缺【Start here】段（入口会退化成目录）"
-  grep -qE '^\| *The question you are asking *\|' "$F" || echo "README.md 缺【question → read this】表头（读者无法按需取用）"
-  grep -q 'docs/INDEX.md' "$F" || echo "README.md 未指向 docs/INDEX.md（按问题索引的唯一入口）"
-  if LC_ALL=C grep -qE '^\| *我要回答的问题' "$F"; then echo "README.md 混入了中文块（应放在 README.zh-CN.md）"; fi
+  # ① 按需指针块 —— **按语言分叉**（同一判据、两种形态：园丁 2026-10-12；名 ⊇ 判据见 body 的职责表）
+  case "$F" in
+    *README.zh-CN.md)
+      grep -qE '^## ▸ 从这里开始|^## 从这里开始' "$F" || echo "README.zh-CN.md 缺【从这里开始】段（中文入口会退化成目录）"
+      grep -qE '^\| *我要回答的问题 *\|' "$F" || echo "README.zh-CN.md 缺【问题 → 读这个】表头"
+      grep -q 'docs/INDEX.md' "$F" || echo "README.zh-CN.md 未指向 docs/INDEX.md"
+      ;;
+    *)
+      grep -qE '^## Start here' "$F" || echo "README.md 缺【Start here】段（入口会退化成目录）"
+      grep -qE '^\| *The question you are asking *\|' "$F" || echo "README.md 缺【question → read this】表头（读者无法按需取用）"
+      grep -q 'docs/INDEX.md' "$F" || echo "README.md 未指向 docs/INDEX.md（按问题索引的唯一入口）"
+      if LC_ALL=C grep -qE '^\| *我要回答的问题' "$F"; then echo "README.md 混入了中文块（应放在 README.zh-CN.md）"; fi
+      ;;
+  esac
   # ② 可执行：bash 命令块里不许有 <…> 占位符（读者会照抄 ⇒ 跑不通）
   PL=$(grep -nE '`bash [^`]*<[^`]*`' "$F" | head -3)
   [ -n "$PL" ] && echo "bash 命令块含占位符 <…>（照抄跑不通）: $(printf '%s' "$PL" | tr '\n' ' ')"
@@ -41,9 +50,10 @@ check: |
   # ④ 版本真值源 = 分支（**不存版本号**：分支是物理事实，存下来的数过期时从不响）
   # ★ 真值源必须是【物理锚点】（园丁 0′）：HEAD 是**可移动指针**（谁 checkout 都变）⇒ 不用它。
   #   优先级：远端默认分支 symref（origin/HEAD → origin/v2） > 版本次第 tag（vN）；都取不到 ⇒ **复用 skip()**（exit 4）。
-  BR=$(git symbolic-ref -q --short refs/remotes/origin/HEAD | sed 's|^origin/||')
-  if [ -z "$BR" ]; then BR=$(git tag --list 'v[0-9]*' --sort=-creatordate | head -1); fi
-  [ -n "$BR" ] || skip "远端默认分支 symref 与版本次第 tag 都取不到 ⇒ 版本真值源不可得"
+  #   优先级（园丁 2026-10-12）：**版本次第 tag > 远端默认分支 symref > skip()** —— tag 是显式放行标记。
+  BR=$(git tag --list 'v[0-9]*' --sort=-creatordate | head -1)
+  if [ -z "$BR" ]; then BR=$(git symbolic-ref -q --short refs/remotes/origin/HEAD | sed 's|^origin/||'); fi
+  [ -n "$BR" ] || skip "版本次第 tag 与远端默认分支 symref 都取不到 ⇒ 版本真值源不可得"
   case "$BR" in v[0-9]*) ;; *) skip "真值源 ${BR} 非版本次第（vN）形态 ⇒ 不判" ;; esac
   ID=$(grep -m1 '^id: ' "$F" | sed 's/^id: *//')
   [ "$ID" = "DOC-README-${BR}" ] || echo "版本不一致：真值源 ${BR} ⇒ id 应为 DOC-README-${BR}，实为 ${ID}"

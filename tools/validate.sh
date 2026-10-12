@@ -287,6 +287,7 @@ done < <(gates)
 
 n_hits=$(echo "$hits"|tr '|' '\n'|grep -c .); first=$(echo "$hits"|sed 's/^|//'|cut -d: -f1)
 [ "$skips" -gt 0 ] && echo "具名跳过 $skips 个（缺历史 ⇒ 判据不判，不是绿也不是红）: $skips_named" >&2
+if [ "$scanned" = 0 ]; then echo "具名提示: 本次扫描【没有任何路径被 post 闸门覆盖】（scanned=0）—— 绿不代表合规，代表【没有判】" >&2; fi
 if [ -z "$hits" ]; then printf '{"verdict":"pass","scanned":%d,"hits":0,"skipped":%d}\n' "$scanned" "$skips"; exit 0; fi
 printf '{"verdict":"block","scanned":%d,"hits":%d,"skipped":%d,"rule_id":"%s"}\n' "$scanned" "$n_hits" "$skips" "$first"
 echo "违规: $hits" >&2

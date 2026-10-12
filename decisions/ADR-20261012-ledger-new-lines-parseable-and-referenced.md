@@ -46,7 +46,8 @@ check: |
   dec_dir = os.path.join(sys.argv[3], 'decisions')   # ★ 由 ROOT 出（不从 $F 推：临时副本也能跑）
   adrs = {os.path.basename(p)[:-3] for p in glob.glob(os.path.join(dec_dir, 'ADR-*.md'))}
   # 具名豁免：hook 拦截执行点（PROTECTION 三执行点）的形状名闸门，不属于闸门池命名空间
-  allow = adrs | {'hook-bash-command', 'hook-fail-closed'}
+  allow = adrs | {'hook-bash-command', 'hook-fail-closed',
+  'ADR-20261009-readme-must-carry-the-on-demand-pointer-block'}   # ★ 具名历史豁免：该门 2026-10-12 改名为 ADR-20261009-readme-must-be-a-truthful-entry（账本 append-only ⇒ 45 行旧记录不可能改）
   lines = open(F, encoding='utf-8').read().split('\n')
   red = []
   for i, l in enumerate(lines, 1):
