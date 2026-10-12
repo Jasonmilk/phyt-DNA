@@ -46,3 +46,12 @@ fixtures/<gate-id>/counter.sh  反例：只做"内容不变"的改动（如 touc
 
 **`--probe` 会依次跑两者**；缺 `counter.sh` 时**具名记录** "negative direction unproven"，
 **不静默算通过**。
+
+## ★ 夹具写入纪律（2026-10-12 园丁裁定 4 · **无例外**）
+
+**夹具与判据一律跑在【临时副本】上** —— 引擎在 `probe_one` 里为每道门建
+`TMP=$(mktemp -d)` · `mkdir -p "$TMP/$(dirname "$F")"`（保持相对结构）· `cp "$F" "$TMP/$F"` · `decisions` 软链 · 单 trap（BAK 恢复 + TMP 清理）。
+⇒ `inject.sh` 与 `counter.sh` **同形**：都只碰 `$F`（届时 `$F` 已是副本），**从不碰真件**。
+⇒ 为什么写死：**卡口前**真 `README.md` 曾被注入成 `## X — by question`，而**四个 commit 无人发现** ——
+   修法不是"更小心"，是**让真件从"靠恢复"变成"从不被写"**。
+⇒ 三条验收（每次动引擎都要过）：(a) 真件行数不变（红侧报副本路径）· (b) 真件除 `kind:probe` 外新增 0 · (c) `kill -9` 后真件零新增。

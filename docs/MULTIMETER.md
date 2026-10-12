@@ -97,3 +97,17 @@ python3 -c "import io,json,collections;bad=[];corr=[];[ (corr.append(json.loads(
 - **`--cull` 冻结 = 硬约束，不是待办**：减法只能由**人类显式下令**执行（不可逆操作走授权三级守则第③级）。
   替代鉴别器（不改行为面）：用**已有的** `dangerous-action-*` 门当减法池首个被告 ——
   INDEX 实测它 `inject=NO · counter=NO`（**三边一条没证**）⇒ 它是唯一"连夹具都没有还活着"的门。
+
+## 归档态读数（2026-10-12 · 园丁裁定 4）
+
+`docs/archive/DOC-README-v1.md` 是**指针档**（只存分支 + commit + 日期，不复制正文）⇒ 归档态**必须由命令读**：
+
+```
+cd <phyt-DNA> && git log origin/v1 -1 --format="分支 v1 · tip %h · %ad · %s" --date=short
+```
+
+**实测读数（活的，不是陈述）**：分支 v1 · tip d41b7ed · 2026-09-24 · feat(rna): 通用铁律第 9 条「非空转自证」—— 断言的价值在它能红
+
+★ 为什么只写命令不写结论："v1 已归档"这类陈述**会腐烂**（分支会动、人会改主意），而命令每次都给当下的事实。
+★ 语料纪律（同轮教训）：**裁定 v1 遗产时语料是 `git ls-tree -r origin/v1` / `git show origin/v1:…`**，
+不是 v2 工作区 —— 我用 v2 扫 `400` 得"不存在"，而它在 **`origin/v1:README.md:185`**（人批 2026-09-09）。

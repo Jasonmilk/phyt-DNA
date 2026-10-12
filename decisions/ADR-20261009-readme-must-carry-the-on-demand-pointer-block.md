@@ -34,18 +34,22 @@ check: |
     case "$p" in tools/todo-ready.sh) continue ;; esac   # 具名豁免：生态仓的报告头（README 以文字指代）
     [ -e "$ROOT/$p" ] || echo "README 指向 ${p}，但该路径不存在（声明的路径必须是真路径）"
   #   ★ 只认【本仓】路径：形如 `helix-mind/docs/…` 的跨仓引用不得被当成本仓路径（实测假阳一次）。
-  done < <(grep -oE '(^|[^A-Za-z0-9_./-])(tools/[A-Za-z0-9_.-]+\.(sh|py)|docs/[A-Za-z0-9_./-]+\.md|decisions/INDEX\.md)' "$F" \
+  #   ★ trailer 白名单：紧跟 `*` 的片段不算路径（`decisions/ADR-*.md` 这种【模式】不得被读成路径 —— 实测假阳一次）。
+  done < <(grep -oE '(^|[^A-Za-z0-9_./-])((tools|docs|decisions|examples)/[A-Za-z0-9_./-]+|(README\.zh-CN|VISION|DNA|SPEC|RNA|PLAN|GROWTH|DEPRECATE)\.md)([^A-Za-z0-9_./*-]|$)' "$F" \
+           | sed -E 's/^[^A-Za-z0-9_./-]//; s/[^A-Za-z0-9_./-]$//' | grep -E '\\.(md|sh|py|jsonl|json|sha256|txt|ya?ml)$' | sort -u)   # ★ 必须是【具体文件名】（带扩展名）—— 散文里的 `decisions/ADR-` 这类【前缀/模式】不得当路径
            | sed -E 's/^[^A-Za-z0-9_./-]//' | sort -u)
   # ④ 版本真值源 = 分支（**不存版本号**：分支是物理事实，存下来的数过期时从不响）
-  BR=$(git rev-parse --abbrev-ref HEAD)
-  case "$BR" in v[0-9]*) ;; *) echo "（版本检查跳过：分支 ${BR} 非版本次第分支）" >&2; BR="" ;; esac
-  if [ -n "$BR" ]; then
-    ID=$(grep -m1 '^id: ' "$F" | sed 's/^id: *//')
-    [ "$ID" = "DOC-README-${BR}" ] || echo "版本不一致：分支 ${BR} ⇒ id 应为 DOC-README-${BR}，实为 ${ID}"
-    SUP=$(grep -m1 '^supersedes: ' "$F" | sed 's/^supersedes: *//')
-    if [ -n "$SUP" ]; then
-      grep -q "^status: deprecated" "$ROOT/docs/archive/${SUP}.md" || echo "supersedes: ${SUP} 无真源（docs/archive/${SUP}.md 缺失或缺 status: deprecated）⇒ 配对不可执行"
-    fi
+  # ★ 真值源必须是【物理锚点】（园丁 0′）：HEAD 是**可移动指针**（谁 checkout 都变）⇒ 不用它。
+  #   优先级：远端默认分支 symref（origin/HEAD → origin/v2） > 版本次第 tag（vN）；都取不到 ⇒ **复用 skip()**（exit 4）。
+  BR=$(git symbolic-ref -q --short refs/remotes/origin/HEAD | sed 's|^origin/||')
+  if [ -z "$BR" ]; then BR=$(git tag --list 'v[0-9]*' --sort=-creatordate | head -1); fi
+  [ -n "$BR" ] || skip "远端默认分支 symref 与版本次第 tag 都取不到 ⇒ 版本真值源不可得"
+  case "$BR" in v[0-9]*) ;; *) skip "真值源 ${BR} 非版本次第（vN）形态 ⇒ 不判" ;; esac
+  ID=$(grep -m1 '^id: ' "$F" | sed 's/^id: *//')
+  [ "$ID" = "DOC-README-${BR}" ] || echo "版本不一致：真值源 ${BR} ⇒ id 应为 DOC-README-${BR}，实为 ${ID}"
+  SUP=$(grep -m1 '^supersedes: ' "$F" | sed 's/^supersedes: *//')
+  if [ -n "$SUP" ]; then
+    grep -q "^status: deprecated" "$ROOT/docs/archive/${SUP}.md" || echo "supersedes: ${SUP} 无真源（docs/archive/${SUP}.md 缺失或缺 status: deprecated）⇒ 配对不可执行"
   fi
 last-hit: null
 hit-count: 0
@@ -69,3 +73,19 @@ supersedes: null
 
 `fixtures/<id>/inject.sh` 把块标识删掉 ⇒ 心跳报 RED。
 `fixtures/<id>/counter.sh` 做**内容保持**的改动（只改 mtime）⇒ 结论不得改变。
+
+---
+
+## 本门的实际职责（名字 ⊇ 四判据 · 2026-10-12 园丁裁定）
+
+**`id` 是终身身份（改名不重编号）**：`…-readme-must-carry-the-on-demand-pointer-block` 是 **v1 时代的名字**，
+而这道门今天判的是**四件事** —— 读这道门请以本节为准：
+
+| # | 判据 | 来历 |
+|---|---|---|
+| ① | **按需指针块**：`## Start here` · `question → read this` 表 · 指向 `docs/INDEX.md` · 不混中文块 | 原职责（v1 遗产） |
+| ② | **可执行**：命令块里不得有 `<…>` 占位符（读者会照抄） | 实测 3 处真红灯（`README:60/65/88`） |
+| ③ | **路径真**：README 声明的**本仓**路径（`tools/` `docs/` `decisions/` `examples/` + 根目录受管文档）必须存在；跨仓引用（`helix-mind/docs/…`）不误判 | 实测抓到真断链 `tools/baseline.sh` |
+| ④ | **版本同源**：`id` = 真值源推出的 `DOC-README-${BR}`（真值源 = **远端默认分支 symref / 版本次第 tag**，不是可移动的 `HEAD`）；`supersedes` 必须在 `docs/archive/` 有 `status: deprecated` 真源 | 实测三处不同步（分支 v2 / id v3 / supersedes v2） |
+
+**⇒ 名字是历史的，职责是活的。** 新增判据一律折进本门（出生律：不许凭空长面）。
