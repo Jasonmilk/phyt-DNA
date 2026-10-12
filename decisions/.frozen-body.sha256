@@ -15,8 +15,8 @@ c0f8776c05330751daf785983d808d3890453e91c68ea47df5820aff983f1023  ADR-20261009-l
 e2b7dc3e564a7c495902fbdd10e1f508814c690cb752d905457874c008457782  ADR-20261009-ledger-must-be-valid-utf8.md
 c7096fc2d678df92396a1d3ba35b5ac39aa3fa8a68b44f5e3767366d3918e11f  ADR-20261009-lesson-must-be-replayed.md
 9794a7acfdbe4fdc680fd62b9fb53a444641c43c65b50fef3e04ef392fb09593  ADR-20261009-lesson-must-land-in-artifact.md
-f48f9441dde5d248a959d703fbc60297fba77f9dc15442011291910a0942aa5b  ADR-20261009-readme-must-be-a-truthful-entry.md
-# rebaseline ADR-20261009-readme-must-be-a-truthful-entry.md 理由: 0*******c 补：远端真值源兜底
+3f98bd870859461af2d4b3683d3712a516a4bc860718e829b2df1476bb125147  ADR-20261009-readme-must-be-a-truthful-entry.md
+# rebaseline ADR-20261009-readme-must-be-a-truthful-entry.md 理由: 措辞：三级都点名
 71b0014c70a913ab47d97680544fa639c2ce8d7c6a0227ccd2db1e123b4738de  ADR-20261009-readme-must-carry-the-on-demand-pointer-block.md
 f26a98a3cb04497b3c4334ddbb4f0b6dd3f68547dde45ca54f4d544a3c297fad  ADR-20261009-shell-var-before-cjk-must-brace.md
 7fd4bc72b6899850df248c66170bc0427a2a9c8a3b546c7c42a5aff0bf3c689d  ADR-20261009-upstream-manifest-threat-model.md

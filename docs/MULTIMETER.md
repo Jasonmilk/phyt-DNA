@@ -302,3 +302,22 @@ grep -n 'symbolic-ref' decisions/ADR-20261009-readme-must-be-a-truthful-entry.md
 | probe-scope-must-be-tagged | **无** | 2027-01-13 | 同上 |
 
 **★ 一句话**：**9 扇图纸无一处有 ，也无一处登记** ⇒ 图纸三律（登记 · 并发 ≤3 · promote-when + 日落）**全部未落**。
+
+## 真值源链的三级读数（2026-10-13）
+
+| 级 | 真仓读数 | 说明 |
+|---|---|---|
+| tag `v[0-9]*` | **恒空**（`git tag -l` = 空） | 链靠下面两级 |
+| 本地 `refs/remotes/origin/HEAD` | **不存在**（`fatal: … is not a symbolic ref`） | ⇒ **判据此前一直【具名跳过】= 从未真判** |
+| **远端 `git ls-remote --symref origin HEAD`** | **读到 `v2`** | ⇒ 正读数（判据真判且一致） |
+| 三级都取不到 | **具名 `exit 4`** | 实测（真独立克隆 + 删 origin）：`具名跳过: … 版本真值源不可得` · **stdout 空 ⇒ 非红**（防心跳噪音） |
+
+**④ 三态（改判据后重测）**：基线绿 ✅ · **注入红（`id ⇒ DOC-README-v9` ⇒ `④ 版本不一致：真值源 v2 ⇒ id 应为 DOC-README-v2，实为 DOC-README-v9`）** ✅ · 反例守住（`[]`）✅
+
+## ★★ 事故与教训：**worktree 不是沙箱**（2026-10-13）
+
+**事故**：我在"模拟 CI"时于 **worktree 里跑了 `git remote remove origin`** ⇒ **worktree 与原仓共享 `.git/config`**
+⇒ **真仓的 origin 被删**（连同远端追踪引用）⇒ 推送/读数一度失效（已恢复：`git remote add` + 复用 SSH 通道）。
+**实测（顺带成为二级读数的来历）**：删掉 origin 后，④ 的行为 = **具名跳过（exit 4）**，不是红。
+**教训（与"夹具不得在可能为真的路径上创建对象"同族）**：**凡"我以为隔离了"的地方，先问一句：它共享什么？**
+—— worktree 共享 config · 夹具与真件共享目录 · `/tmp/inj.bak` 共享文件名。

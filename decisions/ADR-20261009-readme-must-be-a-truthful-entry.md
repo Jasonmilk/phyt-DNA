@@ -68,7 +68,7 @@ check: |
     #   ⇒ 加【远端真值源】兜底：`git ls-remote --symref origin HEAD`（读的是**远端自己报的**默认分支 = 物理锚点）。
     #   仍守铁律：三级都取不到 ⇒ 下面的具名 skip（exit 4），**不许默认**。
     if [ -z "$BR" ]; then BR=$(git ls-remote --symref origin HEAD | sed -n 's|^ref: refs/heads/\([^ 	]*\).*|\1|p'); fi
-    [ -n "$BR" ] || skip "版本次第 tag 与远端默认分支 symref 都取不到 ⇒ 版本真值源不可得"
+    [ -n "$BR" ] || skip "版本次第 tag · 本地 symref · 远端 ls-remote --symref 三级都取不到 ⇒ 版本真值源不可得"
     case "$BR" in v[0-9]*) ;; *) skip "真值源 ${BR} 非版本次第（vN）形态 ⇒ 不判" ;; esac
     ID=$(grep -m1 '^id: ' "$F" | sed 's/^id: *//')
     [ "$ID" = "DOC-README-${BR}" ] || echo "④ 版本不一致：真值源 ${BR} ⇒ id 应为 DOC-README-${BR}，实为 ${ID}"
