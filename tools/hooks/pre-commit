@@ -17,7 +17,25 @@ cd "$ROOT" || exit 1
 
 # ── ② 逃生门（PHYT_WIP=1 优先；消息里的 [wip] 只能反映【上一笔】—— git 在 pre-commit 看不到待写消息）
 WIP=0
+# ── ★ 逃生门护栏（清单 1 ① · 2026-10-13）：**只在【门自身坏了】时放行**；内容违规仍然拒 ──
+#   ① 理由来自机器（哪一步红 + 首条消息），不是我敲的一句话；
+#   ② 作用域 = 门自身（spec-lint/清点器/死代码断言坏了 ⇒ 放行；step 4 扫描违规 / 基线红 ⇒ **拒**）；
+#   ③ 落账（ledger 一行 kind=skip，机器可读）· ④ 计数（`kind=skip` 的条数）· ⑤ 不计入"连续无红推轮数 N"。
 if [ "${PHYT_WIP:-0}" = 1 ]; then
+  pre=$(bash tools/ci-local.sh 2>&1); pre_rc=$?
+  if [ "$pre_rc" = 0 ]; then
+    echo "  [pre-commit] 逃生门未被使用（ci-local 本来就绿）"
+  else
+    step=$(printf '%s\n' "$pre" | grep -E '★ RED' -B1 | grep -E '^  [0-9]' | head -1 | sed 's/^ *//')
+    if printf '%s\n' "$pre" | grep -qE '全仓违规扫描|违规:'; then
+      echo "⛔ 内容违规（**不是门坏了**）⇒ 逃生门不适用（PHYT_WIP 只对'门自身坏'有效）" >&2
+      printf '%s\n' "$pre" | grep -E '违规' | head -3 | sed 's/^/   /' >&2
+      exit 1
+    fi
+    echo "  [pre-commit] 逃生门放行 —— 理由（机器给出）: ${step:-（未取到步骤名）}"
+    python3 -c 'import json,sys,time;print(json.dumps({"ts":time.strftime("%Y-%m-%dT%H:%M:%S%z"),"kind":"skip","gate_id":"pre-commit-gate","verdict":"skip","override":True,"source":"hook","event_id":"wip-escape-%d"%int(time.time()),"note":"PHYT_WIP 逃生门：%s" % sys.argv[1][:200]},ensure_ascii=False))' "${step:-unknown}" >> "ledger/hits-$(date +%Y).jsonl"
+    echo "  [pre-commit] 已落账（kind=skip，不计入连续无红推轮数 N）"
+  fi
   WIP=1
 fi
 case "$(git log -1 --pretty=%s 2>/dev/null || true)" in *'[wip]'*) WIP=1 ;; esac
