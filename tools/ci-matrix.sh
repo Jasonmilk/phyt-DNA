@@ -15,7 +15,17 @@
 set -uo pipefail
 cd "$(dirname "$0")/../.." || exit 2
 OWNER="${PHYT_CI_OWNER:-Jasonmilk}" \
-REPOS="${PHYT_CI_REPOS:-phyt-DNA anaphase-helix Cellrix FlowModus Tuck helix-mind}" \
+# ★ 1b（2026-10-12 · 宿主/寄生同条）：默认仓列表**不写死** —— 从【同级的兄弟仓】派生，**优雅退化**（不许改坏工具）。
+#   注：本脚本自己 `cd` 到【生态根】（`$0/../..` = 兄弟仓所在层）⇒ 定位必须用 BASH_SOURCE，不能用当前 cwd（实测踩过）。
+SELF="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"; REPO_ROOT="$(dirname "$SELF")"
+PHYT_DERIVED=$(ls -d "$REPO_ROOT/../"*/.git 2>/dev/null | sed 's|/.git$||; s|.*/||' | tr '\n' ' ')
+if [ -z "$PHYT_DERIVED" ]; then
+  PHYT_DERIVED=$(basename "$REPO_ROOT")
+  echo "  [ci-matrix] 无兄弟仓 ⇒ 只读本仓: $PHYT_DERIVED" >&2
+else
+  echo "  [ci-matrix] 仓列表（派生自兄弟仓）: $PHYT_DERIVED" >&2
+fi
+REPOS="${PHYT_CI_REPOS:-$PHYT_DERIVED}" \
 GATE="${PHYT_CI_GATE_NAMES:-ci|Gate|verify|test}" \
 python3 - <<'PY'
 import json, os, re, subprocess

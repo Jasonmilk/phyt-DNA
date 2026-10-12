@@ -156,7 +156,7 @@ hosthit=""
 for f in decisions/ADR-*.md; do
   grep -q '^check: |' "$f" || continue
   body=$(awk '/^check: \|/{f=1;next} f&&/^[^ ]/{f=0} f&&NF{print}' "$f" | sed 's/^  //')
-  if printf '%s' "$body" | grep -qE 'helix-mind|anaphase-helix|Cellrix|FlowModus|Tuck|helixECO|Helix 生态'; then
+  if printf '%s' "$body" | grep -qE 'helix-mind|anaphase-helix|Cellrix|FlowModus|Tuck|helixECO|Helix 生态|OUTWARD|外视读数'; then
     hosthit="$hosthit $(basename "$f" .md)"
   fi
 done

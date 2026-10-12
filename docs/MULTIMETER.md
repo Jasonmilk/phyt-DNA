@@ -141,3 +141,25 @@ git config --get core.hooksPath || echo '未接线 ⇒ 钩子不跑'
 | 其他（非 .sh 的 tools/ 文件） | `ls tools/* \| grep -v '\.sh$' \| wc -l` | 3 |
 
 **报数必须点名是哪一栏**（"17 个工具"这种合并口径 = 流沙）。
+
+## 止损线读数（2026-10-12 · 园丁裁定 0）
+
+```
+人口 = 活 ADR 28 + tools/*.sh 16 + tools/hooks 1 = **45**（基线 43 ⇒ **+2**；止损线 N=3 ⇒ **贴线未破**）
+命令：for f in decisions/ADR-*.md; do grep -q '^status: deprecated' "$f" || echo x; done | wc -l   # 28
+     ls tools/*.sh | wc -l   # 16 · ls tools/hooks/* | wc -l   # 1
+```
+
+**替代鉴别器审查（不改 `regex-census` —— 它有调用者）**：`--index` 查"无夹具的门" ⇒ 唯一被告：
+**`ADR-20261009-dangerous-action-shapes-must-be-blocked`**（`inject=NO · counter=NO`）⇒ 它是**减法首候选**
+（其 `redtest` 由 `hook_test.sh` 9 例承担 ⇒ 是"面"还是"必要"，须外眼裁定）。
+
+**本次触线的定性**：**合规增长 + 待外眼供给减法源**（内审只能看见自己 ⇒ 减法源必须有外眼）。
+
+## 工具口径（钉死，不再漂移）
+
+| 栏 | 值 |
+|---|---|
+| `tools/*.sh` | **16** |
+| `tools/hooks/*` | **1** |
+| 合计（报数时就报这两个数，不再报"17 个工具"） | **16 + 1** |
