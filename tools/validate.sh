@@ -14,6 +14,8 @@ _d=$(dirname "$0"); [ -f "$_d/paths.env" ] && . "$_d/paths.env"
 DEC_DIR="${PHYT_DECISIONS:-decisions}"
 FIX_DIR="${PHYT_FIXTURES:-fixtures}"
 LED_DIR="${PHYT_LEDGER:-ledger}"
+# ★ trap 用的临时态一律【全局】（trap 在脚本退出时触发，local 那时已不在作用域）
+BAK=""; BAK2=""; TMP=""
 # ★ 轻件 d（2026-10-09）：把"我用的布局"说出来 —— **但只在它与约定不同时才响**。
 #
 # ★★ 为什么必须加"只在偏离时"这个条件（血的教训，CI 实证 2026-10-09）：
@@ -103,6 +105,9 @@ sys.stdout.write(json.dumps(rec, ensure_ascii=False) + "\n")
 }
 probe_one(){ # probe_one <gate-id> → 0=闸门活着（RED）· 2=腐化/拓扑失配/假阳性
   local id="$1" F fx out cf out2 chk_src
+  # ★（2026-10-12 自伤修复 · 两处）：① 本脚本顶部有 `set -u` ⇒ 合一 trap 引用的变量必须先声明；
+  #   ② 更狠的一处：`local BAK` 只在函数作用域活 ⇒ 而 trap 在**脚本退出时**触发 ⇒ 那时 local 已失效 ⇒
+  #   `BAK: unbound variable`（实测）。⇒ BAK/BAK2/TMP 一律【脚本级全局】声明（见文件顶部）。
   if grep -q '^status: deprecated' "$DEC_DIR/$id.md"; then
     echo "  具名跳过: $id 是 deprecated 存根（引擎 gates() 本就不跑它）—— 不是红，也不是绿" >&2
     rec "$id" skip "deprecated stub: gates() skips it"; return 0
@@ -131,7 +136,8 @@ probe_one(){ # probe_one <gate-id> → 0=闸门活着（RED）· 2=腐化/拓扑
   if [ -z "$base_out" ]; then echo "  基线（未注入）: 绿"
   else echo "  基线（未注入）: 红 → ${base_out}"; fi
   BAK=$(mktemp /tmp/inj.bak.XXXXXX); cp "$F" "$BAK"
-  trap 'if [ -n "$BAK" ] && [ -f "$BAK" ]; then cp "$BAK" "$F"; rm -f "$BAK"; fi' EXIT
+  # ★ 2：trap **合一**（原先 BAK 的 trap 会覆盖 TMP 清理 ⇒ 临时目录泄漏；夹具纪律无例外）
+  trap 'if [ -n "$BAK" ] && [ -f "$BAK" ]; then cp "$BAK" "$F"; rm -f "$BAK"; fi; if [ -n "$BAK2" ] && [ -f "$BAK2" ]; then cp "$BAK2" "$F"; rm -f "$BAK2"; fi; rm -rf "$TMP"' EXIT
   F="$F" bash "$fx" >/dev/null 2>&1
   # ★ check 自己跑不起来时，【必须具名失败】—— 不能与"无输出=通过"混同。
   # 实测（2026-10-09）：一个 check 因嵌套 heredoc 语法错误而根本没运行，
@@ -145,7 +151,10 @@ probe_one(){ # probe_one <gate-id> → 0=闸门活着（RED）· 2=腐化/拓扑
     rec "$id" skip "named skip after injection: anchor not derivable"; return 0
   fi
   # ★ 只在【bash 语法错误】（真的没跑起来）时判失败 —— 不能用 rc：正常通过时 rc 也可能是 1。
-  if [ -z "$out" ] && printf '%s' "$err" | grep -qE 'syntax error|unexpected EOF|unexpected token'; then
+  # ★ 1（2026-10-12）：失败模式表补齐 —— `unbound variable`（-u 生效后最常见）· `command not found`
+  #   · Python 侧 `IndentationError|SyntaxError|Traceback`。注：**不再要求 stdout 为空** ——
+  #   判据半途炸掉时可能已经吐了半行，那半行不是"红"。
+  if printf '%s' "$err" | grep -qE 'syntax error|unexpected EOF|unexpected token|command not found|unbound variable|IndentationError|SyntaxError|Traceback'; then
     echo "  [check 失败] 判据自己没能运行：$(printf '%s' "$err" | head -1)" >&2
     rec "$id" block "check did not run: $(printf '%s' "$err" | head -1)"; return 2
   fi
@@ -172,11 +181,11 @@ probe_one(){ # probe_one <gate-id> → 0=闸门活着（RED）· 2=腐化/拓扑
   # （本仓就有一条：PLAN.md 177 行 > 它自定的 150）。只看"是否红"会把"本来就红"
   # 误报成假阳性 —— 这个缺陷是在真闸门上加反例时才现形的。
   before_out=$(F="$F" bash -u -c "$(check_of "$id")" 2>/dev/null)
-  cp "$F" /tmp/cnt.bak
+  BAK2=$(mktemp /tmp/cntbak.XXXXXX); cp "$F" "$BAK2"      # ★ 2：mktemp（固定路径 = 并发相撞）
   F="$F" bash "$cf" >/dev/null 2>&1
   after_out=$(F="$F" bash -u -c "$(check_of "$id")" 2>/dev/null)
   # （反例段只比"结论是否改变"；若 check 本身坏了，上面的正例段已经具名报过。）
-  cp /tmp/cnt.bak "$F" 2>/dev/null; rm -f /tmp/cnt.bak
+  cp "$BAK2" "$F"; rm -f "$BAK2"; BAK2=
   if [ "$before_out" != "$after_out" ]; then
     echo "  [假阳性] 内容未变，结论却变了：'${before_out}' → '${after_out}'" >&2
     echo "          判据在'变了'与'没变'两个世界给出不同结论 ⇒ 按 Ω 是装饰品" >&2

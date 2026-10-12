@@ -108,14 +108,22 @@ for f in decisions/ADR-*.md; do
   grep -q '^check: |' "$f" || continue
   body=$(awk '/^check: \|/{f=1;next} f&&/^[^ ]/{f=0} f&&NF{print}' "$f" | sed 's/^  //')
   #   ★ 收紧（同轮）：① 先剥【单引号串】—— 判据里被搜索的模式串（如 `\$var（`）不是变量；
-  #   ② 全大写名视为【环境提供】（约定：大写 = 环境/CI 注入，如 PHYT_LEDGER）。
+  #   ② 豁免名单**从引擎的注入点派生**（不手写约定）：引擎实际注入哪些变量，就读它哪一行 ——
+  #      判据 `F="$F" bash -u -c …` ⇒ 注入集 = {F}；并接受 `${VAR:-…}` 自带默认值的形态。
+  #      ★ 反面教训：首版写"全大写 = 环境提供" ⇒ ROOT 也是全大写 ⇒ **该抓的抓不到，断言形同虚设**。
   stripped=$(printf '%s' "$body" | sed -E "s/'[^']*'/''/g")
-  used=$(printf '%s' "$stripped" | grep -oE '\\$\\{?[A-Za-z_][A-Za-z0-9_]*' | tr -d '${' | sort -u)
+  stripped=$(printf '%s' "$stripped" | sed 's/\\\$//g')   # 转义美元 \$var = 被搜索的形态，不是变量
+  used=$(printf '%s' "$stripped" | grep -oE '\$\{?[A-Za-z_][A-Za-z0-9_]*' | tr -d '$\{' | sort -u)
+  INJECT=$(grep -ohE '[A-Za-z_]+="\$[A-Za-z_]+" bash -u -c' tools/validate.sh | sed 's/=.*//' | sort -u | tr '\n' ' ')
   for v in $used; do
+    case " $INJECT " in *" $v "*) continue ;; esac        # 引擎注入（派生，非手写）
     case "$v" in F) continue ;; esac
-    case "$v" in *[a-z]*) ;; *) continue ;; esac   # 全大写 ⇒ 环境提供（大写约定）
+    if printf '%s' "$body" | grep -qE "\$\{${v}[:-]"; then continue; fi   # ${VAR:-…} 自带默认值
     if printf '%s' "$body" | grep -qE "(^|[;[:space:]])(local )?${v}="; then continue; fi
-    if printf '%s' "$body" | grep -qE "(for|read)[[:space:]]+${v}([[:space:]]|\$)"; then continue; fi
+    if printf '%s' "$body" | grep -qE "(for|read)[[:space:]]+(-[A-Za-z]+[[:space:]]+)*${v}([[:space:]]|$)"; then continue; fi
+    if printf '%s' "$body" | grep -q "variable-lint-exempt.*[^A-Za-z0-9_]${v}[^A-Za-z0-9_]"; then continue; fi
+    case "$v" in *[a-z]*) ;; *) case " ${LINT_ENV:-PHYT_LEDGER PHYT_DECISIONS PHYT_QUIET} " in *" $v "*) continue ;; esac ;; esac   # 环境变量（**具名清单**，不是"全大写"）
+    if printf '%s' "$body" | grep -q "variable-lint-exempt"; then continue; fi
     unassigned="$unassigned $(basename "$f"):\$${v}"
   done
 done

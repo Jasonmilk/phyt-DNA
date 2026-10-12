@@ -15,6 +15,7 @@ owner: "@jason"
 origin: "真实经历（2026-10-09，同一会话内三次）：`echo \"… ${L1}（上限 280）\"` 与 `echo \"… ${miss}（最近 …）\"` 与 `echo \"… ${out}（no counter-fixture）\"` —— 全角括号被 bash 吞进变量名 ⇒ 输出乱码 / unbound variable。而 CI 的 fail-closed hook 里也有一条（`${rc}）`）——**它自己的失败消息会失败**。"
 risk: normal
 check: |
+  # variable-lint-exempt: L1 rc   （本门【必须】在体里引用 `${L1}（` 这类陷阱形态才能说明它 ⇒ 具名豁免）
   # 只看【非注释行】：注释里的 `${F}（…）` 是说明文字，不是代码（否则假红 ⇒ 装饰品）。
   # LC_ALL=C 下 `[^ -~]` 匹配一切非可打印 ASCII 字节 ⇒ 不依赖 PCRE。
   # ★ scope 含 decisions/ADR-*.md：因为 `check:` 块【就是 shell 代码】，只是住在 .md 里。
