@@ -185,43 +185,82 @@ if [ "$census_rc" = 0 ]; then grn "正则清点器自检通过（12/12）"; else
 if python3 - <<'PYDC' 2>/dev/null
 import glob, io, os, re
 
-def has_dead_code(text):
-    # 逐行深度追踪（2026-10-13 正解）：
-    # · 闭合只在【真是闭合】时减、且钳位到 0；
-    # · **同一行既开又闭**（`case … esac` / `if …; fi`）视为**平衡**（先按开+1、再按闭-1 —— 顺序即语义！）；
-    # · 行内闭合在标志检查之前数。
-    depth = 0; exit_at = None
+def scan(text):
+    # 返回 (死代码命中, 结束时深度)。深度追踪正解（2026-10-13）：
+    #   · 先算开、后算闭（同一行既开又闭 ⇒ 净额 0 —— 顺序即语义）
+    #   · 闭合只在真是闭合时减、且钳位到 0
+    #   · heredoc 体跳过（体里不是 shell —— 它既是假阳源，也是假阴源）
+    depth = 0; exit_at = None; heredoc = None
     for n, raw in enumerate(text.split('\n'), 1):
         t = raw.strip()
+        if heredoc is not None:
+            if t == heredoc: heredoc = None
+            continue
         if not t or t.startswith('#'): continue
+        m = re.search(r"<<-?['\"]?([A-Za-z_][A-Za-z0-9_]*)['\"]?", t)
+        if m: heredoc = m.group(1)
         low = t
-        opens = low.startswith(('if ','for ','while ','case ')) or low=='{' or low.endswith('(){') or '() {' in low
-        if opens: depth += 1
+        if low.startswith(('if ','for ','while ','case ')) or low=='{' or low.endswith('(){') or '() {' in low:
+            depth += 1
         if low in ('fi','esac','}','done') or low.startswith(('fi ','esac ','} ','done ')):
             depth = depth - 1 if depth > 0 else 0
         for kw in ('fi','esac','done'):
-            if re.search(r'(^|;|\s)%s(\s*;|\s*$)' % kw, low) and not low.startswith(kw):
+            #   ★ 闭后允许【空白 / 分号 / 行尾】—— `done < f`（重定向）与 `fi; echo` 都算闭合（自检 ②-4[while] 抓到的缺口）
+            if re.search(r'(^|;|\s)%s(\s|;|$)' % kw, low) and not low.startswith(kw):
                 depth = depth - 1 if depth > 0 else 0
         if exit_at is not None and depth == 0 and not low.startswith(('fi','esac','}','done',';;')):
-            return (n, exit_at)
-        if exit_at is None and depth == 0 and (low == 'exit' or low.startswith('exit ')): exit_at = n
-    return None
+            return ((n, exit_at), depth)
+        if exit_at is None and depth == 0 and (low == 'exit' or low.startswith('exit ') or low.startswith('return')):
+            exit_at = n
+    return (None, depth)
 
 bad = False
 for f in sorted(glob.glob('tools/hooks/*')):
     if not os.path.isfile(f): continue
-    hit = has_dead_code(io.open(f, encoding='utf-8').read())
+    hit, _ = scan(io.open(f, encoding='utf-8').read())
     if hit:
         print('%s:第%d行（第%d行 exit 之后 · 顶层 ⇒ 死代码）' % (os.path.basename(f), hit[0], hit[1])); bad = True
-# ★ 自检（②-3 · 合成输入、可重跑、不占 decisions/）：a 真死代码必须被抓 · b 合法 exit 必须不被抓
-_a = 'set -u\nexit 0\necho x\n'
-_b = ('set -u\n' 'if [ ! -f x ]; then\n  exit 1\nfi\n'
-      'case "${1:-}" in\n  --x) exit 0 ;;\nesac\n'
-      'if [ -z "${A:-}" ]; then echo h; exit 1; fi\n' 'exit 0\n')
-if has_dead_code(_a) is None:
-    print('自检失败 a：真死代码样本**没**被抓到'); bad = True
-if has_dead_code(_b) is not None:
-    print('自检失败 b：合法 exit 样本被误判为死代码（假阳）'); bad = True
+
+# ②-4 同一行开+闭 ⇒ 净额 0（每种形状都断言"深度回 0"；漏一种 = 整段静默失明）
+D0 = {
+ 'case':  'case x in y) echo a ;; esac\nexit 0\n',
+ 'if':    'if [ 1 ]; then echo a; fi\nexit 0\n',
+ 'for':   'for i in 1; do echo $i; done\nexit 0\n',
+ 'while': 'while read -r l; do echo $l; done < f\nexit 0\n',
+ 'sub':   'V=$(printf x)\nexit 0\n',
+ 'brace': '{ echo a; }\nexit 0\n',
+ 'andor': 'true && echo a || echo b\nexit 0\n',
+}
+for k, v in sorted(D0.items()):
+    hit0, d = scan(v)
+    if d != 0:
+        print('自检失败 ②-4[%s]：同行开+闭之后深度 = %d（应 0）' % (k, d)); bad = True
+    if hit0 is not None:
+        print('自检失败 ②-4[%s]：合法形状被判死代码' % k); bad = True
+
+# ②-5 红侧矩阵（≥5 支）：每支必须具名红，且行号要对（漏判即红）
+RED = {
+ 'exit 后多行':    ('set -u\nexit 0\necho a\necho b\n', 3),
+ '嵌套块后顶层':   ('set -u\nif [ 1 ]; then\n  echo x\nfi\nexit 0\necho dead\n', 6),
+ 'exit 4 后':      ('set -u\nexit 4\necho dead\n', 3),
+ 'return 后顶层':  ('set -u\nreturn\necho dead\n', 3),
+ '函数体后':       ('set -u\nf(){\n  echo x\n}\nexit 0\necho dead\n', 6),
+ 'heredoc 后顶层': ('set -u\ncat <<EOF > /tmp/x\nhi\nEOF\nexit 0\necho dead\n', 6),
+}
+for k, (v, want) in sorted(RED.items()):
+    hit, _ = scan(v)
+    if hit is None:
+        print('自检失败 ②-5[%s]：真死代码没被抓（漏判即红）' % k); bad = True
+    elif hit[0] != want:
+        print('自检失败 ②-5[%s]：行号错（得 %d 应 %d）' % (k, hit[0], want)); bad = True
+
+# ②-6 heredoc 局限样本（去掉内含 if…fi ⇒ 真证/真反证）
+H = 'set -u\ncat <<EOF > /tmp/x\nexit 0\necho heredoc_body_text\nEOF\nexit 0\n'
+h_hit, h_d = scan(H)
+if h_hit is not None:
+    print('自检失败 ②-6：heredoc 体内样文本被判死代码（得 %s）⇒ 体未被跳过' % (h_hit,)); bad = True
+if h_d != 0:
+    print('自检失败 ②-6：heredoc 之后深度 = %d（应 0）' % h_d); bad = True
 raise SystemExit(0 if not bad else 1)
 PYDC
 then grn "钩子里没有 exit 之后的死代码（深度感知；**已数行内 if/for/case 闭合**；仍不数工具脚本内的 heredoc ⇒ 局限在 tools/*.sh）"; else red "钩子里的 exit 之后仍有可执行行（死代码 ⇒ 你以为它在工作）"; fi

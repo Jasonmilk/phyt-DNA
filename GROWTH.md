@@ -2,33 +2,7 @@
 > 只保留最近 3 条。更早的移入 `archive/`（落叶归土，仍可检索）。
 > **年轮只记 phyt-DNA 自己的经历**（v2.1 起清空镜像仓库的数字，每条可追溯出处）。
 
-## 年轮 · 2026-W41
-
-```
-真实闸门   **不在此处写数字**（DNA「唯一真源」：派生视图禁手编）—— 真数由脚本产出：
-           条数与口径 ⇒ `decisions/INDEX.md`（`validate.sh --index` 生成）· 心跳 ⇒ `validate.sh --probe-all`
-           〔2026-10-11 修：原文写"12 条 hard:true / 2 份 hard:false" ⇒ **实测已漂到 18 / 4**
-             （ADR 从 12 增到 18 —— 差 6 条、false 差 2 条）⇒ 这正是"两抄之差即突变显红"要抓的东西，
-             而数字写在散文里 ⇒ 没有任何东西会报红 ⇒ 故改为指向生成物〕
-新增结晶   本圈 +6：lesson-must-be-replayed（G2 第四圈）· shell-var-before-cjk-must-brace ·
-           index-must-be-regenerated · VISION-must-exist-and-be-a-seed ·
-           README-must-carry-the-one-command · DEPRECATE-must-exist
-           lesson-must-land-in-artifact · PLAN≤150 · layer1≤280 ·
-           GROWTH≤3 · DNA 不可变 + claim-needs-redtest（hard:false）
-引擎 bug   2 个红测暴露并修复：decisions/README 被误当闸门（gates 精确匹配）·
-           spec-lint 文档示例误伤（gate7 只扫 *.sh）
-CI         首红（缺基线）→ 补基线 → GREEN；红测注入违规 → RED → revert → GREEN
-自检拦截   2 次（payload 级实测：Edit DNA.md exit 2 / 非法 JSON fail-closed exit 2，ledger 可核）
-override   0（无真实 override；缺口：破坏性 Bash 命令无闸门覆盖，见债务列）
-hits/任务  0/0（本期全部 kind: selftest，无 kind:task 生产任务）
-```
-
-**本圈结晶**：v2.1 任务清单 T1–T8 —— 散文约束结晶为 ADR、hook 组装、CI 首跑、自身体证
-**本圈死亡**：无（尚无闸门被冷存；首次合规冷存未发生）
-**本圈判决**：声称 ≠ 落地 —— T0 声称已修而分支未修；只有"能红"才是判据（G5）
-**本圈追加判决（x 光）**：不要让"纸面富贵"蒙蔽 —— 一次报"48 处无守卫"的扫描，剔噪后只剩 3 处真缺口。
-**统计口径本身也要被判据守**（裸匹配第四次给出噪声）。**没被踩过的地方，恰恰是没人看的地方** —— VISION/README/DEPRECATE 长期无闸门，
-不是"不需要"，是"没人踩到"。补上它们之后，本仓 12 条闸门才覆盖了全部核心文件。
+> 2026-W41 的年轮已归档 ⇒ `archive/growth/年轮-2026-W41.md`（真归档：H#1 判据只数年轮型文件）
 
 ## 年轮 · 2026-10-09（判断力本身也要被判断 · BACKFLOW）
 
@@ -160,3 +134,12 @@ override_rate    按【原因】分类：探针 / 追溯 / 引擎缺陷 / 真实
   ★ 并记：**`$var（` 类今日第 8 次**（这次在 `tools/check-pool.sh` 我自己新写的那行）⇒ 升格名目**走正门**。
 · **夹具的世界（2026-10-12）**：`check-pool` 的"能红"两轮未证 ⇒ 精确待查点 = **harness 复制目录是否字面名为 `decisions`**（引擎的 `applies-to` glob 按**路径字符串**匹配）。
   ★ 一般化：**夹具必须活在"引擎能看到的世界"里** —— 与"测试必须被证明接触了它测的东西"同一课（第二课）。
+
+## 年轮 · 2026-10-13（我以为的形状 ≠ 工具看到的形状 · 第 N 次）
+
+**这一次的形状**：`tools/hooks/pre-commit` 里一行 `case … in *'[wip]'*) WIP=1 ;; esac` —— **同一行既开又闭**。
+**我的追踪器**先算闭、后算开 ⇒ 深度从此停在 **1** ⇒ 末尾 `exit 0` 不算顶层 ⇒ **其后任何行都不判**
+⇒ **门"看着绿"，其实整段失明**（克隆里注入真死代码，却报 `ci-local 本来就绿`）。
+**同一族的旧账**：`$var（` 家族（12 次）· heredoc 缩进 · 值行注释 · 只看到一半的判据 —— **全是"我以为的形状 ≠ 工具看到的形状"**。
+**收口方式（可复用）**：把这类形状**固化成自检样本**（②-4 七种同行开闭 · ②-5 六支红侧矩阵 · ②-6 heredoc 对照），
+**每次跑 spec-lint 自证**；**漏一种 = 整段静默失明** ⇒ 所以样本按"形状种类"枚举，不按"我想到的几个"。
