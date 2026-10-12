@@ -18,7 +18,7 @@ OWNER="${PHYT_CI_OWNER:-Jasonmilk}" \
 # ★ 1b（2026-10-12 · 宿主/寄生同条）：默认仓列表**不写死** —— 从【同级的兄弟仓】派生，**优雅退化**（不许改坏工具）。
 #   注：本脚本自己 `cd` 到【生态根】（`$0/../..` = 兄弟仓所在层）⇒ 定位必须用 BASH_SOURCE，不能用当前 cwd（实测踩过）。
 SELF="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"; REPO_ROOT="$(dirname "$SELF")"
-PHYT_DERIVED=$(ls -d "$REPO_ROOT/../"*/.git 2>/dev/null | sed 's|/.git$||; s|.*/||' | tr '\n' ' ')
+PHYT_DERIVED=$(ls -d ./*/.git 2>/dev/null | sed 's|^\./||; s|/\.git$||' | tr '\n' ' ')   # 脚本 cwd 已是生态根 ⇒ 兄弟仓=当前目录的子目录（任何调用 cwd 都对）
 if [ -z "$PHYT_DERIVED" ]; then
   PHYT_DERIVED=$(basename "$REPO_ROOT")
   echo "  [ci-matrix] 无兄弟仓 ⇒ 只读本仓: $PHYT_DERIVED" >&2
