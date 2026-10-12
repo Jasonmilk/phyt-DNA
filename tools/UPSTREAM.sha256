@@ -1,4 +1,4 @@
-aa74b25f6bcda8735cf07ba195d430080efe46e5  tools/check-baseline.sh
+9a681c5802cb15d632aa17b06912a5a985083c60  tools/check-baseline.sh
 582f6dbb63c2e29df2cd4dd3ac2577903b36e553  tools/check-pool.sh
 5128f96561db872351ecfc52142350d6508bfe4b  tools/ci-local.sh
 942772c3179b1773d03b234b34b9ec14436e5751  tools/ci-matrix.sh

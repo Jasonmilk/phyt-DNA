@@ -7,7 +7,9 @@ RED(){ printf '  RED  %s\n' "$1" >&2; fail=1; }
 fail=0
 
 # DNA.md 也在 scope 内（P9 元闸门的第一例）：'DNA 不可改'由【已有的资产基线】守，不新增机制。
-calc(){ find decisions tools DNA.md -type f \( -name '*.md' -o -name '*.sh' \) -print0 \
+# ★ 2（2026-10-12 裁定）：**docs/ 与根目录受管文档纳入基线** —— 原先 51 条里 `docs` 命中 0
+#   ⇒ 一份文档可以被**静默改写**而无人察觉（"哑失败"）。纳入后：编辑文档 ⇒ 基线变 ⇒ 钩子同批重算（自动 add）。
+calc(){ find decisions tools docs DNA.md VISION.md SPEC.md RNA.md PLAN.md GROWTH.md DEPRECATE.md position.md OUTWARD.md -type f \( -name '*.md' -o -name '*.sh' \) -print0 \
         | sort -z | xargs -0 sha256sum | grep -v 'baseline.sha256'; }
 
 case "${1:-}" in

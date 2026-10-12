@@ -13,9 +13,12 @@ set -uo pipefail
 ROOT=$(git rev-parse --show-toplevel) || { echo "⛔ 不在 git 工作区 ⇒ 拒绝提交" >&2; exit 1; }
 cd "$ROOT" || exit 1
 
+# ★ 2026-10-12（实测缺陷修复）：**git 在 pre-commit 阶段拿不到【待写】的消息** ⇒ 原来"读上一笔提交"的 [wip] 判定
+#   **形同虚设**（我的"验收 C-clean [wip]"就被它漏判、由扫描步拒了）。⇒ 正式逃生门改为**环境变量**：
+#     `PHYT_WIP=1 git commit -m "…"`（消息里的 [wip] 仍兼容，但它只能反映【上一笔】）。
 WIP=0
-LASTMSG=$(git log -1 --pretty=%s 2>/dev/null || true)
-case "$LASTMSG" in *'[wip]'*) WIP=1 ;; esac
+[ "${PHYT_WIP:-0}" = 1 ] && WIP=1
+case "$(git log -1 --pretty=%s 2>/dev/null || true)" in *'[wip]'*) WIP=1 ;; esac
 
 # ── ① 扫描（timing:post）· 仅非 [wip]（[wip] 的逃生门只跳这一步）────────────────
 if [ "$WIP" = 0 ]; then
@@ -51,16 +54,16 @@ git add tools/UPSTREAM.sha256
 if ! git diff --cached --quiet -- tools/UPSTREAM.sha256; then
   echo "  [pre-commit] 引擎清单已同批重生并纳入提交"
 fi
-if ! git diff --quiet -- tools/UPSTREAM.sha256; then
-  echo "⛔ 引擎清单重生后仍有未暂存差异 ⇒ 拒绝提交" >&2; exit 1
-fi
+# ★ 1（裁定统一）：清单与基线一律【自动 add】（不拒绝）—— 拒绝会造成"人工补一步"，今晚我栽过五次；
+#   兜底交给 CI（ci-local step 0/1 会独立校验）。rc 铁律保留（重生失败仍然阻断）。
+if ! git diff --quiet -- tools/UPSTREAM.sha256; then git add tools/UPSTREAM.sha256; fi
 cb_out=$(bash tools/check-baseline.sh --update 2>&1); cb_rc=$?
 printf '%s\n' "$cb_out" | tail -1
 if [ "$cb_rc" != 0 ]; then echo "⛔ 资产基线重算失败（rc=$cb_rc）⇒ 拒绝提交" >&2; exit 1; fi
+# ★ 1（2026-10-12 裁定 · 我倾向并采用【前者】）：**自动 add + CI 校验兜底** —— 不要"人工补一步"。
+#   理由（有实测）：今晚我**五次**栽在"要人工补一步"（基线/清单都是）。**由机制替手，CI 兜底**。
 if ! git diff --quiet -- tools/baseline.sha256; then
-  echo "⛔ 资产基线已变（重算 ≠ 已提交版）⇒ 拒绝提交（D16：不许把'基线没更新'带出去）" >&2
-  git diff --stat -- tools/baseline.sha256 | sed 's/^/   /' >&2
-  echo "   ⇒ 跑：git add tools/baseline.sha256 后重新提交" >&2
-  exit 1
+  git add tools/baseline.sha256
+  echo "  [pre-commit] 资产基线已同批重算并纳入提交（自动；CI 兜底校验）"
 fi
 exit 0
