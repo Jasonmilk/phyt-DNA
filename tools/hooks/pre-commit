@@ -27,13 +27,27 @@ if [ "${PHYT_WIP:-0}" = 1 ]; then
     echo "  [pre-commit] 逃生门未被使用（ci-local 本来就绿）"
   else
     step=$(printf '%s\n' "$pre" | grep -E '★ RED' -B1 | grep -E '^  [0-9]' | head -1 | sed 's/^ *//')
-    if printf '%s\n' "$pre" | grep -qE '全仓违规扫描|违规:'; then
+    #   ★ 分类器只看【真正的违规行】（`★ 违规:`），不看【步骤名】（"全仓违规扫描"是步名 ⇒ 永远在场 ⇒ 会把一切判成内容违规）
+    if printf '%s\n' "$pre" | grep -qE '★ 违规:'; then
       echo "⛔ 内容违规（**不是门坏了**）⇒ 逃生门不适用（PHYT_WIP 只对'门自身坏'有效）" >&2
       printf '%s\n' "$pre" | grep -E '违规' | head -3 | sed 's/^/   /' >&2
       exit 1
     fi
     echo "  [pre-commit] 逃生门放行 —— 理由（机器给出）: ${step:-（未取到步骤名）}"
-    python3 -c 'import json,sys,time;print(json.dumps({"ts":time.strftime("%Y-%m-%dT%H:%M:%S%z"),"kind":"skip","gate_id":"pre-commit-gate","verdict":"skip","override":True,"source":"hook","event_id":"wip-escape-%d"%int(time.time()),"note":"PHYT_WIP 逃生门：%s" % sys.argv[1][:200]},ensure_ascii=False))' "${step:-unknown}" >> "ledger/hits-$(date +%Y).jsonl"
+    #   落账带三项：**revisit_on（何时回头）· recovery（怎么接着干）· sunset（日落 = 逾期未结即红）**
+    python3 -c '
+import json, sys, time, datetime
+step = sys.argv[1][:200]
+today = datetime.date.today()
+print(json.dumps({
+ "ts": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
+ "kind": "skip", "gate_id": "pre-commit-gate", "verdict": "skip", "override": True, "source": "hook",
+ "event_id": "wip-escape-%d" % int(time.time()),
+ "revisit_on": str(today + datetime.timedelta(days=2)),
+ "recovery": "先修门自身（spec-lint/清点器/死代码断言），再正常提交一次（不带 PHYT_WIP）；随后追加 kind=closure 行（ref_event_id 指向本行）",
+ "sunset": "revisit_on 之后仍未 closure ⇒ 心跳具名红（ci-local 步 3b）",
+ "note": "PHYT_WIP 逃生门：%s" % step,
+}, ensure_ascii=False))' "${step:-unknown}" >> "ledger/hits-$(date +%Y).jsonl"
     echo "  [pre-commit] 已落账（kind=skip，不计入连续无红推轮数 N）"
   fi
   WIP=1

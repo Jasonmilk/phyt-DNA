@@ -62,6 +62,24 @@ _bl=$(bash tools/validate.sh --probe-all 2>&1 | grep -c '基线（未注入）: 
 # ★ 0*（2026-10-13）：**"腐化"也算红** —— 此前只数"基线红" ⇒ **夹具跨不过阈值的死门对本步隐形**
 #   （实测：recopy 门 probe 报「腐化」，而本步报 OK）。死门 = 门不在工作 ⇒ 与基线红同等严重。
 _rot=$(bash tools/validate.sh --probe-all 2>&1 | grep -c '闸门已腐化')
+# ★ ①补（2026-10-13）：**逃生门逾期未结 ⇒ 具名红** —— 落账三项里的 sunset 由这里执行。
+#   结案方式：追加一行 kind=closure（ref_event_id 指向那行逃生门的 event_id）；append-only，不改旧行。
+_esc=$(python3 - <<'PY'
+import datetime, io, json, glob, os
+today = datetime.date.today().isoformat()
+closed = set(); rows = []
+for f in sorted(glob.glob('ledger/hits-*.jsonl')):
+    for l in io.open(f, encoding='utf-8'):
+        try: d = json.loads(l)
+        except Exception: continue
+        if d.get('kind') == 'closure' and d.get('ref_event_id'): closed.add(d['ref_event_id'])
+        if d.get('kind') == 'skip' and d.get('revisit_on'): rows.append((d.get('event_id'), d['revisit_on'], (d.get('recovery') or '')[:60]))
+over = [r for r in rows if r[0] not in closed and r[1] < today]
+print(len(over), '|'.join('%s(限期%s · 恢复命令:%s)' % (a, b, c) for a, b, c in over[:3]))
+PY
+)
+_n=${_esc%% *}; _why=${_esc#* }
+if [ "$_n" != "0" ]; then echo "★ RED: 逃生门逾期未结 $_n 处（日落触发）: $_why" >&2; fail=1; fi
 if [ "${_bl:-0}" = "0" ] && [ "${_rot:-0}" = "0" ]; then echo OK; else
   echo "★ RED ($_bl 条闸门基线红 · ${_rot:-0} 条闸门腐化)"; bash tools/validate.sh --probe-all 2>&1 | grep -B4 -E '基线（未注入）: 红|闸门已腐化' | grep -E '^\s*[0-9]+:[A-Za-z]|红 →|腐化' | grep -E '^\s*[0-9]+:[A-Za-z]|红 →' | head -6 | sed 's/^/       /'; fail=1
 fi
