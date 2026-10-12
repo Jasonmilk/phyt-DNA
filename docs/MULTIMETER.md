@@ -208,3 +208,21 @@ bash -c 'wc -l PLAN.md RNA.md | head -2'
 
 **图纸（`hard:false`）不进 `gates()` ⇒ 第 4 边（origin 三要素）根本不审它** —— 实测：我把假 ADR 写成 `hard:false` 时**一路绿灯**。
 ⇒ **它与"图纸三律"是同一件事的两面**：图纸要**登记 + 并发≤3 + promote-when/日落**，正是为了不让"不审"变成"免审"。
+
+## H0 sweep 重读（2026-10-13 · 用【修好的提取】）
+
+```
+awk '/^check: \|/{f=1;next} f&&/^[a-z-]+:/{f=0} f{print}' decisions/ADR-*.md   # ★ 修好的提取（顶格行不终止）
+```
+
+**读数**：**功能型 = 0**（确证；`hits-2026`/`appeals-2026` 的残留 **29 处全是散文/注释**）· **扫描总行数 380 = 380**
+⇒ **此前盲区（旧提取少看的行数）= 0 现在** —— 它曾经是 **19 行**：`ADR-20261011-recopy-must-equal-the-gene-set` 的判据体
+**整段 python heredoc 顶格写** ⇒ 引擎读到第一个顶格行即停 ⇒ **那条判据几乎没被执行过**（已修）。
+
+## 待办：recopy 门的夹具陈旧（**不是违规**）
+
+```
+直跑 `--probe ADR-20261011-recopy-must-equal-the-gene-set` ⇒ **腐化**（夹具跨不过阈值）：
+夹具的注入点在 `名目重抄` 行，但它改的那处被判据的 `norm()`（去空格/尾 `·`）**归一化掉了** ⇒ 判据看不见。
+★ 而 `ci-local` 的**心跳仍报 OK**（33 门）—— **两者不一致**，这本身值得记（心跳的"腐化"判定与单门 probe 不同径）。
+恢复点：`bash tools/validate.sh --probe ADR-20261011-recopy-must-equal-the-gene-set`（须恢复 基线绿·注入红·反例守住）
