@@ -23,3 +23,4 @@
 - [`GROWTH.md`](../GROWTH.md) — **它怎么长大的（年轮）**
 - [`DEPRECATE.md`](../DEPRECATE.md) — **一个东西怎么死（三种终点）**
 - [`position.md`](../position.md) — **本仓在哪里、不做什么**
+- [`docs/PLAN-PAUSED.md`](PLAN-PAUSED.md) — **哪些事暂停了、怎么恢复（恢复点是一条命令）**
