@@ -8,7 +8,7 @@ aa74b25f6bcda8735cf07ba195d430080efe46e5  tools/check-baseline.sh
 5ce6126bc36ca8e9fa02883e7e25fd14a05c4b23  tools/frozen-body.sh
 a32713ad18b2cc66437402a08048428918915a51  tools/probe.sh
 e98364dc156d1ec865218fe76cbdb1b356ebd748  tools/redrate.sh
-586bd39e8111fb58f845cfc41415c3223eaf4d0c  tools/spec-lint.sh
+9d86d208ecae31884c743afd6a058ddf9b76f094  tools/spec-lint.sh
 1a29eef48923128bd715923b8b9edd06728c8657  tools/sync-upstream.sh
-769b805d6ce0fb45ac8b6bd8c1608d257dfc0405  tools/validate.sh
+f27be3fcbfd75608ec47f24eb89b632f94209616  tools/validate.sh
 28beabce5d9041e5c04aff2a72a02dfd46cc10a9  tools/xray.sh

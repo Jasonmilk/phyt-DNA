@@ -122,7 +122,7 @@ probe_one(){ # probe_one <gate-id> → 0=闸门活着（RED）· 2=腐化/拓扑
   F="$TMP/$F"
   # ★ 报【两个世界】（2026-10-09 教训）：注入后的 RED 是**夹具的功劳**，不是仓库的状态。
   # 只报注入态，读者会把"夹具造出来的违规"误读成"仓库不合规"——本仓就有人这么误读过一次。
-  base_out=$(F="$F" bash -c "$chk_src" 2>/dev/null); base_rc=$?
+  base_out=$(F="$F" bash -u -c "$chk_src" 2>/dev/null); base_rc=$?
   # ★ 引擎认【具名跳过】（YB 2026-10-12）：rc=4 + stdout 空 ⇒ 记 skip。**既不是绿，也不是红。**
   if [ "$base_rc" = 4 ] && [ -z "$base_out" ]; then
     echo "  具名跳过: 判据拒绝在【缺历史】的场景下判（浅克隆/非 git 工作区）—— 不算绿也不算红" >&2
@@ -137,7 +137,7 @@ probe_one(){ # probe_one <gate-id> → 0=闸门活着（RED）· 2=腐化/拓扑
   # 实测（2026-10-09）：一个 check 因嵌套 heredoc 语法错误而根本没运行，
   # 而 stderr 被丢掉 ⇒ 报"NOT RED"，看起来像闸门活着。**这正是本仓禁止的"静默失败=伪证"。**
   CHK=$(mktemp /tmp/chk.out.XXXXXX)
-  err=$(F="$F" bash -c "$chk_src" 2>&1 >"$CHK"); rc=$?
+  err=$(F="$F" bash -u -c "$chk_src" 2>&1 >"$CHK"); rc=$?
   out=$(cat "$CHK"); rm -f "$CHK"
   cp "$BAK" "$F"; rm -f "$BAK"; BAK=
   if [ "$rc" = 4 ] && [ -z "$out" ]; then
@@ -171,10 +171,10 @@ probe_one(){ # probe_one <gate-id> → 0=闸门活着（RED）· 2=腐化/拓扑
   # ★ 判据是【结论是否改变】，不是【是否红】—— 因为 gate 可能【本来就红】
   # （本仓就有一条：PLAN.md 177 行 > 它自定的 150）。只看"是否红"会把"本来就红"
   # 误报成假阳性 —— 这个缺陷是在真闸门上加反例时才现形的。
-  before_out=$(F="$F" bash -c "$(check_of "$id")" 2>/dev/null)
+  before_out=$(F="$F" bash -u -c "$(check_of "$id")" 2>/dev/null)
   cp "$F" /tmp/cnt.bak
   F="$F" bash "$cf" >/dev/null 2>&1
-  after_out=$(F="$F" bash -c "$(check_of "$id")" 2>/dev/null)
+  after_out=$(F="$F" bash -u -c "$(check_of "$id")" 2>/dev/null)
   # （反例段只比"结论是否改变"；若 check 本身坏了，上面的正例段已经具名报过。）
   cp /tmp/cnt.bak "$F" 2>/dev/null; rm -f /tmp/cnt.bak
   if [ "$before_out" != "$after_out" ]; then
@@ -269,7 +269,7 @@ while read -r id; do
           out="[输入失效] $p 不存在 —— 按 fail-closed 处理（静默放行=伪证）"
         else
           SC=$(mktemp /tmp/scan.out.XXXXXX)
-          err2=$(F="$p" bash -c "$(check_of "$id")" 2>&1 >"$SC"); rc2=$?
+          err2=$(F="$p" bash -u -c "$(check_of "$id")" 2>&1 >"$SC"); rc2=$?
           out=$(cat "$SC"); rm -f "$SC"
           if [ "$rc2" = 4 ] && [ -z "$out" ] && printf '%s' "$err2" | grep -q '具名跳过'; then
             skips=$((skips+1)); skips_named="$skips_named|$id"

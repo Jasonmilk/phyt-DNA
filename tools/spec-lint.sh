@@ -100,6 +100,27 @@ for f in decisions/ADR-*.md; do
 done
 if [ -n "$bare" ]; then red "check 体里有未行首锚定的前言字段匹配（裸匹配 = 会被正文里的同名文字骗）:$bare"; else grn "前言字段匹配都行首锚定"; fi
 
+# ★ 2026-10-12（裁定 2 · 净 0）：**变量必须赋值** —— check 体里用了 `$VAR` 而体里没有 `VAR=` 赋值 ⇒ 红。
+#   实测两例：索引门的根目录循环 `[ -e "$ROOT/$d" ] || continue`（ROOT 从未定义 ⇒ **静默跳过一切**）；
+#   PLAN 门的跨文件核对 `ls "$ROOT"/archive/…`（跑到 `/archive/…`）。**不报错的判据 ≠ 在工作。**
+unassigned=""
+for f in decisions/ADR-*.md; do
+  grep -q '^check: |' "$f" || continue
+  body=$(awk '/^check: \|/{f=1;next} f&&/^[^ ]/{f=0} f&&NF{print}' "$f" | sed 's/^  //')
+  #   ★ 收紧（同轮）：① 先剥【单引号串】—— 判据里被搜索的模式串（如 `\$var（`）不是变量；
+  #   ② 全大写名视为【环境提供】（约定：大写 = 环境/CI 注入，如 PHYT_LEDGER）。
+  stripped=$(printf '%s' "$body" | sed -E "s/'[^']*'/''/g")
+  used=$(printf '%s' "$stripped" | grep -oE '\\$\\{?[A-Za-z_][A-Za-z0-9_]*' | tr -d '${' | sort -u)
+  for v in $used; do
+    case "$v" in F) continue ;; esac
+    case "$v" in *[a-z]*) ;; *) continue ;; esac   # 全大写 ⇒ 环境提供（大写约定）
+    if printf '%s' "$body" | grep -qE "(^|[;[:space:]])(local )?${v}="; then continue; fi
+    if printf '%s' "$body" | grep -qE "(for|read)[[:space:]]+${v}([[:space:]]|\$)"; then continue; fi
+    unassigned="$unassigned $(basename "$f"):\$${v}"
+  done
+done
+if [ -n "$unassigned" ]; then red "check 体里用了从未赋值的变量（会静默展开成空 ⇒ 判据在"假跑"）:$unassigned"; else grn "check 体里的变量都有赋值"; fi
+
 echo
 [ "$fail" = 0 ] && { echo "spec-lint: PASS"; exit 0; }
 echo "spec-lint: BLOCK（规范自身未过闸门）" >&2
