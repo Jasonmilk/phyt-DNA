@@ -9,7 +9,7 @@
 a32713ad18b2cc66437402a08048428918915a51  tools/probe.sh
 e98364dc156d1ec865218fe76cbdb1b356ebd748  tools/redrate.sh
 c13477ff1f4703c542a22ec37f36f278e3e882bf  tools/regex-census.sh
-e555aad1ed06246a0fab2a0143c5db07e1cbfc73  tools/spec-lint.sh
+9b937b7a771493b846ab6b1e4ababb10ff7d49df  tools/spec-lint.sh
 1a29eef48923128bd715923b8b9edd06728c8657  tools/sync-upstream.sh
 c59e95958fc6472ecdfcd100af4a1e831ba4851a  tools/validate.sh
 a3ec83c801e065fd77a5cffe946dc5164fdd255d  tools/xray.sh

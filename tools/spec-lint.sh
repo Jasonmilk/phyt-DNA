@@ -184,25 +184,44 @@ if [ "$census_rc" = 0 ]; then grn "正则清点器自检通过（12/12）"; else
 #   来历：pre-commit 第 26 行的无条件 `exit 0` 让其后 24 行（含我新加的阻断）全是死代码，而我以为它在工作。
 if python3 - <<'PYDC' 2>/dev/null
 import glob, io, os, re
-bad=False
-for f in sorted(glob.glob('tools/hooks/*')):
-    if not os.path.isfile(f): continue
-    depth=0; exit_at=None
-    for n,raw in enumerate(io.open(f,encoding='utf-8').read().split('\n'),1):
-        t=raw.strip()
+
+def has_dead_code(text):
+    # 逐行深度追踪（2026-10-13 正解）：
+    # · 闭合只在【真是闭合】时减、且钳位到 0；
+    # · **同一行既开又闭**（`case … esac` / `if …; fi`）视为**平衡**（先按开+1、再按闭-1 —— 顺序即语义！）；
+    # · 行内闭合在标志检查之前数。
+    depth = 0; exit_at = None
+    for n, raw in enumerate(text.split('\n'), 1):
+        t = raw.strip()
         if not t or t.startswith('#'): continue
-        low=t
-        # 闭合只在【真是闭合】时减，并钳位到 0（旧版把"钳位"写成"每行都减" ⇒ 深度衰减 ⇒ 假阳）
+        low = t
+        opens = low.startswith(('if ','for ','while ','case ')) or low=='{' or low.endswith('(){') or '() {' in low
+        if opens: depth += 1
         if low in ('fi','esac','}','done') or low.startswith(('fi ','esac ','} ','done ')):
-            depth = depth-1 if depth>0 else 0
-        # 行内闭合（if …; then X; fi / case … ;; esac / for …; do X; done）—— 同样在此计数（必须在标志检查之前）
+            depth = depth - 1 if depth > 0 else 0
         for kw in ('fi','esac','done'):
             if re.search(r'(^|;|\s)%s(\s*;|\s*$)' % kw, low) and not low.startswith(kw):
-                depth = depth-1 if depth>0 else 0
-        if exit_at is not None and depth==0 and not low.startswith(('fi','esac','}','done',';;')):
-            print('%s:第%d行（第%d行 exit 之后 · 顶层 ⇒ 死代码）' % (os.path.basename(f), n, exit_at)); bad=True; break
-        if exit_at is None and depth==0 and (low=='exit' or low.startswith('exit ')): exit_at=n
-        if low.startswith(('if ','for ','while ','case ')) or low=='{' or low.endswith('(){') or '() {' in low: depth+=1
+                depth = depth - 1 if depth > 0 else 0
+        if exit_at is not None and depth == 0 and not low.startswith(('fi','esac','}','done',';;')):
+            return (n, exit_at)
+        if exit_at is None and depth == 0 and (low == 'exit' or low.startswith('exit ')): exit_at = n
+    return None
+
+bad = False
+for f in sorted(glob.glob('tools/hooks/*')):
+    if not os.path.isfile(f): continue
+    hit = has_dead_code(io.open(f, encoding='utf-8').read())
+    if hit:
+        print('%s:第%d行（第%d行 exit 之后 · 顶层 ⇒ 死代码）' % (os.path.basename(f), hit[0], hit[1])); bad = True
+# ★ 自检（②-3 · 合成输入、可重跑、不占 decisions/）：a 真死代码必须被抓 · b 合法 exit 必须不被抓
+_a = 'set -u\nexit 0\necho x\n'
+_b = ('set -u\n' 'if [ ! -f x ]; then\n  exit 1\nfi\n'
+      'case "${1:-}" in\n  --x) exit 0 ;;\nesac\n'
+      'if [ -z "${A:-}" ]; then echo h; exit 1; fi\n' 'exit 0\n')
+if has_dead_code(_a) is None:
+    print('自检失败 a：真死代码样本**没**被抓到'); bad = True
+if has_dead_code(_b) is not None:
+    print('自检失败 b：合法 exit 样本被误判为死代码（假阳）'); bad = True
 raise SystemExit(0 if not bad else 1)
 PYDC
 then grn "钩子里没有 exit 之后的死代码（深度感知；**已数行内 if/for/case 闭合**；仍不数工具脚本内的 heredoc ⇒ 局限在 tools/*.sh）"; else red "钩子里的 exit 之后仍有可执行行（死代码 ⇒ 你以为它在工作）"; fi
