@@ -150,6 +150,30 @@ done
 if [ -n "$presence_miss" ]; then red "presence 型正则在目标文件上命中 0 次（它没有样本 ⇒ 恒绿断言）:$presence_miss"; else grn "presence 型正则在目标文件上都能命中（样本即目标）"; fi
 
 echo
+# ★ 2（2026-10-12 · 净 0）：【判据体】里不得出现宿主专名 —— 散文可提（归因），**判据不许长着宿主的样子**
+#   （复用 shell-var 门的分层逻辑：判据体严格，散文宽松）。宿主专名 = 生态其余仓 + 生态自身的名。
+hosthit=""
+for f in decisions/ADR-*.md; do
+  grep -q '^check: |' "$f" || continue
+  body=$(awk '/^check: \|/{f=1;next} f&&/^[^ ]/{f=0} f&&NF{print}' "$f" | sed 's/^  //')
+  if printf '%s' "$body" | grep -qE 'helix-mind|anaphase-helix|Cellrix|FlowModus|Tuck|helixECO|Helix 生态'; then
+    hosthit="$hosthit $(basename "$f" .md)"
+  fi
+done
+if [ -n "$hosthit" ]; then red "判据体里出现宿主专名（应改成角色指针/角色名）:$hosthit"; else grn "判据体里没有宿主专名"; fi
+
+# ★ 4（2026-10-12 · 净 0）：**引用必须落地** —— 任何 md 里提到的 ADR id，必须在 decisions/ 有同名文件。
+#   实测来历：`docs/FINDING-…` 与账本都引用过一条【从未落盘】的 ADR（ledger-must-be-parseable-line-oriented）。
+#   ⇒ 一次 grep 治不完：把它变成通则（通则才不会再长出第二个）。
+dangling=""
+for aid in $(git grep -hoE 'ADR-[0-9]{8}-[a-z0-9]+(-[a-z0-9]+)*' -- '*.md' 2>/dev/null | sort -u); do
+  #   ★ 两类正当提及：① 缩写前缀（尾带连字符）由上面的正则排除；② 行内自带"从未落盘/未落盘"标记 = 历史说明。
+  if git grep -qE -- ".*$aid.*(从未落盘|未落盘|never landed)" -- '*.md'; then continue; fi
+  if git grep -qE -- "$aid-[a-z0-9]" -- '*.md'; then continue; fi   # 后置过滤：后面紧跟连字符 ⇒ 是【缩写】，不是 id
+  [ -e "decisions/$aid.md" ] || dangling="$dangling $aid"
+done
+if [ -n "$dangling" ]; then red "引用了【不存在】的 ADR id（悬空引用）:$dangling"; else grn "所有被引用的 ADR id 都有落地文件"; fi
+
 [ "$fail" = 0 ] && { echo "spec-lint: PASS"; exit 0; }
 echo "spec-lint: BLOCK（规范自身未过闸门）" >&2
 exit 2

@@ -45,8 +45,14 @@ check: |
     # ③ 的两类【正当缺席】（2026-10-12 实测：扩作用域后先抓到的正是这两类，不是断链）：
     #   a) 重定向目标：`cmd > $p` —— 读者【当场创建】的文件，不是"声明必须存在的路径"（复核配方常这么写）；
     #   b) 带删除/历史标记的行：年轮与归档**记录过去**（"已删/已移除/历史"）⇒ 那类路径缺席是事实，不是断链。
-    if grep -qE ">[[:space:]]*${p}([[:space:]]|$)" "$F"; then continue; fi
-    if grep -E "${p}" "$F" | grep -qE '已删|已移除|已废弃|历史|deleted|removed'; then continue; fi
+    #   豁免必须【具名进观测】（不具名的豁免 = 哑的断链），且路径一律按【固定串】比对（禁止把路径当正则）。
+    hitline=$(grep -F -m1 -- "$p" "$F")
+    case "$hitline" in
+      *"> $p"*|*">$p"*) echo "③【豁免·重定向目标】${F}: ${p}（该行在创建它，不是声明它存在）" >&2; continue ;;
+    esac
+    if printf '%s' "$hitline" | grep -qE '已删|已移除|已废弃|deleted|removed'; then
+      echo "③【豁免·已删除记录】${F}: ${p}（条目行自带删除标记：记录过去，不是断链）" >&2; continue
+    fi
     echo "③ ${F} 指向 ${p}：本仓不存在它 ⇒ 要么断链，要么【跨仓引用形状错】—— 跨仓必须写成 <repo>/… 形状"
   done
   case "$F" in *README.md)

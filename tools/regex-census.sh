@@ -38,4 +38,12 @@ for f in decisions/ADR-*.md; do
   rm -f /tmp/.census.$$
   if [ "$n" != 0 ]; then printf '%-52s %s\n' "$(basename "$f" .md)" "$n"; TOT=$((TOT+n)); fi
 done
-echo "  ── 合计：$TOT 次正则调用"
+echo "  ── A 栏（check 块内 · 判据型）合计：$TOT 次"
+# ★ 6（2026-10-12）：**两栏口径** —— B 栏 = 全脚本（tools/*.sh）的正则调用（工具实现，不属判据）。
+SOT=0
+for s in tools/*.sh; do
+  n=$(count_one < "$s")
+  [ "$n" = 0 ] || { printf '%-52s %s\n' "$(basename "$s")" "$n"; SOT=$((SOT+n)); }
+done
+echo "  ── B 栏（全脚本 · 工具实现）合计：$SOT 次"
+echo "  ── 口径：A=判据（无样本不当绿）· B=实现（不参与该判据）"
