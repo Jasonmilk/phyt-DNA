@@ -6,7 +6,6 @@ b1694a130fda5b1abdf0e2b514eddb221e0243e8ec7c16ebdd799d28956088ba  ADR-20261009-P
 5d8300acd49afa5306cbdb719feb32879f15b741bd69701dc1259605fc5ed6c7  ADR-20261009-README-must-carry-the-one-command.md
 3aa73190cbc62efade71d33635aae6bad058dc4b37437cc588943ac9c49a3924  ADR-20261009-VISION-must-exist-and-be-a-seed.md
 3f25e0fa142b75e6d03b4272604f4d8f3f7fb808392836a4f3fbcf524d79c828  ADR-20261009-appeals-must-be-parseable.md
-# rebaseline ADR-20261009-appeals-must-be-parseable.md 理由: 去年度硬编码：值行只留纯值（注释移正文）—— 引擎按行取值
 9f7e437a307ffd12d6a437684fdb962e9d973451f1874a6bbbce3be864d5de89  ADR-20261009-claim-needs-redtest.md
 337405710b208bb206f94e4ed5afe60bb0f6ba240c1ef5aa2413a59e34f792f5  ADR-20261009-cull-after-20-misses.md
 51f361101a27fb7903cfd6f69b2832ba2552a2bb97f2a84669d58d896cb064b7  ADR-20261009-dangerous-action-shapes-must-be-blocked.md
@@ -28,5 +27,6 @@ bbd12d8b7b22bbf4c91cbc339571a08cf0b48972ffbc58f7c40a54e69e17a626  ADR-20261011-l
 fdba3c3fd94269051505596ccacfcddc5ce6685f71b0e1f365ab461566c35f46  ADR-20261011-recopy-must-equal-the-gene-set.md
 aa44c14c404efebee71da67882d5ec965d5167ad47ec28f20fc3a8369b2512bd  ADR-20261011-replay-per-revisit-period.md
 bd5748b5962269e14cf187b5aa8a266b580731caa7961f5071c4772edee009bd  ADR-20261011-supersede-must-be-paired.md
-f5c45d37f1bacdbe1c547c8f13ea4d1ba806ba838fe90706bdecdc4d8e2d1a73  ADR-20261012-ledger-new-lines-parseable-and-referenced.md
+e2f963c2c760d4aacf04e1a9b4b58a93798b62336ddab7c3886b0fccd927ca80  ADR-20261012-ledger-new-lines-parseable-and-referenced.md
+# rebaseline ADR-20261012-ledger-new-lines-parseable-and-referenced.md 理由: 去年度硬编码（改值行，注释移正文）· 复原被裸写弄坏的 heredoc 缩进
 11c477452e79445beb3cd8ec7cdbc36e3e1af8fccb95d42da633875c8459b657  ADR-20261012-pool-consistency-must-be-checked.md

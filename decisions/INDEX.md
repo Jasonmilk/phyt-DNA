@@ -19,4 +19,4 @@
 | `ADR-20261011-frozen-body-immutable` | `["decisions/ADR-*.md"]` | yes | yes | post |
 | `ADR-20261011-layer1-threshold-calibrated-by-premiere` | `["PLAN.md", "RNA.md"]` | yes | yes | post |
 | `ADR-20261011-supersede-must-be-paired` | `["decisions/ADR-*.md"]` | yes | yes | post |
-| `ADR-20261012-ledger-new-lines-parseable-and-referenced` | `["ledger/*.jsonl"]` | yes | yes | post |
+| `ADR-20261012-ledger-new-lines-parseable-and-referenced` | `["ledger/*.jsonl"]   # ★ 去年度硬编码（2027 不失明 · YB 3）` | yes | yes | post |
