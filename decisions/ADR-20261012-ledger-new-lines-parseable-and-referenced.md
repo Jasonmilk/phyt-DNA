@@ -3,7 +3,7 @@ id: ADR-20261012-ledger-new-lines-parseable-and-referenced
 seq: 9020
 status: accepted
 hard: true
-applies-to: ["ledger/*.jsonl"]
+applies-to: ["ledger/hits-*.jsonl"]
 effective-from: 2026-10-12
 timing: post
 redtest: "validate --probe ADR-20261012-ledger-new-lines-parseable-and-referenced"
@@ -20,19 +20,30 @@ check: |
   #   病理解剖：原 ANCHOR=932 是【相对于 hits-2026.jsonl】的度量。作用域扩到 ledger/*.jsonl 后，
   #   glob 首个匹配落到 ledger/appeals-2026.jsonl（实测 git ls-files 序）⇒ 整文件 ≤ 锚点 ⇒ 门恒绿且**不出声**。
   #   元律：**常数只相对于某个作用域成立；作用域一变，常数必须重算。** 存下来的数不会自己更新，过期时也从不响。
-  SELF=decisions/ADR-20261012-ledger-new-lines-parseable-and-referenced.md
+  # ★ 三态分离（YB 2026-10-12）：锚点【不可派生】时具名跳过，**绝不默认 0**。
+  #   约定：stdout 为空 + exit 4 + stderr 含"具名跳过" ⇒ 引擎记 skip（既不是绿也不是红）。
+  #   为什么必须有这一态：默认 0 = "把所有存量行都当新增来判" ⇒ 在浅克隆里会把 82 行存量坏行
+  #   报成"仓库违规"（伪红），或在一个干净的新账本上假绿 —— 两种都是伪证。
+  skip(){ echo "具名跳过: $1（不判 —— 没有锚点就没有判据）" >&2; exit 4; }
+  ROOT=$(git rev-parse --show-toplevel) || skip "非 git 工作区，锚点不可派生"
+  SELF="$ROOT/decisions/ADR-20261012-ledger-new-lines-parseable-and-referenced.md"
+  [ -f "$SELF" ] || skip "本门文件不存在（改名/未检出）：$SELF"
   BIRTH=$(git log --diff-filter=A --format=%H -1 -- "$SELF")
-  LOG="$F"
+  [ -n "$BIRTH" ] || skip "git 历史里找不到本门出生提交（浅克隆 --depth 1？）"
+  PARENT=$(git rev-parse "$BIRTH^") || skip "出生提交没有父提交（浅克隆边界）⇒ 锚点不可派生"
   in_tree(){ git ls-tree -r --name-only "$1" -- "$2" | grep -q .; }   # 存在则 0；不存在**不出错也不出声**
-  if [ -n "$BIRTH" ] && ! in_tree "$BIRTH^" "$LOG"; then LOG="ledger/$(basename "$F")"; fi
-  ANCHOR=0
-  if [ -n "$BIRTH" ] && in_tree "$BIRTH^" "$LOG"; then
-    ANCHOR=$(git show "$BIRTH^:$LOG" | awk 'NF{c++} END{print c+0}')
+  LOG="$F"
+  in_tree "$PARENT" "$LOG" || LOG="ledger/$(basename "$F")"
+  if in_tree "$PARENT" "$LOG"; then
+    ANCHOR=$(git show "$PARENT:$LOG" | awk 'NF{c++} END{print c+0}')
+  else
+    ANCHOR=0
   fi
-  python3 - "$F" "$ANCHOR" <<'PY'
+  echo "锚点=${ANCHOR}（派生自 ${BIRTH}^ · ${LOG}）" >&2
+  python3 - "$F" "$ANCHOR" "$ROOT" <<'PY'
   import json, sys, glob, os
   F = sys.argv[1]; anchor = int(sys.argv[2])
-  dec_dir = os.path.normpath(os.path.join(os.path.dirname(F), '..', 'decisions'))
+  dec_dir = os.path.join(sys.argv[3], 'decisions')   # ★ 由 ROOT 出（不从 $F 推：临时副本也能跑）
   adrs = {os.path.basename(p)[:-3] for p in glob.glob(os.path.join(dec_dir, 'ADR-*.md'))}
   # 具名豁免：hook 拦截执行点（PROTECTION 三执行点）的形状名闸门，不属于闸门池命名空间
   allow = adrs | {'hook-bash-command', 'hook-fail-closed'}

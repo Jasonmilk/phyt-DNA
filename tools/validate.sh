@@ -102,24 +102,36 @@ sys.stdout.write(json.dumps(rec, ensure_ascii=False) + "\n")
 ' "$1" "$2" "$3" >> "$LED_DIR"/hits-2026.jsonl
 }
 probe_one(){ # probe_one <gate-id> → 0=闸门活着（RED）· 2=腐化/拓扑失配/假阳性
-  local id="$1" F fx out cf out2
+  local id="$1" F fx out cf out2 chk_src
   F=$(glob_first "$id")
+  chk_src=$(check_of "$id")   # 判据正文取一次（原先两处各取一次）
   if [ ! -f "$F" ]; then echo "  [B] 拓扑失配: $F 不存在" >&2; rec "$id" block "topology-mismatch"; return 2; fi
   fx="$FIX_DIR/$id/inject.sh"
   if [ ! -f "$fx" ]; then echo "  [A] 缺 fixture: ${fx}（无夹具就无法证明闸门能红）" >&2; rec "$id" block "no-fixture"; return 2; fi
   # ★ 报【两个世界】（2026-10-09 教训）：注入后的 RED 是**夹具的功劳**，不是仓库的状态。
   # 只报注入态，读者会把"夹具造出来的违规"误读成"仓库不合规"——本仓就有人这么误读过一次。
-  base_out=$(F="$F" bash -c "$(check_of "$id")" 2>/dev/null)
+  base_out=$(F="$F" bash -c "$chk_src" 2>/dev/null); base_rc=$?
+  # ★ 引擎认【具名跳过】（YB 2026-10-12）：rc=4 + stdout 空 ⇒ 记 skip。**既不是绿，也不是红。**
+  if [ "$base_rc" = 4 ] && [ -z "$base_out" ]; then
+    echo "  具名跳过: 判据拒绝在【缺历史】的场景下判（浅克隆/非 git 工作区）—— 不算绿也不算红" >&2
+    rec "$id" skip "named skip: anchor not derivable (shallow clone / no history)"; return 0
+  fi
   if [ -z "$base_out" ]; then echo "  基线（未注入）: 绿"
   else echo "  基线（未注入）: 红 → ${base_out}"; fi
-  cp "$F" /tmp/inj.bak
+  BAK=$(mktemp /tmp/inj.XXXXXX.bak); cp "$F" "$BAK"
+  trap 'if [ -n "$BAK" ] && [ -f "$BAK" ]; then cp "$BAK" "$F"; rm -f "$BAK"; fi' EXIT
   F="$F" bash "$fx" >/dev/null 2>&1
   # ★ check 自己跑不起来时，【必须具名失败】—— 不能与"无输出=通过"混同。
   # 实测（2026-10-09）：一个 check 因嵌套 heredoc 语法错误而根本没运行，
   # 而 stderr 被丢掉 ⇒ 报"NOT RED"，看起来像闸门活着。**这正是本仓禁止的"静默失败=伪证"。**
-  err=$(F="$F" bash -c "$(check_of "$id")" 2>&1 >/tmp/chk.out)
-  out=$(cat /tmp/chk.out 2>/dev/null)
-  cp /tmp/inj.bak "$F" 2>/dev/null; rm -f /tmp/inj.bak
+  CHK=$(mktemp /tmp/chk.XXXXXX.out)
+  err=$(F="$F" bash -c "$chk_src" 2>&1 >"$CHK"); rc=$?
+  out=$(cat "$CHK"); rm -f "$CHK"
+  cp "$BAK" "$F"; rm -f "$BAK"; BAK=
+  if [ "$rc" = 4 ] && [ -z "$out" ]; then
+    echo "  具名跳过: 注入后判据仍拒绝判（缺历史）—— 记 skip，不记 pass" >&2
+    rec "$id" skip "named skip after injection: anchor not derivable"; return 0
+  fi
   # ★ 只在【bash 语法错误】（真的没跑起来）时判失败 —— 不能用 rc：正常通过时 rc 也可能是 1。
   if [ -z "$out" ] && printf '%s' "$err" | grep -qE 'syntax error|unexpected EOF|unexpected token'; then
     echo "  [check 失败] 判据自己没能运行：$(printf '%s' "$err" | head -1)" >&2
@@ -226,7 +238,7 @@ except Exception:
     pass
 ')
 [ -z "$paths" ] && { printf '{"verdict":"pass","scanned":0,"hits":0}\n'; exit 0; }
-scanned=0; hits=""
+scanned=0; skips=0; skips_named=""; hits=""
 while read -r id; do
   [ -n "$id" ] || continue
   if [ -n "$only_timing" ]; then
@@ -244,7 +256,13 @@ while read -r id; do
         if [ ! -e "$p" ]; then
           out="[输入失效] $p 不存在 —— 按 fail-closed 处理（静默放行=伪证）"
         else
-          out=$(F="$p" bash -c "$(check_of "$id")" 2>&1)
+          SC=$(mktemp /tmp/scan.XXXXXX.out)
+          err2=$(F="$p" bash -c "$(check_of "$id")" 2>&1 >"$SC"); rc2=$?
+          out=$(cat "$SC"); rm -f "$SC"
+          if [ "$rc2" = 4 ] && [ -z "$out" ] && printf '%s' "$err2" | grep -q '具名跳过'; then
+            skips=$((skips+1)); skips_named="$skips_named|$id"
+            break
+          fi
           # ★ 只在【真的没跑起来】时判失败：rc 不是可靠信号 ——
           #   很多 check 在【通过】时最后一条命令是失败的 `[ … ]` 测试 ⇒ rc=1（那是正常通过）。
           #   可靠信号是 bash 自己的语法错误。实测（2026-10-09）：用 rc 判会让 63 个文件全被判违规。
@@ -259,7 +277,9 @@ while read -r id; do
   done < <(grep '^applies-to:' "$DEC_DIR/$id.md" | sed 's/.*\[//;s/\]//' | tr -d '"' | tr ',' '\n')
 done < <(gates)
 
-if [ -z "$hits" ]; then printf '{"verdict":"pass","scanned":%d,"hits":0}\n' "$scanned"; exit 0; fi
-printf '{"verdict":"block","scanned":%d,"hits":%d,"rule_id":"%s"}\n' "$scanned" "$(echo "$hits"|tr '|' '\n'|grep -c .)" "$(echo "$hits"|sed 's/^|//'|cut -d: -f1)"
+n_hits=$(echo "$hits"|tr '|' '\n'|grep -c .); first=$(echo "$hits"|sed 's/^|//'|cut -d: -f1)
+[ "$skips" -gt 0 ] && echo "具名跳过 $skips 个（缺历史 ⇒ 判据不判，不是绿也不是红）: $skips_named" >&2
+if [ -z "$hits" ]; then printf '{"verdict":"pass","scanned":%d,"hits":0,"skipped":%d}\n' "$scanned" "$skips"; exit 0; fi
+printf '{"verdict":"block","scanned":%d,"hits":%d,"skipped":%d,"rule_id":"%s"}\n' "$scanned" "$n_hits" "$skips" "$first"
 echo "违规: $hits" >&2
 exit 2
