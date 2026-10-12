@@ -183,27 +183,26 @@ if [ "$census_rc" = 0 ]; then grn "正则清点器自检通过（12/12）"; else
 #   钩子/工具脚本里出现 `exit` 之后【仍有可执行行】⇒ 那些行永不执行 ⇒ 具名红。
 #   来历：pre-commit 第 26 行的无条件 `exit 0` 让其后 24 行（含我新加的阻断）全是死代码，而我以为它在工作。
 if python3 - <<'PYDC' 2>/dev/null
-import io, glob, os, sys
-KEYS_OPEN=('if ','for ','while ','case ','{')
-bad=[]
+import glob, io, os, re
+bad=False
 for f in sorted(glob.glob('tools/hooks/*')):
     if not os.path.isfile(f): continue
-        depth=0; exit_at=None
-        import re as _re
-        for n,raw in enumerate(io.open(f,encoding="utf-8").read().split("\n"),1):
-            t=raw.strip()
-            if not t or t.startswith("#"): continue
-            low=t
-            # ★ 闭合只在真是闭合时减、并钳位到 0（旧版把"钳位"写成每行都减 ⇒ 深度衰减到 0 ⇒ 假阳！）
-            if low in ("fi","esac","}","done") or low.startswith(("fi ","esac ","} ","done ")):
+    depth=0; exit_at=None
+    for n,raw in enumerate(io.open(f,encoding='utf-8').read().split('\n'),1):
+        t=raw.strip()
+        if not t or t.startswith('#'): continue
+        low=t
+        # 闭合只在【真是闭合】时减，并钳位到 0（旧版把"钳位"写成"每行都减" ⇒ 深度衰减 ⇒ 假阳）
+        if low in ('fi','esac','}','done') or low.startswith(('fi ','esac ','} ','done ')):
+            depth = depth-1 if depth>0 else 0
+        # 行内闭合（if …; then X; fi / case … ;; esac / for …; do X; done）—— 同样在此计数（必须在标志检查之前）
+        for kw in ('fi','esac','done'):
+            if re.search(r'(^|;|\s)%s(\s*;|\s*$)' % kw, low) and not low.startswith(kw):
                 depth = depth-1 if depth>0 else 0
-            for _kw in ("fi","esac","done"):
-                if _re.search(r"(^|;|\s)%s(\s*;|\s*$)" % _kw, low) and not low.startswith(_kw):
-                    depth = depth-1 if depth>0 else 0
-            if exit_at is not None and depth==0 and not low.startswith(("fi","esac","}","done",";;")):
-                print("%s:第%d行（第%d行 exit 之后 · 顶层 ⇒ 死代码）" % (os.path.basename(f), n, exit_at)); bad=True; break
-            if exit_at is None and depth==0 and (low=="exit" or low.startswith("exit ")): exit_at=n
-            if low.startswith(("if ","for ","while ","case ")) or low=="{" or low.endswith("(){") or "() {" in low: depth+=1
+        if exit_at is not None and depth==0 and not low.startswith(('fi','esac','}','done',';;')):
+            print('%s:第%d行（第%d行 exit 之后 · 顶层 ⇒ 死代码）' % (os.path.basename(f), n, exit_at)); bad=True; break
+        if exit_at is None and depth==0 and (low=='exit' or low.startswith('exit ')): exit_at=n
+        if low.startswith(('if ','for ','while ','case ')) or low=='{' or low.endswith('(){') or '() {' in low: depth+=1
 raise SystemExit(0 if not bad else 1)
 PYDC
 then grn "钩子里没有 exit 之后的死代码（深度感知；**局限具名：不数单行 if …; fi ⇒ 会让深度漂**）"; else red "钩子里的 exit 之后仍有可执行行（死代码 ⇒ 你以为它在工作）"; fi

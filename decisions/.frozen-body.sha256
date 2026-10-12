@@ -16,13 +16,13 @@ e2b7dc3e564a7c495902fbdd10e1f508814c690cb752d905457874c008457782  ADR-20261009-l
 c7096fc2d678df92396a1d3ba35b5ac39aa3fa8a68b44f5e3767366d3918e11f  ADR-20261009-lesson-must-be-replayed.md
 9794a7acfdbe4fdc680fd62b9fb53a444641c43c65b50fef3e04ef392fb09593  ADR-20261009-lesson-must-land-in-artifact.md
 3f98bd870859461af2d4b3683d3712a516a4bc860718e829b2df1476bb125147  ADR-20261009-readme-must-be-a-truthful-entry.md
-# rebaseline ADR-20261009-readme-must-be-a-truthful-entry.md 理由: 措辞：三级都点名
 71b0014c70a913ab47d97680544fa639c2ce8d7c6a0227ccd2db1e123b4738de  ADR-20261009-readme-must-carry-the-on-demand-pointer-block.md
 f26a98a3cb04497b3c4334ddbb4f0b6dd3f68547dde45ca54f4d544a3c297fad  ADR-20261009-shell-var-before-cjk-must-brace.md
 7fd4bc72b6899850df248c66170bc0427a2a9c8a3b546c7c42a5aff0bf3c689d  ADR-20261009-upstream-manifest-threat-model.md
 d324a3d6233a6de68694cfb3e253e90c113e4b4e7c2429078e5983ac509e1580  ADR-20261011-derivation-must-carry-origin.md
 67af532f9e29ef5b580273cd56e9e2855b52fb02cffffca8de031959eb9194f9  ADR-20261011-dna-modification-first-exercise.md
-18c6f8f2e55cfffaa048f889094db16d47ab3e09a596b89434729a622b22c207  ADR-20261011-failure-must-be-named-where-machines-can-read.md
+07174e463a5d6cf77732226e292581256fe18afe4d456995839afcacc30c2c19  ADR-20261011-failure-must-be-named-where-machines-can-read.md
+# rebaseline ADR-20261011-failure-must-be-named-where-machines-can-read.md 理由: 门禁坏了怎么修（逃生门定位）
 bafc8a095eb14a4975e9dd861454f87e750e2ed57e8d3132a582fb0859bdfe03  ADR-20261011-frozen-body-immutable.md
 ef6c49f99683f565e9cfab22a2e933e912eceab3d3f8a1ee78dcbd816975ac8d  ADR-20261011-layer1-budget-is-attention-not-maintenance.md
 bbd12d8b7b22bbf4c91cbc339571a08cf0b48972ffbc58f7c40a54e69e17a626  ADR-20261011-layer1-threshold-calibrated-by-premiere.md
