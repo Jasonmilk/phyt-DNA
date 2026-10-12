@@ -7,11 +7,11 @@
 | `ADR-20261009-PLAN-must-stay-under-150-lines` | `["PLAN.md"]` | yes | yes | post |
 | `ADR-20261009-README-must-carry-the-one-command` | `["README.md"]` | yes | yes | post |
 | `ADR-20261009-VISION-must-exist-and-be-a-seed` | `["VISION.md"]` | yes | yes | post |
-| `ADR-20261009-appeals-must-be-parseable` | `["ledger/appeals-2026.jsonl"]` | yes | yes | post |
+| `ADR-20261009-appeals-must-be-parseable` | `["ledger/*.jsonl"]   # ★ 去年度硬编码（2027 不失明 · YB 3）` | yes | yes | post |
 | `ADR-20261009-dangerous-action-shapes-must-be-blocked` | `["DNA.md", "VISION.md", "decisions/**"]` | NO | NO | pre |
 | `ADR-20261009-docs-must-be-indexed` | `["docs/INDEX.md"]` | yes | yes | post |
 | `ADR-20261009-index-must-be-regenerated` | `["decisions/INDEX.md"]` | yes | yes | post |
-| `ADR-20261009-ledger-must-be-valid-utf8` | `["ledger/hits-2026.jsonl"]` | yes | yes | post |
+| `ADR-20261009-ledger-must-be-valid-utf8` | `["ledger/*.jsonl"]   # ★ 去年度硬编码（2027 不失明 · YB 3）` | yes | yes | post |
 | `ADR-20261009-lesson-must-land-in-artifact` | `["examples/phyt.yml", ".github/workflows/**"]` | yes | yes | post |
 | `ADR-20261009-readme-must-carry-the-on-demand-pointer-block` | `["README.md"]` | yes | yes | post |
 | `ADR-20261009-shell-var-before-cjk-must-brace` | `["**/*.sh", "decisions/ADR-*.md"]` | yes | yes | post |
@@ -19,4 +19,4 @@
 | `ADR-20261011-frozen-body-immutable` | `["decisions/ADR-*.md"]` | yes | yes | post |
 | `ADR-20261011-layer1-threshold-calibrated-by-premiere` | `["PLAN.md", "RNA.md"]` | yes | yes | post |
 | `ADR-20261011-supersede-must-be-paired` | `["decisions/ADR-*.md"]` | yes | yes | post |
-| `ADR-20261012-ledger-new-lines-parseable-and-referenced` | `["ledger/hits-2026.jsonl"]` | yes | yes | post |
+| `ADR-20261012-ledger-new-lines-parseable-and-referenced` | `["ledger/*.jsonl"]   # ★ 去年度硬编码（2027 不失明 · YB 3）` | yes | yes | post |

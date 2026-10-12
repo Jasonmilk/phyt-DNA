@@ -3,7 +3,7 @@ id: ADR-20261012-ledger-new-lines-parseable-and-referenced
 seq: 9020
 status: accepted
 hard: true
-applies-to: ["ledger/hits-2026.jsonl"]
+applies-to: ["ledger/*.jsonl"]   # ★ 去年度硬编码（2027 不失明 · YB 3）
 effective-from: 2026-10-12
 timing: post
 redtest: "validate --probe ADR-20261012-ledger-new-lines-parseable-and-referenced"

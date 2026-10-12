@@ -5,7 +5,7 @@ id: ADR-20261009-ledger-must-be-valid-utf8
 seq: 9007
 status: accepted
 hard: true
-applies-to: ["ledger/hits-2026.jsonl"]
+applies-to: ["ledger/*.jsonl"]   # ★ 去年度硬编码（2027 不失明 · YB 3）
 effective-from: 2026-10-09
 timing: post
 redtest: "bash tools/validate.sh --probe ADR-20261009-ledger-must-be-valid-utf8"

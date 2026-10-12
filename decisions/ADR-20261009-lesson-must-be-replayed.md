@@ -5,7 +5,7 @@ id: ADR-20261009-lesson-must-be-replayed
 seq: 9001
 status: deprecated
 hard: true
-applies-to: ["ledger/hits-2026.jsonl"]
+applies-to: ["ledger/*.jsonl"]   # ★ 去年度硬编码（2027 不失明 · YB 3）
 effective-from: 2026-10-09
 timing: post
 redtest: "bash tools/validate.sh --probe ADR-20261009-lesson-must-be-replayed"
