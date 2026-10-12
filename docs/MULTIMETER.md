@@ -121,3 +121,23 @@ git clone . /tmp/orphan && cd /tmp/orphan && git remote remove origin && bash to
 ```
 
 **只写命令，不写结论** —— 结论会腐烂（依赖会变），命令每次给当下的事实。
+
+## 钩子接线读数（2026-10-12 · 一行命令，不造门）
+
+`tools/hooks/` 里的钩子**不会自动生效** —— `core.hooksPath` 是**每克隆一份**的本地配置：
+
+```
+git config --get core.hooksPath || echo '未接线 ⇒ 钩子不跑'
+```
+
+**只写命令不写结论。**
+
+## 工具口径（三栏 · 2026-10-12 钉死）
+
+| 栏 | 计数命令 | 现值 |
+|---|---|---|
+| `.sh`（工具脚本） | `ls tools/*.sh \| wc -l` | 16 |
+| `hooks`（钩子） | `ls tools/hooks/* \| wc -l` | 1 |
+| 其他（非 .sh 的 tools/ 文件） | `ls tools/* \| grep -v '\.sh$' \| wc -l` | 3 |
+
+**报数必须点名是哪一栏**（"17 个工具"这种合并口径 = 流沙）。

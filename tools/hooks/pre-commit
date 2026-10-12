@@ -39,14 +39,19 @@ if ! printf '%s' "$idx_out" | cmp -s - decisions/INDEX.md 2>/dev/null; then
   echo "  [pre-commit] 闸门资产变了 ⇒ decisions/INDEX.md 已自动重生（不依赖记得）"
 fi
 
-staged=$(git diff --cached --name-only 2>/dev/null | grep -E '^(decisions/|tools/|DNA\.md)' || true)
-if [ -n "$staged" ]; then
-  um_out=$(bash tools/upstream-manifest.sh --write 2>&1); um_rc=$?
-  if [ "$um_rc" != 0 ]; then echo "⛔ 引擎清单重生失败 ⇒ 拒绝提交: $(printf '%s' "$um_out" | tail -1)" >&2; exit 1; fi
-  git add tools/upstream-manifest.sha256 2>/dev/null || true
-  cb_out=$(bash tools/check-baseline.sh --update 2>&1); cb_rc=$?
-  printf '%s\n' "$cb_out" | tail -2
-  if [ "$cb_rc" != 0 ]; then echo "⛔ 资产基线重记失败（rc=$cb_rc）⇒ 拒绝提交：不许把'基线没更新'悄悄带进去" >&2; exit 1; fi
-  git add tools/baseline.sha256
+# ★ 1（2026-10-12 园丁裁定）：**按 staged 判定是错的** —— 改 `docs/*.md` 同样会动资产，
+#   而那条正则只认 decisions/|tools/|DNA.md ⇒ **"该跑的时候没跑"**（实测：改 docs/ 动资产，钩子放行）。
+#   ⇒ 改为【无条件重算 + 比对】：重算 ≡ 已提交版 ? pass : **拒绝并提示 --update**（基线不许"下一笔补"）。
+um_out=$(bash tools/upstream-manifest.sh --write 2>&1); um_rc=$?
+if [ "$um_rc" != 0 ]; then echo "⛔ 引擎清单重生失败 ⇒ 拒绝提交: $(printf '%s' "$um_out" | tail -1)" >&2; exit 1; fi
+git add tools/upstream-manifest.sha256 2>/dev/null || true
+cb_out=$(bash tools/check-baseline.sh --update 2>&1); cb_rc=$?
+printf '%s\n' "$cb_out" | tail -1
+if [ "$cb_rc" != 0 ]; then echo "⛔ 资产基线重算失败（rc=$cb_rc）⇒ 拒绝提交" >&2; exit 1; fi
+if ! git diff --quiet -- tools/baseline.sha256; then
+  echo "⛔ 资产基线已变（重算 ≠ 已提交版）⇒ 拒绝提交（D16：不许把'基线没更新'带出去）" >&2
+  git diff --stat -- tools/baseline.sha256 | sed 's/^/   /' >&2
+  echo "   ⇒ 跑：git add tools/baseline.sha256 后重新提交" >&2
+  exit 1
 fi
 exit 0
