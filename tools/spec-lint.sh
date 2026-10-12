@@ -240,6 +240,13 @@ done
 if [ -n "$chk" ]; then red "判据体里有顶格行（**原文**里；引擎只看到它之前的部分）:$chk"; else grn "判据体原文没有顶格行"; fi
 if [ -n "$trunc" ]; then red "编号判据在【提取后的体】里缺失（被截断？）:$trunc"; else grn "编号判据在提取后的体里逐一出现"; fi
 
+# ★ 0*******d（2026-10-13）：**分母自检** —— 总 = 活 + 图纸 + deprecated；不等 ⇒ 具名红
+#   （"在分母量准之前，任何分类读数都只是子集读数"）。反例：一份 ADR 缺 hard 字段 ⇒ 和必然不等。
+_t=$(ls decisions/ADR-*.md | wc -l | tr -d ' ')
+_a=$(for f in decisions/ADR-*.md; do grep -q '^hard: true$' "$f" || continue; grep -q '^status: deprecated' "$f" && continue; echo x; done | wc -l | tr -d ' ')
+_b=$(for f in decisions/ADR-*.md; do grep -q '^hard: false' "$f" || continue; grep -q '^status: deprecated' "$f" && continue; echo x; done | wc -l | tr -d ' ')
+_d=$(grep -l '^status: deprecated' decisions/ADR-*.md | wc -l | tr -d ' ')
+if [ "$((_a+_b+_d))" = "$_t" ]; then grn "分母自检：总 $_t = 活 $_a + 图纸 $_b + deprecated $_d"; else red "分母自检失败：总 $_t ≠ 活 $_a + 图纸 $_b + deprecated $_d ⇒ 有 ADR 缺 hard 字段（分类读数会漏）"; fi
 [ "$fail" = 0 ] && { echo "spec-lint: PASS"; exit 0; }
 echo "spec-lint: BLOCK（规范自身未过闸门）" >&2
 exit 2
