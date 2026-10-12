@@ -222,14 +222,23 @@ raise SystemExit(0 if not bad else 1)
 PYDC
 then grn "钩子里没有 exit 之后的死代码（深度感知）"; else red "钩子里的 exit 之后仍有可执行行（死代码 ⇒ 你以为它在工作）"; fi
 grn "死代码断言：hooks/（**局限具名**：tools/*.sh 未覆盖 —— 它们内有 heredoc 嵌 python/awk，逐行深度追踪必然漂移；真覆盖需解析器）"
-
-# ★ 2026-10-13（实测机制）：**判据体不得有顶格行** —— 正文提取的 awk 以"非空格开头"为结束条件
-#   ⇒ 一行顶格 ⇒ 引擎**只看到它前面的部分**（实测：全文 40 行，引擎只跑前 10 行 ⇒ 判据静默）。
-chk=""; for f in decisions/ADR-*.md; do
+# ★ 2026-10-13（实测机制 · 断言修正）：**判据体不得有顶格行** ——
+#   ① **必须查【原文】**：正文提取的 awk **以"非空格开头"为结束条件** ⇒ 用"提取结果"去查顶格行**永远查不到**
+#      （旧版断言因此**恒绿** —— 正是我这一晚反复栽的那类）。② **编号兜底**：声明了编号判据的门，
+#      其【提取后的体】必须逐一含这些编号（截断时即红）。
+chk=""; trunc=""
+for f in decisions/ADR-*.md; do
   grep -q '^check: |' "$f" || continue
-  awk '/^check: \|/{f=1;next} f&&/^[^ ]/{f=0} f&&NF{print}' "$f" | grep -q '^[^ ]' && chk="$chk $(basename "$f")"
+  raw=$(awk '/^check: \|/{f=1;next} f&&/^[a-z-]+:/{f=0} f{print}' "$f")
+  printf '%s\n' "$raw" | grep -qE '^[^ ][^ ]*' && chk="$chk $(basename "$f")"
+  ext=$(printf '%s' "$raw" | sed 's/^  //')
+  for n in ① ② ③ ④; do
+    grep -q "^| $n |" "$f" || continue
+    printf '%s' "$ext" | grep -q "$n" || trunc="$trunc $(basename "$f"):$n"
+  done
 done
-if [ -n "$chk" ]; then red "判据体里有顶格行（引擎只看到它之前的部分）:$chk"; else grn "判据体没有顶格行（正文提取完整）"; fi
+if [ -n "$chk" ]; then red "判据体里有顶格行（**原文**里；引擎只看到它之前的部分）:$chk"; else grn "判据体原文没有顶格行"; fi
+if [ -n "$trunc" ]; then red "编号判据在【提取后的体】里缺失（被截断？）:$trunc"; else grn "编号判据在提取后的体里逐一出现"; fi
 
 [ "$fail" = 0 ] && { echo "spec-lint: PASS"; exit 0; }
 echo "spec-lint: BLOCK（规范自身未过闸门）" >&2
