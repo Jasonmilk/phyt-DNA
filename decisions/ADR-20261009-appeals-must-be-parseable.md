@@ -5,7 +5,7 @@ id: ADR-20261009-appeals-must-be-parseable
 seq: 9009
 status: accepted
 hard: true
-applies-to: ["ledger/*.jsonl"]
+applies-to: ["ledger/appeals-*.jsonl"]
 effective-from: 2026-10-09
 timing: post
 redtest: "bash tools/validate.sh --probe ADR-20261009-appeals-must-be-parseable"

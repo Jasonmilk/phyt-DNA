@@ -11,7 +11,7 @@ revisit-on: 2027-04-11
 expires-on: null
 owner: "@jason"
 origin: "DNA「恒常不靠冻结，靠重抄」+ VISION「GROWTH.md 每圈的末行重抄名目全集，两抄之差，即突变显红处」—— 检测器欠账（队列中最久一笔），本轮立"
-origin-amend: "【第 1 轮更正 · 2026-10-12 · 三要素：event_id=round-2026-10-11-census · 账本行=ledger/hits-2026.jsonl 的 replay 普查 18 行 · commit=6537339】本事 = GROWTH 数字**实测漂移 12→18（无人报红）**"
+origin-amend: "【第 1 轮更正 · 2026-10-12 · 三要素：event_id=round-2026-10-11-census · 证据行=607（kind:replay · 行 event_id=census-61009-GROWTH-max-3-entries）· commit=6537339】本事 = GROWTH 数字**实测漂移 12→18（无人报红）**"
 risk: normal
 check: |
   [ -f "$F" ] || { echo "输入失效: $F 不存在（静默失败=伪证）"; }
