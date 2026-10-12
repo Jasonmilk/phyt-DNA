@@ -15,7 +15,7 @@ c0f8776c05330751daf785983d808d3890453e91c68ea47df5820aff983f1023  ADR-20261009-l
 e2b7dc3e564a7c495902fbdd10e1f508814c690cb752d905457874c008457782  ADR-20261009-ledger-must-be-valid-utf8.md
 38fd2f8a9b72ac9c0d9df3309334c4d67b98da195e3a897b773a547633df6aa6  ADR-20261009-lesson-must-be-replayed.md
 9794a7acfdbe4fdc680fd62b9fb53a444641c43c65b50fef3e04ef392fb09593  ADR-20261009-lesson-must-land-in-artifact.md
-6bb1604acd0039d96db48344126320c59fa35b15f08948fc8f5b6d761f6780c7  ADR-20261009-readme-must-be-a-truthful-entry.md
+3a296c710ff05ad186ecc7afb3ccfc8d57e50fc60a4c15b19c9496a3bf23c8b0  ADR-20261009-readme-must-be-a-truthful-entry.md
 71b0014c70a913ab47d97680544fa639c2ce8d7c6a0227ccd2db1e123b4738de  ADR-20261009-readme-must-carry-the-on-demand-pointer-block.md
 f26a98a3cb04497b3c4334ddbb4f0b6dd3f68547dde45ca54f4d544a3c297fad  ADR-20261009-shell-var-before-cjk-must-brace.md
 7fd4bc72b6899850df248c66170bc0427a2a9c8a3b546c7c42a5aff0bf3c689d  ADR-20261009-upstream-manifest-threat-model.md
@@ -28,7 +28,7 @@ bbd12d8b7b22bbf4c91cbc339571a08cf0b48972ffbc58f7c40a54e69e17a626  ADR-20261011-l
 e08b79a48598e0e3f935de9eb0ad6904e2181b33a4322543b341e4a7c2927be7  ADR-20261011-recopy-must-equal-the-gene-set.md
 aa44c14c404efebee71da67882d5ec965d5167ad47ec28f20fc3a8369b2512bd  ADR-20261011-replay-per-revisit-period.md
 bd5748b5962269e14cf187b5aa8a266b580731caa7961f5071c4772edee009bd  ADR-20261011-supersede-must-be-paired.md
-7c0a713c107ced8a25bffe40a6b615963c9883c0e1f127eca033cdbf5254ea8c  ADR-20261012-ledger-new-lines-parseable-and-referenced.md
-# rebaseline ADR-20261012-ledger-new-lines-parseable-and-referenced.md 理由: 补 origin 三要素（第 4 边生效后出生）
+3610c9b127903f654f2ba9b2ff684dc154599b22bf2f87939008254b7a6ef7eb  ADR-20261012-ledger-new-lines-parseable-and-referenced.md
 e69afe4c22b78925b52743b3ec3c5d0ea08ec70c334e97fa03d0ebe684efc964  ADR-20261012-pool-consistency-must-be-checked.md
-5102d977a654f7d365e88358e4a1fa4341ed6481d43650576dca99762b308c96  ADR-20261013-probe-scope-must-be-tagged.md
+0bceae24296fe1a66a83e4d4bd974eea5c46f4b028a0acb0e5f91938fb48855a  ADR-20261013-probe-scope-must-be-tagged.md
+# rebaseline ADR-20261013-probe-scope-must-be-tagged.md 理由: 图纸：证据尚未产生

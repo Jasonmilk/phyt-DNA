@@ -9,7 +9,7 @@ effective-from: 2026-10-13
 revisit-on: 2027-01-13
 expires-on: null
 owner: "@jasonmilk"
-origin: "事件=2026-10-13 人类裁定（probe-touched 设计稿：先定标签语义、不实现、周期全量保留） · 证据行=ledger/hits-2026.jsonl（本轮 probe 记录） · 提交=75e942b"
+origin: "图纸（hard:false）：2026-10-13 人类裁定定标签语义；**证据尚未产生** —— 实现时才由 touched/full 的台账产生（图纸不补三要素蒙混）"
 risk: normal
 check: |
   :   # 设计稿：hard:false ⇒ 引擎 gates() 不收它；实现与判据在下一轮（先定语义，再落机器）。

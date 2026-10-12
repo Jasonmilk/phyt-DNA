@@ -13,24 +13,24 @@ owner: "@jason"
 origin: "DNA「派生律的住址」六律之一「派生必带 origin」—— 取证时发现它是六律中【唯一无人守】的一条；而实测 hard:true 18/18 全有 origin ⇒ 可零红上线（立号，见本 ADR）"
 risk: normal
 check: |
-  ROOT=$(git rev-parse --show-toplevel) || { echo "输入失效: 不在 git 工作区，出生日不可量"; exit 4; }
-  [ -f "$F" ] || { echo "输入失效: $F 不存在（静默失败=伪证）"; }
+  ROOT=$(git rev-parse --show-toplevel) || { echo "输入失效: 不在 git 工作区（出生日/证据提交不可量）"; exit 4; }
   grep -q '^hard: true$' "$F" || exit 0
-  o=$(sed -n 's/^origin: *//p' "$F" | head -1)
-  case "$o" in
-    ""|'""'|null) echo "派生缺 origin（$(basename "$F")）—— 没有出处的闸门无法追溯：它凭什么长出来？（派生必带 origin）" ;;
-  esac
-  # ★ 0（2026-10-13 · 阻断项修复）：**第 4 边没有进执行面** —— 原判据只查 origin 非空
-  #   ⇒ 实测：一个 **origin 是散文**的假 ADR **一路绿灯**（"我觉得应该这样"也算出处 ⇒ 等于没出处）。
-  #   ⇒ 现在：**出生日在【本条生效日】之后的 ADR**，origin 必须带【三要素】事件=/证据行=/提交=（证据必须可核）。
-  #   边界【派生】而来：生效日读本条自己的 effective-from（政策锚在本 ADR）；出生日由 git 量（--diff-filter=A）。
+  # ★ 0′（2026-10-13）：三要素必须【不可自证】—— 锚定 ^origin: · 提交≠出生提交 · 事件须真 · 证据行须有行号/event_id
+  o=$(grep -m1 '^origin:' "$F" | sed 's/^origin: *//')          # ★ 锚定到 ^origin:（禁全文裸匹配）
+  case "$o" in ""|'""'|null) echo "派生缺 origin（$(basename "$F")）—— 没有出处的闸门无法追溯" ;; esac
   SELF="$ROOT/decisions/ADR-20261011-derivation-must-carry-origin.md"
+  [ -f "$SELF" ] || { echo "输入失效: 本门自身不在（SELF 缺失）⇒ 生效日不可读"; exit 4; }   # ★ SELF 缺失 ⇒ exit 4（不静默跳过）
   EFF=$(grep -m1 '^effective-from:' "$SELF" | sed 's/^effective-from: *//')
   BIRTH=$(cd "$ROOT" && git log --diff-filter=A -1 --format=%cs -- "$F")
+  BSHA=$(cd "$ROOT" && git log --diff-filter=A -1 --format=%h -- "$F")
   if [ -n "$BIRTH" ] && [ -n "$EFF" ] && [ "$BIRTH" \> "$EFF" ]; then
     for k in '事件=' '证据行=' '提交='; do
-      grep -q -- "$k" "$F" || echo "④ origin 缺三要素（${k}）（$(basename "$F")）—— 第 4 边：**证据必须可核**（形如 事件=… · 证据行=… · 提交=…）"
+      printf '%s' "$o" | grep -q -- "$k" || echo "④ origin 缺三要素（${k}）（$(basename "$F")）—— 形如 事件=… · 证据行=… · 提交=…"
     done
+    c=$(printf '%s' "$o" | sed -n 's/.*提交=\([0-9a-f]\{7,\}\).*/\1/p')
+    case "$BSHA" in "$c"*) [ -n "$c" ] && echo "④ origin 自证（提交=${c} 就是本 ADR 的出生提交）⇒ 那不是证据，是自己证明自己" ;; esac
+    printf '%s' "$o" | grep -qE '事件=[^·]*(立本门|本轮|我觉得|我认为)' && echo "④ origin 的 事件= 是自造事件（立本门/本轮/我觉得不算）⇒ 须指 task / 真实事故 / 采用 / 园丁裁定"
+    printf '%s' "$o" | grep -qE '证据行=[^·]*(第 ?[0-9]+ ?行|event_id=|task-) ' || printf '%s' "$o" | grep -qE '证据行=[^·]*(第 ?[0-9]+ ?行|event_id=|task-)' || echo "④ origin 的 证据行= 没有【行号或 event_id】（只给文件名不算证据）"
   fi
 last-hit: null
 hit-count: 0
