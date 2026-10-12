@@ -40,18 +40,12 @@
 
 ---
 
-> 2026-10-09 的缺口扫描已移出加载路径 ⇒ `archive/deprecated/PLAN-gaps-2026-10-09.md`（正文照录）。
-
----
-
-## 执行纪律（2026-10-12 · 人类裁定）
-
-**① 一次一件事 ② 必须批量则两阶段（先全改、后一次验）③ 每轮从 PLAN 取下一件**（= 不许由兴致开工）
+> 2026-10-09 的缺口扫描已移出加载路径 ⇒ `archive/growth/PLAN-gaps-2026-10-09.md`（正文照录）。
 
 ---
 
 ## 活跃区（≤5 行 · 随加载）
 
-1. `--probe-touched` 设计稿（ADR 定标签语义，**不实现**）2. I 闭环最后一边 3. J W0 自举 4. K/L/M
+**当前一件**：`--probe-touched` 设计稿（写 ADR 定标签语义，**不实现**；周期全量保留）
 
-**暂停项在 [`docs/PLAN-PAUSED.md`](docs/PLAN-PAUSED.md)（按需拉取，不随 must-read）** —— 四行格式 + 日落 N=3 + 限量 ≤5 条。
+**待办队列与暂停项在 [`docs/PLAN-PAUSED.md`](docs/PLAN-PAUSED.md)（按需拉取）· 纪律在 [`docs/EXECUTION-DISCIPLINE.md`](docs/EXECUTION-DISCIPLINE.md)（**不占 must-read**）**。

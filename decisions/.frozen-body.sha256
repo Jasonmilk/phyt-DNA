@@ -2,7 +2,8 @@
 efc5b591dd48365da3ccf22c72c64245efa6172045cc194f96d12d3e8b3808df  ADR-20261009-DNA-is-immutable.md
 ce3c589f737d34ef3f5f4235a5c9f0b2c1b3e0aa35e760b34786d71920fed7ff  ADR-20261009-GROWTH-max-3-entries.md
 b1694a130fda5b1abdf0e2b514eddb221e0243e8ec7c16ebdd799d28956088ba  ADR-20261009-PLAN-must-exist.md
-9c3e07837e347569bfd93f91b87c6f03c5c6ff29125a59bcfd9ab6b7cfb66004  ADR-20261009-PLAN-must-stay-under-150-lines.md
+a40e67f17e5d556553458fb9f5e4fc2346cea765977cf207ae4b1a7202578782  ADR-20261009-PLAN-must-stay-under-150-lines.md
+# rebaseline ADR-20261009-PLAN-must-stay-under-150-lines.md 理由: H#2b：归档每条必须带 ✅
 5d8300acd49afa5306cbdb719feb32879f15b741bd69701dc1259605fc5ed6c7  ADR-20261009-README-must-carry-the-one-command.md
 3aa73190cbc62efade71d33635aae6bad058dc4b37437cc588943ac9c49a3924  ADR-20261009-VISION-must-exist-and-be-a-seed.md
 8937b9019cb86f01fe7921a048679e0950f3446b05b596811cecb854fdbb3aee  ADR-20261009-appeals-must-be-parseable.md
@@ -16,7 +17,6 @@ e2b7dc3e564a7c495902fbdd10e1f508814c690cb752d905457874c008457782  ADR-20261009-l
 38fd2f8a9b72ac9c0d9df3309334c4d67b98da195e3a897b773a547633df6aa6  ADR-20261009-lesson-must-be-replayed.md
 9794a7acfdbe4fdc680fd62b9fb53a444641c43c65b50fef3e04ef392fb09593  ADR-20261009-lesson-must-land-in-artifact.md
 31d5f16ca4e082d9c5e3bf0e9196320b609942ceb729caa943f7f1692341dca5  ADR-20261009-readme-must-be-a-truthful-entry.md
-# rebaseline ADR-20261009-readme-must-be-a-truthful-entry.md 理由: 2：加代码围栏配对断言
 71b0014c70a913ab47d97680544fa639c2ce8d7c6a0227ccd2db1e123b4738de  ADR-20261009-readme-must-carry-the-on-demand-pointer-block.md
 f26a98a3cb04497b3c4334ddbb4f0b6dd3f68547dde45ca54f4d544a3c297fad  ADR-20261009-shell-var-before-cjk-must-brace.md
 7fd4bc72b6899850df248c66170bc0427a2a9c8a3b546c7c42a5aff0bf3c689d  ADR-20261009-upstream-manifest-threat-model.md

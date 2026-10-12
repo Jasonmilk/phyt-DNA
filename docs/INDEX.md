@@ -24,3 +24,4 @@
 - [`DEPRECATE.md`](../DEPRECATE.md) — **一个东西怎么死（三种终点）**
 - [`position.md`](../position.md) — **本仓在哪里、不做什么**
 - [`docs/PLAN-PAUSED.md`](PLAN-PAUSED.md) — **哪些事暂停了、怎么恢复（恢复点是一条命令）**
+- [`docs/EXECUTION-DISCIPLINE.md`](EXECUTION-DISCIPLINE.md) — **一件事一次怎么推进（纪律，不占 must-read）**

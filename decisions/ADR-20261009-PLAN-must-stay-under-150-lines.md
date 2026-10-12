@@ -25,6 +25,10 @@ check: |
   if [ "$n_arch" -gt 0 ]; then
     grep -q 'archive/deprecated/PLAN-done-' "$F" || echo "有归档 ${n_arch} 份，但 $F 里没有指向它的指针（移出必须留指针：移出 ≠ 删除）"
     said=$(grep -oE '移出 [0-9]+ 条' "$F" | head -1 | grep -oE '[0-9]+')
+    # ★ H#2b（2026-10-12）：**归档档里的每一条必须自带完成态标记 ✅** —— 不含 ✅ 的行 = 混进了待办（零新字段：用已有表格列）。
+    arc=$(ls "$ROOT"/archive/deprecated/PLAN-done-*.md | head -1)
+    nook=$(grep '^|' "$arc" | grep -v '^| 条目' | grep -vE '^\|[[:space:]]*-' | grep -vc '✅')
+    [ "$nook" -gt 0 ] && echo "归档档 ${arc##*/} 有 ${nook} 条没有 ✅（归档只收已完成；待办应留在 PLAN 或 PLAN-PAUSED）"
     if [ -n "$said" ]; then
       rows=$(grep -c '^|' "$(ls "$ROOT"/archive/deprecated/PLAN-done-*.md | head -1)")
       [ "$rows" -ge "$said" ] || echo "归档档条目数 ${rows} < 声明移出的 ${said} 条 ⇒ 移出没落全（移出 ≠ 删除，但也 ≠ 丢）"
