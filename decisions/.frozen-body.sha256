@@ -15,7 +15,9 @@ c0f8776c05330751daf785983d808d3890453e91c68ea47df5820aff983f1023  ADR-20261009-l
 e2b7dc3e564a7c495902fbdd10e1f508814c690cb752d905457874c008457782  ADR-20261009-ledger-must-be-valid-utf8.md
 38fd2f8a9b72ac9c0d9df3309334c4d67b98da195e3a897b773a547633df6aa6  ADR-20261009-lesson-must-be-replayed.md
 7fac7ab5ec85a026a6cbe12ac2b51af0783be8d1562430aa644d47fcbaf11ae9  ADR-20261009-lesson-must-land-in-artifact.md
-1f0c0bc48aeacbf4daf2a90b7d983d66faa4998ed60701643e81d55e0801ef3e  ADR-20261009-readme-must-be-a-truthful-entry.md
+aa8fcacc7efa1036abbe904ac721ddcedd53f653afc266486a9ae15a30fe2868  ADR-20261009-readme-must-be-a-truthful-entry.md
+# rebaseline ADR-20261009-readme-must-be-a-truthful-entry.md 理由: 1：③ 形状判据；存根正文修复
+71b0014c70a913ab47d97680544fa639c2ce8d7c6a0227ccd2db1e123b4738de  ADR-20261009-readme-must-carry-the-on-demand-pointer-block.md
 e1c8f26008594eda1462da27cd4b38ac97e354871a39fee4c8bcbcb42ec60299  ADR-20261009-shell-var-before-cjk-must-brace.md
 7fd4bc72b6899850df248c66170bc0427a2a9c8a3b546c7c42a5aff0bf3c689d  ADR-20261009-upstream-manifest-threat-model.md
 45cff1b126c72adc24771574a20b4580e922d2bbe44ce50401dc6fb95b11aaae  ADR-20261011-derivation-must-carry-origin.md
@@ -27,6 +29,5 @@ bbd12d8b7b22bbf4c91cbc339571a08cf0b48972ffbc58f7c40a54e69e17a626  ADR-20261011-l
 e08b79a48598e0e3f935de9eb0ad6904e2181b33a4322543b341e4a7c2927be7  ADR-20261011-recopy-must-equal-the-gene-set.md
 aa44c14c404efebee71da67882d5ec965d5167ad47ec28f20fc3a8369b2512bd  ADR-20261011-replay-per-revisit-period.md
 bd5748b5962269e14cf187b5aa8a266b580731caa7961f5071c4772edee009bd  ADR-20261011-supersede-must-be-paired.md
-ff0b439b76adbe0bc29645dfa67f2c6dea36d37b028e110e03e0f2a885e990b0  ADR-20261012-ledger-new-lines-parseable-and-referenced.md
-# rebaseline ADR-20261012-ledger-new-lines-parseable-and-referenced.md 理由: 0′/3：真值源优先级 tag>symref>skip · 历史豁免
+4e7230711ca2c3a453ee72de0dbd9e8cd4e9bbf478703d4f21faceef941aeb86  ADR-20261012-ledger-new-lines-parseable-and-referenced.md
 e69afe4c22b78925b52743b3ec3c5d0ea08ec70c334e97fa03d0ebe684efc964  ADR-20261012-pool-consistency-must-be-checked.md

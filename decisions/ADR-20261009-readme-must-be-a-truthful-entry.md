@@ -2,7 +2,7 @@
 
 ---
 id: ADR-20261009-readme-must-be-a-truthful-entry
-seq: 9010
+seq: 9021
 status: accepted
 hard: true
 applies-to: ["README.md", "README.zh-CN.md"]
@@ -41,7 +41,7 @@ check: |
   while read -r p; do
     [ -n "$p" ] || continue
     case "$p" in tools/todo-ready.sh) continue ;; esac   # 具名豁免：生态仓的报告头（README 以文字指代）
-    [ -e "$ROOT/$p" ] || echo "README 指向 ${p}，但该路径不存在（声明的路径必须是真路径）"
+    [ -e "$ROOT/$p" ] || echo "README 指向 ${p}：本仓不存在它 ⇒ 要么是断链，要么是【跨仓引用的形状错了】—— 跨仓必须写成 <repo>/… 形状（自定义原则：路径形状要能自我说明归属）"
   #   ★ 只认【本仓】路径：形如 `helix-mind/docs/…` 的跨仓引用不得被当成本仓路径（实测假阳一次）。
   #   ★ trailer 白名单：紧跟 `*` 的片段不算路径（`decisions/ADR-*.md` 这种【模式】不得被读成路径 —— 实测假阳一次）。
   done < <(grep -oE '(^|[^A-Za-z0-9_./-])((tools|docs|decisions|examples)/[A-Za-z0-9_./-]+|(README\.zh-CN|VISION|DNA|SPEC|RNA|PLAN|GROWTH|DEPRECATE)\.md)([^A-Za-z0-9_./*-]|$)' "$F" \
@@ -63,7 +63,7 @@ check: |
   fi
 last-hit: null
 hit-count: 0
-supersedes: null
+supersedes: ADR-20261009-readme-must-carry-the-on-demand-pointer-block
 ---
 
 # README 必须带「按需指针」块

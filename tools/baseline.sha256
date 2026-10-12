@@ -1,4 +1,4 @@
-368b0fcf222d25ddf0c46d51f9f305875bd2e5f434f4600c16997a6f17a8506b  DNA.md
+0f5ad8162a51f092898e04884757f958ef504dc23c242acabbf94e1d3de203bb  DNA.md
 079178c937a8dbef6c8ab867ace11c6b787b3664909103c80982d405735ec4cf  decisions/ADR-20261009-DEPRECATE-must-exist.md
 30a24ff6b6de661fdf95e70e28aea5c5c09c1ab758a6dceeb731cb41da0cc5bb  decisions/ADR-20261009-DNA-is-immutable.md
 e260f056a5cea117cea79e6e5875f729db0c74c770a177ea73ed2629aa5c1f9a  decisions/ADR-20261009-GROWTH-max-3-entries.md
@@ -16,7 +16,8 @@ cd064ea0f72a80e2b99e0c451548e2c17598b716d85973dcf5353f1f246c35c8  decisions/ADR-
 444b0a9b5c79cb5aa3d9b20944f036c4200c16581f68e4cb2b2bf887c8839229  decisions/ADR-20261009-ledger-must-be-valid-utf8.md
 bca5a3094c351a4f5182a73815258a4534623f9d2b3b2657086a1e2ba97bd364  decisions/ADR-20261009-lesson-must-be-replayed.md
 ace7bf03604ecec0fdfa46ee10e1c88c37d2ec6665816a0974c028bbf0bc788c  decisions/ADR-20261009-lesson-must-land-in-artifact.md
-18d3388d2755a38869d510abd68402700299f49c2d25578d2865a8ff3528c217  decisions/ADR-20261009-readme-must-be-a-truthful-entry.md
+7afa0c9f3989880d369595c1e9e4244f23871ee2ee0e404e9c4feeb24ddaf578  decisions/ADR-20261009-readme-must-be-a-truthful-entry.md
+cbc5b3eb78fb1fdb56a5e1600dfc13046fdef6e23d711dc8df4ef0d2cabb96cb  decisions/ADR-20261009-readme-must-carry-the-on-demand-pointer-block.md
 7c577e1eef65164f23352b1cca872e5763f15d31fd5f659a1a8f6e302d9c2e66  decisions/ADR-20261009-shell-var-before-cjk-must-brace.md
 e2693f257f8e9512848e01c932078e4d687f34d6b19ca3bffac4e7cbe24f74e1  decisions/ADR-20261009-upstream-manifest-threat-model.md
 6b36bc0378ebd5e0eda2ddefaa70b0786614d2e057315e4203467237344025d1  decisions/ADR-20261011-derivation-must-carry-origin.md
@@ -28,7 +29,7 @@ e447785ae3d66188431ac3a7be04f711afa67ee379c079de6716c862d2787499  decisions/ADR-
 643e1f3d15d616fadbcbffbf2d390a53349e74b055e8be6ef5b5f106fddca588  decisions/ADR-20261011-recopy-must-equal-the-gene-set.md
 6ad949dfd6faf0d9f66c12237cbe13a2b3645dd92fbce4bcebe89fd45bc74b3a  decisions/ADR-20261011-replay-per-revisit-period.md
 aaaae14de6264a9d007766082994472b420271d933ae63f9d42054c4e0720d99  decisions/ADR-20261011-supersede-must-be-paired.md
-3d2213edb5976148503624650d8feafe75d3b582667269cd895dd3aae5b44941  decisions/ADR-20261012-ledger-new-lines-parseable-and-referenced.md
+c7e25039f95208294f58761fa6409d6a11b805f726328094664122b01d72cbcb  decisions/ADR-20261012-ledger-new-lines-parseable-and-referenced.md
 505b5a7bc132297f0ab54ce1802e0248d0baf21caa2e4feb51d894fb82993590  decisions/ADR-20261012-pool-consistency-must-be-checked.md
 a5f5925104ac4cb0736ed8815ce96230c34997c116c221c6f773073670e07f7a  decisions/INDEX.md
 2b6ec735f00b7dbf3057c9fd4fe81cb808b5aedd8bd8e95984529a3eccfe3387  decisions/README.md

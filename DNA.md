@@ -133,7 +133,7 @@ pass 单独不可报告：pass + alive 才算数。
 > · **不静默失败** ⇒ `tools/spec-lint.sh` **闸门6**（扫 `decisions/*.md` 的 `2>/dev/null`）；
 > · **测试不破坏被测物** ⇒ `tools/spec-lint.sh` **闸门7**（ADR-0009 · 扫全量还原命令）；
 > · **外部性降治理层** ⇒ `decisions/ADR-20261009-dangerous-action-shapes-must-be-blocked`（`applies-to: ["DNA.md","VISION.md","decisions/**"]`）
->   ＋ `helix-mind/docs/helixECO/KNOWN_ISSUES.md` 的 **K34**（跨仓判据的适用范围声明：**不许自签放行**）；
+>   ＋ **生态缺陷登记处**（KNOWN_ISSUES）的 **K34**（跨仓判据的适用范围声明：**不许自签放行**）；
 > · **只引用不复制** ⇒ **对齐链实践**（五个仓的 `VISION.md` 头部各一行"生态方法论之根在…"）＋ 评审环；
 > · **仪器数字进 ledger** ⇒ **派生视图生成器**（`GROWTH.md` 已改为"不在此处写数字"）＋ `ledger/*.jsonl` 四本账；
 > · **派生必带 origin** ⇒ ★ **本轮立号**：`ADR-20261011-derivation-must-carry-origin`（`hard: true` · 判据：`hard:true` 的 ADR 必须有非空 `origin`
