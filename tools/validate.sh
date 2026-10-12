@@ -196,7 +196,16 @@ probe_one(){ # probe_one <gate-id> → 0=闸门活着（RED）· 2=腐化/拓扑
 }
 
 if [ "$mode" = probe ]; then
-  if [ -n "$target" ]; then probe_one "$target"; exit $?; fi
+  if [ -n "$target" ]; then
+    # ★ 0***a（2026-10-13）：**单门路径也要读 `probe: none`** —— 否则同一份声明在单跑/全跑下说法不一致
+    #   （实测：DNA 门在 --probe-all 里是"具名不可 probe"，单跑却报"腐化"）。
+    if [ "$(grep -m1 '^probe:' "$DEC_DIR/$target.md" | awk '{print $2}')" = "none" ]; then
+      why=$(grep -m1 '^probe-why:' "$DEC_DIR/$target.md" | sed 's/^probe-why: *//')
+      echo "  [具名·不可 probe] $target —— ${why:-未给理由}" >&2
+      [ -z "$why" ] && exit 2 || exit 0
+    fi
+    probe_one "$target"; exit $?
+  fi
   rc=0; ran=0; skipped=""
   while read -r g; do [ -n "$g" ] || continue
     # ★ `probe: none` = 具名的"本闸门不可 probe"（它的回归判据在别处）。

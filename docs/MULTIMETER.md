@@ -228,3 +228,14 @@ awk '/^check: \|/{f=1;next} f&&/^[a-z-]+:/{f=0} f{print}' decisions/ADR-*.md   #
 恢复点：`bash tools/validate.sh --probe ADR-20261011-recopy-must-equal-the-gene-set`（须恢复 基线绿·注入红·反例守住）
 
 ```
+
+## 闸门三分类读数（2026-10-13 · 命令产出）
+
+    for f in decisions/ADR-*.md; do grep -q '^hard: true$' "$f" || continue; grep -q '^status: deprecated' "$f" && continue; basename "$f" .md; done
+    # 对每个 id：有 fixtures/<id>/inject.sh ⇒ 已 probe · 有 probe: none ⇒ 具名不可 probe · 其余 ⇒ unproven
+
+**读数**：**已 probe = 19** · **具名不可 probe = 2** · **unproven（无夹具）= 0**
+
+**两条腐化门的处置与恢复命令**：
+· `ADR-20261009-GROWTH-max-3-entries` —— 口径精度（归档计数**只数年轮型**）⇒ 恢复点：`bash tools/validate.sh --probe ADR-20261009-GROWTH-max-3-entries`
+· `ADR-20261009-DNA-is-immutable` —— **结构上不可 probe**（判据问工具的真实 scope 输出）⇒ 已声明 `probe: none` + `probe-why:`；**单门与全跑同声** ⇒ 恢复点：`bash tools/validate.sh --probe ADR-20261009-DNA-is-immutable`

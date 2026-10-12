@@ -27,3 +27,7 @@ effective-from: 2026-10-12
 1. I 闭环最后一边（DEPRECATE/archive/task → DNA 自检，复用 `revisit-on` 当输入）
 2. J W0 自举（方法学自身受 task 计数约束）
 3. K/L/M（卡模板 author · spec/philosophy 复位 · 认知协议进 RNA）
+
+暂停：2026-10-09 缺口扫描（4 条：G1–G4，多半已闭合）
+恢复点：`grep -c 已补 docs/PLAN-GAPS-2026-10-09.md`（>0 ⇒ 逐条核对是否仍需处理）
+恢复条件：立刻可做（读档 + 逐条判定）｜ 优先级 P2 + 落盘 2026-10-13 ⇒ 满 3 轮转 DEBTS

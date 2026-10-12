@@ -16,7 +16,7 @@
 applies-to: ["DNA.md"]
 origin: "README 硬约束：DNA 不可直接编辑（改基因 = 修宪 = 走 ADR + 人批准）"
 check: |
-  [ "$F" = "DNA.md" ] && echo "DNA 不可变: 禁止写入 $F（改基因 = 修宪…）"
+  [ "$F" = "DNA.md" ] && echo "DNA 不可变: 禁止写入 ${F}（改基因 = 修宪…）"
 ```
 
 **② 手跑在 `DNA.md` 上：** 输出该消息（`exit=0`）。
