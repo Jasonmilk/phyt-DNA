@@ -2,7 +2,7 @@
 efc5b591dd48365da3ccf22c72c64245efa6172045cc194f96d12d3e8b3808df  ADR-20261009-DNA-is-immutable.md
 ce3c589f737d34ef3f5f4235a5c9f0b2c1b3e0aa35e760b34786d71920fed7ff  ADR-20261009-GROWTH-max-3-entries.md
 b1694a130fda5b1abdf0e2b514eddb221e0243e8ec7c16ebdd799d28956088ba  ADR-20261009-PLAN-must-exist.md
-c3f15f97b056c1a1bd815756a461d98a6a2e2b0bf33153cecabc5a55c27c9fd7  ADR-20261009-PLAN-must-stay-under-150-lines.md
+9c3e07837e347569bfd93f91b87c6f03c5c6ff29125a59bcfd9ab6b7cfb66004  ADR-20261009-PLAN-must-stay-under-150-lines.md
 5d8300acd49afa5306cbdb719feb32879f15b741bd69701dc1259605fc5ed6c7  ADR-20261009-README-must-carry-the-one-command.md
 3aa73190cbc62efade71d33635aae6bad058dc4b37437cc588943ac9c49a3924  ADR-20261009-VISION-must-exist-and-be-a-seed.md
 8937b9019cb86f01fe7921a048679e0950f3446b05b596811cecb854fdbb3aee  ADR-20261009-appeals-must-be-parseable.md
@@ -15,10 +15,10 @@ c0f8776c05330751daf785983d808d3890453e91c68ea47df5820aff983f1023  ADR-20261009-l
 e2b7dc3e564a7c495902fbdd10e1f508814c690cb752d905457874c008457782  ADR-20261009-ledger-must-be-valid-utf8.md
 38fd2f8a9b72ac9c0d9df3309334c4d67b98da195e3a897b773a547633df6aa6  ADR-20261009-lesson-must-be-replayed.md
 7fac7ab5ec85a026a6cbe12ac2b51af0783be8d1562430aa644d47fcbaf11ae9  ADR-20261009-lesson-must-land-in-artifact.md
-63c13455777ebeb9964149c081025f24becb70cd6d22d1030704170a31b77cf2  ADR-20261009-readme-must-be-a-truthful-entry.md
+df9e26460c9f7b8683e445627d7ce6b22efb1c642714cf56fc769072a1c337c6  ADR-20261009-readme-must-be-a-truthful-entry.md
+# rebaseline ADR-20261009-readme-must-be-a-truthful-entry.md 理由: 3'b/c：固定串优先 + 一正则一编号
 71b0014c70a913ab47d97680544fa639c2ce8d7c6a0227ccd2db1e123b4738de  ADR-20261009-readme-must-carry-the-on-demand-pointer-block.md
 f26a98a3cb04497b3c4334ddbb4f0b6dd3f68547dde45ca54f4d544a3c297fad  ADR-20261009-shell-var-before-cjk-must-brace.md
-# rebaseline ADR-20261009-shell-var-before-cjk-must-brace.md 理由: 具名豁免标记（本门必须引用陷阱形态）
 7fd4bc72b6899850df248c66170bc0427a2a9c8a3b546c7c42a5aff0bf3c689d  ADR-20261009-upstream-manifest-threat-model.md
 45cff1b126c72adc24771574a20b4580e922d2bbe44ce50401dc6fb95b11aaae  ADR-20261011-derivation-must-carry-origin.md
 67af532f9e29ef5b580273cd56e9e2855b52fb02cffffca8de031959eb9194f9  ADR-20261011-dna-modification-first-exercise.md

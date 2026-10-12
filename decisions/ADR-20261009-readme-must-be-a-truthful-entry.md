@@ -39,7 +39,11 @@ check: |
   [ -n "$PL" ] && echo "② bash 命令块含占位符 <…>（照抄跑不通）: $(printf '%s' "$PL" | tr '\n' ' ')"
   # ③ 路径真：README 声明的【本仓】路径必须存在；跨仓引用必须写成 <repo>/… 形状（自定义原则：形状要能自我说明归属）
   #   ★ 单行实现（不用续行、不用多行管道）：实测本判据曾因续行/多行管道【整段不跑】⇒ 绿是静默腐化。
-  for p in $(grep -oE '(^|[^A-Za-z0-9_./-])((tools|docs|decisions|examples)/[A-Za-z0-9_./-]+|(README\.zh-CN|VISION|DNA|SPEC|RNA|PLAN|GROWTH|DEPRECATE)\.md)([^A-Za-z0-9_./*-]|$)' "$F" | sed -E -e 's|^[^A-Za-z0-9_./-]||' -e 's|[^A-Za-z0-9_./-]$||' | grep -E '\.(md|sh|py|jsonl|json|sha256|txt|ya?ml)$' | sort -u); do
+  #   ★ 3'c（一正则一编号）：原先一条 153 字正则同时管两类路径 ⇒ 拆成 ③a（本仓目录路径）与 ③b（根目录受管文档）。
+  #     理由：**失败集合更小 = 确定性更高**（一条正则管两件事时，红了不知道是哪一件）。
+  PAT_A='(^|[^A-Za-z0-9_./-])(tools|docs|decisions|examples)/[A-Za-z0-9_./-]+([^A-Za-z0-9_./*-]|$)'      # ③a
+  PAT_B='(^|[^A-Za-z0-9_./-])(README\.zh-CN|VISION|DNA|SPEC|RNA|PLAN|GROWTH|DEPRECATE)\.md([^A-Za-z0-9_./*-]|$)'   # ③b
+  for p in $( { grep -oE "$PAT_A" "$F"; grep -oE "$PAT_B" "$F"; } | sed -E -e 's|^[^A-Za-z0-9_./-]||' -e 's|[^A-Za-z0-9_./-]$||' | grep -E '\.(md|sh|py|jsonl|json|sha256|txt|ya?ml)$' | sort -u); do
     [ -n "$p" ] || continue
     case "$p" in tools/todo-ready.sh) continue ;; esac
     [ -e "$ROOT/$p" ] || echo "③ README 指向 ${p}：本仓不存在它 ⇒ 要么断链，要么【跨仓引用形状错】—— 跨仓必须写成 <repo>/… 形状"

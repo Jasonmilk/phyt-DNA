@@ -42,4 +42,25 @@ if [ -n "$miss" ]; then
   echo "★ RED: 已废弃 ADR 未在 archive/deprecated/ 留指针记录:$miss" >&2
   exit 2
 fi
+# ★ 3'a（2026-10-12 · 净 0）：正则必须有【已知会命中的正样本】—— 复用夹具（夹具就是那个样本）。
+#   无样本 ⇒ **unproven**（不当绿）：具名列出，不致命 —— 与 4b 的"unproven · 待夹具"同一形态。
+REG_TOT=$(python3 - "$BASE" <<'PY'
+import glob, io, os, re, subprocess, sys
+base=sys.argv[1]; tot=0; bad=[]
+for f in sorted(glob.glob(base+'/ADR-*.md')):
+    s=io.open(f,encoding='utf-8').read()
+    if 'check: |' not in s: continue
+    gid=os.path.basename(f)[:-3]; fx=os.path.join('fixtures',gid)
+    if not os.path.isdir(fx): continue
+    body=subprocess.run(['bash','-c',"awk '/^check: \\|/{f=1;next} f&&/^[^ ]/{f=0} f&&NF{print}' '%s' | sed 's/^  //'" % f],capture_output=True,text=True).stdout
+    for pat in set(re.findall(r"(?:grep|sed)[^\n']*?'([^']+)'", body)):
+        if not re.search(r'[\\\[\]\(\)\|\*\+\?\^\{\}\$]', pat): continue
+        tot+=1
+        ok=subprocess.run(['bash','-c','grep -qE -- "$1" "$2"/*', '_', pat, fx]).returncode==0
+        if not ok: bad.append(gid)
+print('%d %d %s' % (tot, len(bad), ' '.join(sorted(set(bad)))))
+PY
+)
+echo "正则样本：共 ${REG_TOT%% *} 条；其中【未证（无已知命中样本）】$(printf '%s' "$REG_TOT" | cut -d' ' -f2) 条 ⇒ unproven，不当绿"
+[ "$(printf '%s' "$REG_TOT" | cut -d' ' -f2)" != "0" ] && echo "  未证正则所在门: $(printf '%s' "$REG_TOT" | cut -d' ' -f3-)" >&2
 echo "OK: 全池 $n 份 ADR + 受管文档${extra:-（无）}（目录 ${DIR}）一致 —— 扫描面 = **全部 timing:post 闸门**（不止 pair # 见各 ADR 的 applies-to）"
