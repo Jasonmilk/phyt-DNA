@@ -88,6 +88,18 @@ rm -f /tmp/bn.$$.err
 if [ -n "$dead" ]; then red "check 体不是合法 bash（剥 2 空格后 ⇒ 该判据整段不跑＝死判据）:$dead"; else grn "所有 check 体（剥 2 空格后）都是合法 bash"; fi
 if [ -n "$unnum" ]; then red "声明了编号判据但 check 体缺对应编号:$unnum"; else grn "编号判据的 check 体都带编号前缀"; fi
 
+# ★ 2026-10-12（裁定 2 · 净 0）：**裸匹配断言** —— ADR 的 check 体里 grep 前言字段必须**行首锚定**（`^field:`）。
+#   实测教训：`'status: deprecated' in s` 把"正文里提到 deprecated"当成"自己是 deprecated" ⇒ 多建 4 份归档记录。
+#   字段面：id / status / supersedes / hard / timing / applies-to / revisit-on / expires-on / risk / origin / check。
+bare=""
+for f in decisions/ADR-*.md; do
+  grep -q '^check: |' "$f" || continue
+  body=$(awk '/^check: \|/{f=1;next} f&&/^[^ ]/{f=0} f&&NF{print}' "$f" | sed 's/^  //')
+  bad=$(printf '%s' "$body" | grep -nE "grep[^|]*'(id|status|supersedes|hard|timing|applies-to|revisit-on|expires-on|risk|origin|check): " | grep -v '\^' )
+  if [ -n "$bad" ]; then bare="$bare $(basename "$f")"; fi
+done
+if [ -n "$bare" ]; then red "check 体里有未行首锚定的前言字段匹配（裸匹配 = 会被正文里的同名文字骗）:$bare"; else grn "前言字段匹配都行首锚定"; fi
+
 echo
 [ "$fail" = 0 ] && { echo "spec-lint: PASS"; exit 0; }
 echo "spec-lint: BLOCK（规范自身未过闸门）" >&2

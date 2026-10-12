@@ -48,7 +48,12 @@ check: |
   # ★ 真值源必须是【物理锚点】（园丁 0′）：HEAD 是**可移动指针**（谁 checkout 都变）⇒ 不用它。
   #   优先级：远端默认分支 symref（origin/HEAD → origin/v2） > 版本次第 tag（vN）；都取不到 ⇒ **复用 skip()**（exit 4）。
   #   优先级（园丁 2026-10-12）：**版本次第 tag > 远端默认分支 symref > skip()** —— tag 是显式放行标记。
-  BR=$(git tag --list 'v[0-9]*' --sort=-creatordate | head -1)
+  TAG=$(git tag --list 'v[0-9]*' --sort=-creatordate | head -1)
+  # ★ 1（2026-10-12）：tag 若【陈旧】（不是 HEAD 的祖先）⇒ 具名响，不许拿它当真值源还判绿。
+  if [ -n "$TAG" ]; then
+    git merge-base --is-ancestor "$TAG" HEAD || echo "④ 真值源 tag ${TAG} 不是 HEAD 的祖先（陈旧）⇒ 版本判据失真"
+  fi
+  BR="$TAG"
   if [ -z "$BR" ]; then BR=$(git symbolic-ref -q --short refs/remotes/origin/HEAD | sed 's|^origin/||'); fi
   [ -n "$BR" ] || skip "版本次第 tag 与远端默认分支 symref 都取不到 ⇒ 版本真值源不可得"
   case "$BR" in v[0-9]*) ;; *) skip "真值源 ${BR} 非版本次第（vN）形态 ⇒ 不判" ;; esac

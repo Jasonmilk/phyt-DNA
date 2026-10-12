@@ -23,7 +23,13 @@ check: |
     [ "$b" = "INDEX.md" ] && continue
     grep -q "$b" "$F" || miss="$miss $b"
   done
-  [ -n "$miss" ] && echo "未被 INDEX 收录的知识文档:${miss} ⇒ 补进 docs/INDEX.md（按【问题】写一行）"
+  [ -n "$miss" ] && echo "未被 INDEX 收录的知识文档:${miss} ⇒ 补进 docs/INDEX.md（按【问题】写一行）"  # ★ 0b（2026-10-12 园丁裁定 · 净 0 · 只扩作用域）：索引门原先只管 `docs/*.md` ⇒ **根目录受管文档无人读**
+  #   （实测：`position.md` 落盘后没有任何入口指向它）。扩到根目录受管文档 ⇒ "存在但没人读"变成红。
+  for d in README.zh-CN.md VISION.md DNA.md SPEC.md RNA.md PLAN.md GROWTH.md DEPRECATE.md position.md; do
+    [ -e "$ROOT/$d" ] || continue
+    grep -q "$d" "$ROOT/docs/INDEX.md" || echo "根目录受管文档 ${d} 未被 docs/INDEX.md 收录（存在但没人读 = 等于没有）"
+  done
+
 last-hit: null
 hit-count: 0
 supersedes: null

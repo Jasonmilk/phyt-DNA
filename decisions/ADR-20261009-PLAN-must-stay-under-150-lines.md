@@ -18,7 +18,14 @@ check: |
   # ★ H#2（2026-10-12 折进本门，不生面）：**计划只放未完成** —— 完成态标记（✅）必须移入 archive/deprecated/。
   #   本门正文写明范围：本门判的是 **PLAN 的形状** = 行数上限 + 只放未完成（名 ⊇ 判据见 body）。
   c=$(grep -cE '✅' "$F")
-  [ "$c" -gt 0 ] && echo "$F 里有 ${c} 处完成态标记（✅）⇒ 已完成项必须移入 archive/deprecated/（计划只放未完成）"
+  [ "$c" -gt 0 ] && echo "$F 里有 ${c} 处完成态标记（✅）⇒ 已完成项必须移入 archive/deprecated/（计划只放未完成）"  # ★ 3（2026-10-12）：**跨文件核对** —— 移出必须留指针，且指针指向的归档必须真在。
+  skip(){ echo "具名跳过: $1（不判 —— 没有真值源就没有判据）" >&2; exit 4; }
+  ROOT=$(git rev-parse --show-toplevel) || skip "非 git 工作区，归档载体不可定位"
+  n_arch=$(ls "$ROOT"/archive/deprecated/PLAN-done-*.md | grep -c .)
+  if [ "$n_arch" -gt 0 ]; then
+    grep -q 'archive/deprecated/PLAN-done-' "$F" || echo "有归档 ${n_arch} 份，但 $F 里没有指向它的指针（移出必须留指针：移出 ≠ 删除）"
+  fi
+
 last-hit: null
 hit-count: 0
 supersedes: null
