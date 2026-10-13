@@ -1,6 +1,6 @@
 9a681c5802cb15d632aa17b06912a5a985083c60  tools/check-baseline.sh
 582f6dbb63c2e29df2cd4dd3ac2577903b36e553  tools/check-pool.sh
-86868fc802f1b4b61284168a2c4dcc2b2a64c344  tools/ci-local.sh
+a392d92b59cfe7312fb6611f2fafb06bb0be1fed  tools/ci-local.sh
 942772c3179b1773d03b234b34b9ec14436e5751  tools/ci-matrix.sh
 2fd530a674ee7e9966bb21225a22e71d03768b70  tools/claim-check.sh
 43006122bfb2b383f97da3a1abd3bc32d805bb17  tools/deprecated_skip_test.sh
