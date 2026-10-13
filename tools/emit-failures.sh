@@ -25,8 +25,8 @@ if [ -z "$log" ] || [ ! -f "$log" ]; then
 fi
 echo "::notice title=失败具名::读取 $log"
 {
-  grep -aE "^test .* FAILED|^failures:$|panicked at|^error(\[|:)|No such file|NotFound|Could not find|cannot find|^assertion|CHECKER ERROR|^\s*违规:|\"rule_id\"|违规:" "$log" | head -12
-  grep -aA4 "panicked at" "$log" | grep -avE "^--|^\s*$" | head -14
+  grep -aE "^test .* FAILED|^failures:$|panicked at|^error(\[|:)|No such file|NotFound|Could not find|cannot find|^assertion|CHECKER ERROR|^[[:space:]]*违规:|\"rule_id\"|违规:" "$log" | head -12
+  grep -aA4 "panicked at" "$log" | grep -avE "^--|^[[:space:]]*$" | head -14
 } | awk '!seen[$0]++' | head -24 | while IFS= read -r _l; do
     echo "::error title=失败具名::$(printf %s "$_l" | tr -d "\r" | cut -c1-400)"
   done

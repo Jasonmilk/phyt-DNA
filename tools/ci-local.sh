@@ -132,7 +132,7 @@ _miss=${_esc%% *}; _rest=${_esc#* }; _over=${_rest%% *}; _why=${_rest#* }
 if [ "$_miss" != "0" ]; then echo "★ RED: skip 账缺字段（commit/revisit_on/recovery）$_miss 处: $_why" >&2; fail=1; fi
 if [ "$_over" != "0" ]; then echo "★ RED: 逃生门逾期未结 $_over 处（日落触发，**点名 commit**）: $_why" >&2; fail=1; fi
 if [ "${_bl:-0}" = "0" ] && [ "${_rot:-0}" = "0" ]; then echo OK; else
-  echo "★ RED ($_bl 条闸门基线红 · ${_rot:-0} 条闸门腐化)"; grep -B4 -E '基线（未注入）: 红|闸门已腐化' "$_pa" | grep -E '^\s*[0-9]+:[A-Za-z]|红 →|腐化' | head -6 | sed 's/^/       /'; fail=1
+  echo "★ RED ($_bl 条闸门基线红 · ${_rot:-0} 条闸门腐化)"; grep -B4 -E '基线（未注入）: 红|闸门已腐化' "$_pa" | grep -E '^[[:space:]]*[0-9]+:[A-Za-z]|红 →|腐化' | head -6 | sed 's/^/       /'; fail=1
 fi
 
 step "3 · 全部闸门能力心跳"

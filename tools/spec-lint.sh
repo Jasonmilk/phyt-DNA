@@ -19,7 +19,7 @@ else
 fi
 
 # 闸门2：三种死亡终点必须有各自承载字段
-if grep -qE '^\s*(expires-on|auto-expire):' "$SPEC"; then
+if grep -qE '^[[:space:]]*(expires-on|auto-expire):' "$SPEC"; then
   grn "自动删除有承载字段"
 else
   red "三种终点只有 revisit-on 一个字段 —— 「自动删除」无路由器"
@@ -51,8 +51,8 @@ else
 fi
 
 # 闸门6：check 表达式不得静默失败（EXP-E 漏报实证）
-if grep -rqE '^\s+.*2>/dev/null' decisions/*.md 2>/dev/null; then
-  bad=$(grep -lE '^\s+.*2>/dev/null' decisions/*.md 2>/dev/null | tr '\n' ' ')
+if grep -rqE '^[[:space:]]+.*2>/dev/null' decisions/*.md 2>/dev/null; then
+  bad=$(grep -lE '^[[:space:]]+.*2>/dev/null' decisions/*.md 2>/dev/null | tr '\n' ' ')
   red "check 表达式含 2>/dev/null（静默失败=伪证）: $bad"
 else
   grn "check 表达式无静默失败"
@@ -60,6 +60,7 @@ fi
 
 # 闸门7：测试基础设施不得含全量还原（ADR-0009，五次同族现身）
 # 只扫 *.sh 脚本：fixtures/README.md 等文档示例文字会合法地提及禁令本身（T0 顺带修复）
+# 有意回写（理由：这是检查器自身的**模式文本**，不是写回真件 —— 构造性自匹配）
 BAD=$(grep -rlE --include='*.sh' 'git checkout -- \.|git clean -fd|git stash' tools/ fixtures/ 2>/dev/null | grep -v 'spec-lint.sh')
 if [ -n "$BAD" ]; then
   red "测试脚本含全量还原命令（会破坏被测物）: $(echo $BAD | tr '\n' ' ')"
@@ -308,9 +309,11 @@ if [ -n "$_hookbad" ]; then red "钩子里自带了 spec-lint 调用（应只委
 # ★ 0-b（2026-10-13）：**写回真件的两腿判据** —— 正列举 + 负兜底。
 #   负兜底：**非追加**地写【真件/受管】的语句，必须在**同一行或上一行**带 `有意回写（理由：…）` 标注，否则红。
 #   ★ 判据看**目标**（cp/mv 的最后一个 token），不是看整行 —— 否则 `cp /tmp/x tools/X`（源在 /tmp、目标在仓内）会漏（实测漏过一次）。
+# 有意回写（理由：这是检查器自身的**模式文本**，不是写回真件 —— 构造性自匹配）
 _cand=$(grep -rnE '(^|[^>])(cp|mv|tee)[^|]*( |$)|sed -i|rsync|git (checkout|restore)' tools/*.sh examples/*/*.sh 2>/dev/null \
         | grep -v '>>' | grep -vE '^[^:]+:[0-9]+: *#' \
-        | grep -v 'tools/spec-lint.sh:' || true)   # ★ 排除检查器自身：它的**正则文本**里必然含这些模式（构造性自匹配），非写回
+        | grep -v 'tools/spec-lint.sh:' \   # ★ 排除检查器自身（它的模式文本必然自匹配）；**补偿控制 = 待做的窄断言**（见 DEBTS d-phyt-selfwrite-compensate）
+         || true)   # ★ 排除检查器自身：它的**正则文本**里必然含这些模式（构造性自匹配），非写回
 _nb=""
 while IFS=: read -r _f _n _rest; do
   [ -n "${_f:-}" ] && [ -f "$_f" ] || continue
@@ -335,6 +338,17 @@ else grn "写回真件：无非追加写法（或已按同行/上一行标注）
 _nw=$(grep -rc '有意回写' tools/*.sh 2>/dev/null | grep -v 'spec-lint' | awk -F: '{s+=$2} END{print s+0}')
 if [ "${_nw:-0}" -lt 2 ]; then red "已标注的写回站点只有 ${_nw:-0} 个（< 2 ⇒ 正列举被削弱）"; fail=1
 else grn "已标注写回站点 = ${_nw}（不含检查器自身；数字变化 ⇒ 人复核）"; fi
+
+# ★ C'（2026-10-14）：**GNU 专属特性 ⇒ 必须标注**（判据只许依赖：shell 内建 + git + python3 + 可移植 grep/sed 基本语法）
+#   为什么：`awk '\s'`/`grep '\s'` 在 **BSD 是死模式（静默永不命中）**、`grep -P` 在 BSD rc=2 ⇒ **门会静默空转**（比红更坏）。
+# ★ C' 的**模式行自身**用「GNU 专属（理由：检查器自身的模式文本）」标注（有了标注就不必排除自身 ⇒ 不留盲区）
+# GNU 专属（理由：下面这一行是**检查器自身的模式文本**，本身不在 BSD 上执行；标注放独立行，避免注释吞掉续行反斜杠）
+_gnu=$(grep -rnE 'grep[^|]*-P\b|sed[^|]*-r\b|sort[^|]*-V\b|readlink[^|]*-f\b|xargs[^|]*-r\b|mktemp[^;)]*-p\b|\\s|gawk\b|gensub\(|asort\(|find[^|]*-printf|--wildcards' tools/*.sh examples/*/*.sh decisions/*.md .github/workflows/*.yml docs/*.md docs/*/*.md 2>/dev/null \
+       | grep -vE ':[0-9]+: *#'  | grep -v 'timeout=' | grep -v 'GNU 专属' \
+       | grep -vE 're\.(compile|finditer|search|match|sub|fullmatch)|import re|python3 -c' \   # python 的空白类元字符合法，非 GNU 专属
+       | grep -v '^tools/regex-census.sh:' || true)
+if [ -n "$_gnu" ]; then red "未标注的 GNU 专属特性（BSD 会静默空转/报错；要么改可移植写法，要么同行标注「GNU 专属（理由…）」）"; printf '%s\n' "$_gnu" | head -5 | sed 's/^/      /' >&2; fail=1
+else grn "GNU 专属特性：0 处（判据只依赖 shell 内建 + git + python3 + 可移植 grep/sed）"; fi
 
 [ "$fail" = 0 ] && { echo "spec-lint: PASS"; exit 0; }
 echo "spec-lint: BLOCK（规范自身未过闸门）" >&2
