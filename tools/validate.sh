@@ -136,7 +136,9 @@ probe_one(){ # probe_one <gate-id> → 0=闸门活着（RED）· 2=腐化/拓扑
       [ -f "$TMP/$_mm" ] || cp "$_mm" "$TMP/$_mm"
     done
   done
-  trap 'if [ -n "$BAK" ] && [ -f "$BAK" ]; then cp "$BAK" "$F"; rm -f "$BAK"; fi; rm -rf "$TMP"' EXIT
+  # ★ 0（2026-10-13 · 同族守卫）：**只许回写临时副本** —— 真件回写是"账本被擦"那一族的根源（ci-local 已出过一次真实事故）。
+  #   非 `$TMP` 下的路径一律**拒绝回写并具名报警**（宁可留下 TMP 之外的不一致，也不许悄悄覆盖真件）。
+  trap 'if [ -n "$BAK" ] && [ -f "$BAK" ]; then case "$F" in "$TMP"/*) cp "$BAK" "$F" ;; *) echo "★ 拒绝回写非临时文件: ${F}（同族守卫）" >&2 ;; esac; rm -f "$BAK"; fi; rm -rf "$TMP"' EXIT
   echo "  判据作用于临时副本: ${TMP}/${F}（真件不动）"
   F="$TMP/$F"
   # ★ 报【两个世界】（2026-10-09 教训）：注入后的 RED 是**夹具的功劳**，不是仓库的状态。
@@ -151,7 +153,9 @@ probe_one(){ # probe_one <gate-id> → 0=闸门活着（RED）· 2=腐化/拓扑
   else echo "  [${id}] 基线（未注入）: 红 → ${base_out}"; fi
   BAK=$(mktemp /tmp/inj.bak.XXXXXX); cp "$F" "$BAK"
   # ★ 2：trap **合一**（原先 BAK 的 trap 会覆盖 TMP 清理 ⇒ 临时目录泄漏；夹具纪律无例外）
-  trap 'if [ -n "$BAK" ] && [ -f "$BAK" ]; then cp "$BAK" "$F"; rm -f "$BAK"; fi; if [ -n "$BAK2" ] && [ -f "$BAK2" ]; then cp "$BAK2" "$F"; rm -f "$BAK2"; fi; rm -rf "$TMP"' EXIT
+  # ★ 0（2026-10-13 · 同族守卫）：**只许回写临时副本** —— 真件回写是"账本被擦"那一族的根源（ci-local 已出过一次真实事故）。
+  #   非 `$TMP` 下的路径一律**拒绝回写并具名报警**（宁可留下 TMP 之外的不一致，也不许悄悄覆盖真件）。
+  trap 'if [ -n "$BAK" ] && [ -f "$BAK" ]; then case "$F" in "$TMP"/*) cp "$BAK" "$F" ;; *) echo "★ 拒绝回写非临时文件: ${F}（同族守卫）" >&2 ;; esac; rm -f "$BAK"; fi; if [ -n "$BAK2" ] && [ -f "$BAK2" ]; then case "$F" in "$TMP"/*) cp "$BAK2" "$F" ;; *) echo "★ 拒绝回写非临时文件: ${F}（同族守卫）" >&2 ;; esac; rm -f "$BAK2"; fi; rm -rf "$TMP"' EXIT
   F="$F" bash "$fx" >/dev/null 2>&1
   # ★ check 自己跑不起来时，【必须具名失败】—— 不能与"无输出=通过"混同。
   # 实测（2026-10-09）：一个 check 因嵌套 heredoc 语法错误而根本没运行，
