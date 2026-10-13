@@ -122,6 +122,17 @@ probe_one(){ # probe_one <gate-id> → 0=闸门活着（RED）· 2=腐化/拓扑
   #   TMP 内 decisions 做软链 ⇒ 任何"从 $F 推 ../decisions"的判据仍读到真源。
   TMP=$(mktemp -d); mkdir -p "$TMP/$(dirname "$F")"; cp "$F" "$TMP/$F"
   TR=$(git rev-parse --show-toplevel); if [ -n "$TR" ]; then ln -s "$TR/decisions" "$TMP/decisions"; fi
+  # ★ 9（2026-10-13 · d-phyt-probe-fixture）：**同形目录** —— 判据体常读同门 applies-to 里的**兄弟文件**。
+  #   实测 `ADR-20261011-layer1-threshold-calibrated-by-premiere`（applies-to=[PLAN.md,RNA.md]）在探针里报
+  #   `bash: line 2: /tmp/…/RNA.md: No such file or directory` ⇒ 记 unmeasurable ⇒ **该门永远证不了**（判不了 ≠ 判出违规）。
+  #   对策：把本门 applies-to 命中的**所有受管文件**一并复制进 TMP（保持相对结构；真件不动）。
+  for _ap in $(grep -m1 '^applies-to:' "$DEC_DIR/$id.md" | sed 's/^applies-to: *//; s/[][]//g; s/"//g; s/,/ /g'); do
+    for _mm in $_ap; do
+      [ -f "$_mm" ] || continue
+      mkdir -p "$TMP/$(dirname "$_mm")"
+      [ -f "$TMP/$_mm" ] || cp "$_mm" "$TMP/$_mm"
+    done
+  done
   trap 'if [ -n "$BAK" ] && [ -f "$BAK" ]; then cp "$BAK" "$F"; rm -f "$BAK"; fi; rm -rf "$TMP"' EXIT
   echo "  判据作用于临时副本: ${TMP}/${F}（真件不动）"
   F="$TMP/$F"
