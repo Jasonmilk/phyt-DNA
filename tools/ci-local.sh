@@ -65,21 +65,27 @@ _rot=$(bash tools/validate.sh --probe-all 2>&1 | grep -c '闸门已腐化')
 # ★ ①补（2026-10-13）：**逃生门逾期未结 ⇒ 具名红** —— 落账三项里的 sunset 由这里执行。
 #   结案方式：追加一行 kind=closure（ref_event_id 指向那行逃生门的 event_id）；append-only，不改旧行。
 _esc=$(python3 - <<'PY'
-import datetime, io, json, glob, os
+import datetime, io, json, glob
 today = datetime.date.today().isoformat()
 closed = set(); rows = []
+need = ('commit', 'revisit_on', 'recovery')          # ★ ④-7补：三字段缺一即红
 for f in sorted(glob.glob('ledger/hits-*.jsonl')):
     for l in io.open(f, encoding='utf-8'):
         try: d = json.loads(l)
         except Exception: continue
         if d.get('kind') == 'closure' and d.get('ref_event_id'): closed.add(d['ref_event_id'])
-        if d.get('kind') == 'skip' and d.get('revisit_on'): rows.append((d.get('event_id'), d['revisit_on'], (d.get('recovery') or '')[:60]))
-over = [r for r in rows if r[0] not in closed and r[1] < today]
-print(len(over), '|'.join('%s(限期%s · 恢复命令:%s)' % (a, b, c) for a, b, c in over[:3]))
+        if d.get('kind') == 'skip': rows.append(d)
+missing = [r for r in rows if any(not r.get(k) for k in need)]
+open_ = [r for r in rows if r.get('event_id') not in closed]
+overdue = [r for r in open_ if (r.get('revisit_on') or '9999') < today]
+def fmt(r):
+    return '%s（commit=%s · 限期%s · 恢复命令:%s）' % (r.get('event_id'), (r.get('commit') or '缺')[:12], r.get('revisit_on'), (r.get('recovery') or '缺')[:46])
+print(len(missing), len(overdue), '|'.join(fmt(r) for r in (missing + overdue)[:3]))
 PY
 )
-_n=${_esc%% *}; _why=${_esc#* }
-if [ "$_n" != "0" ]; then echo "★ RED: 逃生门逾期未结 $_n 处（日落触发）: $_why" >&2; fail=1; fi
+_miss=${_esc%% *}; _rest=${_esc#* }; _over=${_rest%% *}; _why=${_rest#* }
+if [ "$_miss" != "0" ]; then echo "★ RED: skip 账缺字段（commit/revisit_on/recovery）$_miss 处: $_why" >&2; fail=1; fi
+if [ "$_over" != "0" ]; then echo "★ RED: 逃生门逾期未结 $_over 处（日落触发，**点名 commit**）: $_why" >&2; fail=1; fi
 if [ "${_bl:-0}" = "0" ] && [ "${_rot:-0}" = "0" ]; then echo OK; else
   echo "★ RED ($_bl 条闸门基线红 · ${_rot:-0} 条闸门腐化)"; bash tools/validate.sh --probe-all 2>&1 | grep -B4 -E '基线（未注入）: 红|闸门已腐化' | grep -E '^\s*[0-9]+:[A-Za-z]|红 →|腐化' | grep -E '^\s*[0-9]+:[A-Za-z]|红 →' | head -6 | sed 's/^/       /'; fail=1
 fi

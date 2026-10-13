@@ -387,3 +387,15 @@ arch=$(grep -l '^## 年轮' archive/growth/*.md | wc -l) # 已归档（年轮型
 **字段**：`event_id` · **`commit`（= 那笔提交的 sha）** · `revisit_on` · `recovery` · `sunset`。
 **实测（真克隆）**：`commit=377cd8bacb7cb42066b27e74d2c1ad323e0a435e` **= 该笔真 sha** ✅ · 三件齐 ✅
 **⇒ "skip 账能回答它对应哪一笔提交"** 已成立。
+
+## ④ 收口三条补（2026-10-13 · **全部在克隆里做，真仓 skip 恒 0**）
+
+**④-5补 · ④-7补（心跳两支 · 实测）**：注入两行 skip 账（esc-A 正常未结 · esc-B 缺 `commit` 且逾期）
+⇒ 心跳同时具名红**两支**：
+· `★ RED: skip 账缺字段（commit/revisit_on/recovery）1 处: esc-B（commit=缺 · 限期2000-01-01 · 恢复命令:y）`
+· `★ RED: 逃生门逾期未结 1 处（日落触发，**点名 commit**）: esc-B（…）`
+⇒ **正常未结的 esc-A 不红** ✅（负样本同时成立）
+
+**④-6补（断言两支 · 实测）**：
+· 加一行**真调用** ⇒ `RED 钩子里自带了 spec-lint 调用（应只委派 ci-local）: pre-commit:1` ✅
+· 只留**注释提及** ⇒ `GRN 钩子未自带 spec-lint 调用（只委派）` ✅（注释不算调用 —— 与"提及 ≠ 调用"同一课）
