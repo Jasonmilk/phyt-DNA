@@ -19,6 +19,7 @@ for f in "$UP"/tools/*.sh; do
   b=$(basename "$f")
   [ "$b" = "sync-upstream.sh" ] && continue        # 同步器自身不参与
   [ -f "tools/$b" ] || continue                     # 本仓没有的引擎文件不硬塞
+  # ★ 有意回写（理由：同步上游时**必须**覆盖本仓 tools/<名>，这正是脚本的目的；旧件留在上游仓）
   cp "$f" "tools/$b"; chmod +x "tools/$b"; list="$list tools/$b"; same=$((same+1))
 done
 [ "$same" -gt 0 ] || { echo "★ 本仓 tools/ 里没有可同步的引擎文件"; exit 2; }

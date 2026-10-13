@@ -138,7 +138,7 @@ probe_one(){ # probe_one <gate-id> → 0=闸门活着（RED）· 2=腐化/拓扑
   done
   # ★ 0（2026-10-13 · 同族守卫）：**只许回写临时副本** —— 真件回写是"账本被擦"那一族的根源（ci-local 已出过一次真实事故）。
   #   非 `$TMP` 下的路径一律**拒绝回写并具名报警**（宁可留下 TMP 之外的不一致，也不许悄悄覆盖真件）。
-  trap 'if [ -n "$BAK" ] && [ -f "$BAK" ]; then case "$F" in "$TMP"/*) cp "$BAK" "$F" ;; *) echo "★ 拒绝回写非临时文件: ${F}（同族守卫）" >&2 ;; esac; rm -f "$BAK"; fi; rm -rf "$TMP"' EXIT
+  trap 'if [ -n "$BAK" ] && [ -f "$BAK" ]; then case "$F" in "$TMP"/*) cp "$BAK" "$F" ;; *) echo "★ 拒绝回写非临时文件: ${F}（同族守卫）" >&2; exit 3 ;; esac; rm -f "$BAK"; fi; rm -rf "$TMP"' EXIT
   echo "  判据作用于临时副本: ${TMP}/${F}（真件不动）"
   F="$TMP/$F"
   # ★ 报【两个世界】（2026-10-09 教训）：注入后的 RED 是**夹具的功劳**，不是仓库的状态。
@@ -155,7 +155,7 @@ probe_one(){ # probe_one <gate-id> → 0=闸门活着（RED）· 2=腐化/拓扑
   # ★ 2：trap **合一**（原先 BAK 的 trap 会覆盖 TMP 清理 ⇒ 临时目录泄漏；夹具纪律无例外）
   # ★ 0（2026-10-13 · 同族守卫）：**只许回写临时副本** —— 真件回写是"账本被擦"那一族的根源（ci-local 已出过一次真实事故）。
   #   非 `$TMP` 下的路径一律**拒绝回写并具名报警**（宁可留下 TMP 之外的不一致，也不许悄悄覆盖真件）。
-  trap 'if [ -n "$BAK" ] && [ -f "$BAK" ]; then case "$F" in "$TMP"/*) cp "$BAK" "$F" ;; *) echo "★ 拒绝回写非临时文件: ${F}（同族守卫）" >&2 ;; esac; rm -f "$BAK"; fi; if [ -n "$BAK2" ] && [ -f "$BAK2" ]; then case "$F" in "$TMP"/*) cp "$BAK2" "$F" ;; *) echo "★ 拒绝回写非临时文件: ${F}（同族守卫）" >&2 ;; esac; rm -f "$BAK2"; fi; rm -rf "$TMP"' EXIT
+  trap 'if [ -n "$BAK" ] && [ -f "$BAK" ]; then case "$F" in "$TMP"/*) cp "$BAK" "$F" ;; *) echo "★ 拒绝回写非临时文件: ${F}（同族守卫）" >&2; exit 3 ;; esac; rm -f "$BAK"; fi; if [ -n "$BAK2" ] && [ -f "$BAK2" ]; then case "$F" in "$TMP"/*) cp "$BAK2" "$F" ;; *) echo "★ 拒绝回写非临时文件: ${F}（同族守卫）" >&2; exit 3 ;; esac; rm -f "$BAK2"; fi; rm -rf "$TMP"' EXIT
   F="$F" bash "$fx" >/dev/null 2>&1
   # ★ check 自己跑不起来时，【必须具名失败】—— 不能与"无输出=通过"混同。
   # 实测（2026-10-09）：一个 check 因嵌套 heredoc 语法错误而根本没运行，
@@ -163,7 +163,8 @@ probe_one(){ # probe_one <gate-id> → 0=闸门活着（RED）· 2=腐化/拓扑
   CHK=$(mktemp /tmp/chk.out.XXXXXX)
   err=$(F="$F" bash -u -c "$chk_src" 2>&1 >"$CHK"); rc=$?
   out=$(cat "$CHK"); rm -f "$CHK"
-  cp "$BAK" "$F"; rm -f "$BAK"; BAK=
+  # ★ 0-b：**非 trap 的脚本内还原也要守**（同族不只是 trap！）—— 只许回写临时副本
+  case "$F" in "$TMP"/*) cp "$BAK" "$F" ;; *) echo "★ 拒绝回写非临时文件: ${F}（同族守卫·脚本内还原）" >&2; exit 3 ;; esac; rm -f "$BAK"; BAK=
   if [ "$rc" = 4 ] && [ -z "$out" ]; then
     echo "  具名跳过: 注入后判据仍拒绝判（缺历史）—— 记 skip，不记 pass" >&2
     rec "$id" skip "named skip after injection: anchor not derivable"; return 0
@@ -205,7 +206,7 @@ probe_one(){ # probe_one <gate-id> → 0=闸门活着（RED）· 2=腐化/拓扑
   F="$F" bash "$cf" >/dev/null 2>&1
   after_out=$(F="$F" bash -u -c "$(check_of "$id")" 2>/dev/null)
   # （反例段只比"结论是否改变"；若 check 本身坏了，上面的正例段已经具名报过。）
-  cp "$BAK2" "$F"; rm -f "$BAK2"; BAK2=
+  case "$F" in "$TMP"/*) cp "$BAK2" "$F" ;; *) echo "★ 拒绝回写非临时文件: ${F}（同族守卫·脚本内还原）" >&2; exit 3 ;; esac; rm -f "$BAK2"; BAK2=
   if [ "$before_out" != "$after_out" ]; then
     echo "  [假阳性] 内容未变，结论却变了：'${before_out}' → '${after_out}'" >&2
     echo "          判据在'变了'与'没变'两个世界给出不同结论 ⇒ 按 Ω 是装饰品" >&2

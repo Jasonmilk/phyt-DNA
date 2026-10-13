@@ -41,6 +41,7 @@ case "${1:-}" in
       printf '%s  %s\n' "$h" "$n" >> "$out.tmp"
       [ "$n" = "$rebase" ] && printf '# rebaseline %s 理由: %s\n' "$n" "$rebase_why" >> "$out.tmp"
     done
+    # ★ 有意回写（理由：基线清单必须**原子替换**（先写 .tmp 再 mv）—— 这是"读改写"的正当形态，且目标就是它自己）
     mv "$out.tmp" "$out"
     if [ -n "$changed" ]; then
       echo "★ 冻结体已被改（拒绝重记，保留旧指纹）：$changed"

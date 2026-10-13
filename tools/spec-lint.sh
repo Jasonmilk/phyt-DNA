@@ -305,6 +305,37 @@ if [ "$(printf '%s\n' "$_selfcall" | grep -cE '(bash|\./)[^|]*spec-lint')" = "0"
 fi
 if [ -n "$_hookbad" ]; then red "钩子里自带了 spec-lint 调用（应只委派 ci-local）:$_hookbad"; fail=1; else grn "钩子未自带 spec-lint 调用（只委派）"; fi
 
+# ★ 0-b（2026-10-13）：**写回真件的两腿判据** —— 正列举 + 负兜底。
+#   负兜底：**非追加**地写【真件/受管】的语句，必须在**同一行或上一行**带 `有意回写（理由：…）` 标注，否则红。
+#   ★ 判据看**目标**（cp/mv 的最后一个 token），不是看整行 —— 否则 `cp /tmp/x tools/X`（源在 /tmp、目标在仓内）会漏（实测漏过一次）。
+_cand=$(grep -rnE '(^|[^>])(cp|mv|tee)[^|]*( |$)|sed -i|rsync|git (checkout|restore)' tools/*.sh examples/*/*.sh 2>/dev/null \
+        | grep -v '>>' | grep -vE '^[^:]+:[0-9]+: *#' \
+        | grep -v 'tools/spec-lint.sh:' || true)   # ★ 排除检查器自身：它的**正则文本**里必然含这些模式（构造性自匹配），非写回
+_nb=""
+while IFS=: read -r _f _n _rest; do
+  [ -n "${_f:-}" ] && [ -f "$_f" ] || continue
+  case "$_n" in ''|*[!0-9]*) continue ;; esac
+  _line=$(sed -n "${_n}p" "$_f")
+  # ★ 守卫形态本身不算"未声明写回"：`case "$F" in "$TMP"/*)` 的写法**只在临时副本上写**
+  printf '%s' "$_line" | grep -qF '"$TMP"/*)' && continue   # ★ 定串匹配（`/*)` 里的 `*` 会被当量词 ⇒ 正则匹配不上，实测漏豁免）
+  printf '%s' "$_line" | grep -q '有意回写' && continue
+  if [ "$_n" -gt 1 ] && sed -n "$(( _n - 1 ))p" "$_f" | grep -q '有意回写'; then continue; fi
+  # ★ 平台无关：用 `sed -E` 的 `(cp|mv)` —— **BSD sed 不支持 `\|`**（实测：抽取恒空 ⇒ 判据在 macOS 空转、在 GNU CI 才生效）
+  # ★ 先剥掉行尾注释（否则 `cp "$F" "$BAK2"   # ★ 2：mktemp…` 会把注释当目标 —— 实测抽出 `并发相撞）`）
+  _code=$(printf '%s' "$_line" | sed 's/#.*$//')
+  _dst=$(printf '%s' "$_code" | sed -E 's/.*(cp|mv) *([^;]*).*/\2/' | awk '{print $NF}' | tr -d '\042'\047)
+  case "${_dst:-}" in
+    \$TMP*|/tmp/*|\$BAK*|\$BAK2*|mktemp*|/dev/null*) continue ;;   # 目标是临时件 ⇒ 不算写回真件
+  esac
+  # ★ 空/未判定目标 ⇒ **fail-closed 报红**（不许因为"我没解析出来"就放过）
+  _nb="$_nb $_f:$_n(目标=${_dst})"
+done <<< "$_cand"
+if [ -n "$_nb" ]; then red "未声明的写回（须在同行或上一行标注「有意回写（理由：…）」）:${_nb}"; fail=1
+else grn "写回真件：无非追加写法（或已按同行/上一行标注）"; fi
+_nw=$(grep -rc '有意回写' tools/*.sh 2>/dev/null | grep -v 'spec-lint' | awk -F: '{s+=$2} END{print s+0}')
+if [ "${_nw:-0}" -lt 2 ]; then red "已标注的写回站点只有 ${_nw:-0} 个（< 2 ⇒ 正列举被削弱）"; fail=1
+else grn "已标注写回站点 = ${_nw}（不含检查器自身；数字变化 ⇒ 人复核）"; fi
+
 [ "$fail" = 0 ] && { echo "spec-lint: PASS"; exit 0; }
 echo "spec-lint: BLOCK（规范自身未过闸门）" >&2
 exit 2
