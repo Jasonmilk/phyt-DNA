@@ -14,7 +14,11 @@ set -uo pipefail
 # ⚠️ 第一版我改成 PHYT_LEDGER=<临时目录> —— 那是错的：**判据读临时账本，而夹具仍写 ${F}（真实账本）**
 # ⇒ **注入目标 ≠ 检测目标**（第 29 条 / P5 —— 我一直在拿这条管别人）。实测它让 replay 闸门假红。
 # ⇒ 正确做法与本仓夹具的惯例一致：**备份 + 还原**，不改读取路径。
-LED="$(git rev-parse --show-toplevel)/ledger/hits-$(date +%Y).jsonl"
+# ★ 起点一次算好账本绝对路径并**导出**：引擎（validate.sh）会读 `PHYT_LEDGER`，
+#   否则它**每次调用**都要 `git rev-parse`（144 次）+ 还会打"非约定布局"提示（实测：快层 90s → 140s）。
+ROOT_DIR="$(git rev-parse --show-toplevel)"
+export PHYT_LEDGER="${PHYT_LEDGER:-$ROOT_DIR/ledger}"
+LED="$PHYT_LEDGER/hits-$(date +%Y).jsonl"
 # ★ 守卫修（2026-10-13 · 阻断项 1 的根因）：**删掉"退出时回写账本"的 trap** ——
 #   原设计想的是"本地跑一遍别把账本弄脏"，但它**把本次运行的所有行（含 run 摘要！）在退出时整个擦掉**：
 #   实测脚本内 `wc -l=1539 · 末行 source="ci-local"`，出脚本后 `1538 · sha1 改了 · 末行 source=空`。
@@ -151,13 +155,12 @@ f4=0
 # ★ F-b（2026-10-13）：**四码必须区分**（rc 契约见 ADR-20261011-failure-must-be-named…）
 #   0=判过 · 2=判出违规 ⇒ 红 · 4=本次无门可判（逐文件常见，不计）· **其他非零=引擎异常 ⇒ 红**（此前一律忽略 ⇒ 引擎坏了会静默通过）
 f4=0; f4v=""; judged=0; bad=0
-_jids=""; _nfiles=0
+# ★ 五类逐门（2026-10-13）：**不用 eval、不做逐文件 python** —— 引擎 JSON 收进临时文件，结尾**一次**解析。
+_jf=$(mktemp); _nfiles=0; _t0=$(date +%s)
 for f in $(git -c core.quotePath=false ls-files '*.md' '*.py' '*.sh' '*.yml'); do
   _nfiles=$((_nfiles+1))
-  _o=$(printf '{"tool":"Write","paths":["%s"]}\n' "$f" | ./tools/validate.sh --timing post 2>/dev/null)
+  printf '{"tool":"Write","paths":["%s"]}\n' "$f" | ./tools/validate.sh --timing post 2>/dev/null >> "$_jf"
   rc=$?
-  _j=$(printf '%s' "$_o" | sed -n 's/.*"judged":"\([^"]*\)".*/\1/p')
-  [ -n "$_j" ] && _jids="$_jids $_j"
   case "$rc" in
     0) judged=$((judged+1)) ;;
     2) f4=1; f4v="$f4v $f" ;;
@@ -165,21 +168,45 @@ for f in $(git -c core.quotePath=false ls-files '*.md' '*.py' '*.sh' '*.yml'); d
     *) bad=$((bad+1)); echo "      ★ 引擎异常 rc=${rc}（非 0/2/4）于 ${f}"; f4=1 ;;
   esac
 done
-# ★ A-5（2026-10-13）：**每次运行落一行 run 摘要** —— "判过且绿"第一次可读（此前它不落账 ⇒ 覆盖率只能靠猜、判据只能靠穷举）。
-#   消费端规则（见 DEBTS d-phyt-run-summary）：**只有 judged-green 计入 proven**；`skipped-by-cache` 具名且缓存失效可机检；其余不计入。
-_led="${PHYT_LEDGER:-$(git rev-parse --show-toplevel)/ledger}/hits-$(date +%Y).jsonl"   # ★ 绝对锚定 + 尊重 PHYT_LEDGER（同一写入点）
-_uni=$(printf '%s' "$_jids" | tr ' ' '\n' | grep . | sort -u | tr '\n' ' ' | sed 's/ *$//')
-_ng=$(printf '%s' "$_uni" | wc -w | tr -d ' ')
+_elapsed=$(( $(date +%s) - _t0 ))
+# ★ 一次解析出五类（含显式 0）—— **不用 eval**（eval 上一次直接把变量没设上 ⇒ line 190 unbound）
+_cf=$(mktemp)
+python3 - "$_jf" > "$_cf" <<'PY'
+import sys, json
+cls = ["judged", "blocked", "unmeasurable", "skipped_timing", "skipped_cache"]
+sets = {k: set() for k in cls}
+for line in open(sys.argv[1], encoding='utf-8', errors='replace'):
+    line = line.strip()
+    if not line.startswith('{'): continue
+    try: d = json.loads(line)
+    except Exception: continue
+    for k in cls:
+        for g in (d.get(k) or '').split(): sets[k].add(g)
+for k in cls:                      # 前 5 行 = 各类的 id 列表（空 ⇒ 显式空行）
+    print(' '.join(sorted(sets[k])))
+for k in cls:                      # 后 5 行 = 各类的个数（含 0）
+    print(len(sets[k]))
+PY
+_uj=$(sed -n 1p "$_cf"); _ub=$(sed -n 2p "$_cf"); _uu=$(sed -n 3p "$_cf"); _ut=$(sed -n 4p "$_cf"); _uc=$(sed -n 5p "$_cf")
+_nj=$(sed -n 6p "$_cf"); _nb=$(sed -n 7p "$_cf"); _nu=$(sed -n 8p "$_cf"); _nt=$(sed -n 9p "$_cf"); _nc=$(sed -n 10p "$_cf")
+_tot=$(( _nj + _nb + _nu + _nt + _nc ))
+rm -f "$_cf" "$_jf"
+_led="${PHYT_LEDGER:-$(git rev-parse --show-toplevel)/ledger}/hits-$(date +%Y).jsonl"
 _led0=$(wc -l < "$_led" | tr -d ' ')
-printf '{"kind":"run","ts":"%s","source":"ci-local","caller":"ci-local","timing":"post","files":%d,"judged_gates":%d,"judged_ids":"%s","verdicts":{"pass":%d,"block":%d,"other":%d}}\n' "$(date '+%Y-%m-%dT%H:%M:%S%z')" "$_nfiles" "$_ng" "$_uni" "$judged" "$f4" "$bad" >> "$_led"
+printf '{"kind":"run","ts":"%s","source":"ci-local","caller":"ci-local","timing":"post","elapsed_ms":%d,"files":%d,"judged_gates":%d,"judged_ids":"%s","per_gate":{"judged-green":"%s","judged-red":"%s","unmeasurable":"%s","skipped-by-timing":"%s","skipped-by-cache":"%s"},"verdicts":{"pass":%d,"block":%d,"other":%d},"fail_closed_note":"坏 payload 的 rc=2 属 fail-closed，与 blocked 分开记"}\n' "$(date '+%Y-%m-%dT%H:%M:%S%z')" "$(( _elapsed * 1000 ))" "$_nfiles" "$_nj" "$_uj" "$_ub" "$_uu" "$_ut" "$_uc" "$judged" "$f4" "$bad" >> "$_led"
 _led1=$(wc -l < "$_led" | tr -d ' ')
-# ★ A-6（2026-10-13）：**读数声明来源** + **stdout ⇄ 账本一致性断言**（摘要行必须真落地，否则读数无出处）
 echo "  读数来源: stdout（本行以上）+ 账本 ${_led}（追加 $(( _led1 - _led0 )) 行 run 摘要 · 第 ${_led1} 行）"
 [ $(( _led1 - _led0 )) -eq 1 ] || { echo "      ★ RED: run 摘要未落地（期望 +1 行，实得 +$(( _led1 - _led0 ))）⇒ 读数无出处"; fail=1; }
+if ! tail -1 "$_led" | python3 -c 'import sys,json; d=json.load(sys.stdin); assert d.get("kind")=="run"; assert "per_gate" in d; assert "elapsed_ms" in d; assert "skipped-by-cache" in d.get("per_gate",{})' 2>/dev/null; then
+  echo "      ★ RED: run 摘要的本体判据不成立（末行非 run / 缺 per_gate / 缺 elapsed_ms / 缺 skipped-by-cache 显式 0）"; fail=1
+fi
+_d_all=$(ls decisions/ADR-*.md | wc -l | tr -d ' ')
+echo "  总数校验: 五类之和=${_tot}（绿 ${_nj} · 红 ${_nb} · 不可量 ${_nu} · 时序跳 ${_nt} · 缓存跳 ${_nc}）"
+echo "  口径并列（**不统一 · 待裁定**）: ADR 总数=${_d_all} · 本次扫到 ${judged}/${_nfiles} 文件 · 差 = 不在扫描面（applies-to 命中 .jsonl 等非扫描扩展名）"
 if [ "$judged" = 0 ]; then
   echo "      ★ RED: **覆盖面为零** —— 逐文件扫完但无一门命中（judged=0）⇒ 不报绿"; f4=1
 fi
-[ "$f4" = 0 ] && echo "OK（逐文件 · 判过 $judged · 无门可判 $(( _nfiles - judged )) · 逐门来源已入账 ${_ng} 门）" \
+[ "$f4" = 0 ] && echo "OK（逐文件 · 判过 $judged · 无门可判 $(( _nfiles - judged )) · 逐门五类已入账 绿${_nj}/红${_nb}/不可量${_nu}/时序跳${_nt}/缓存跳${_nc} · elapsed ${_elapsed}s）" \
   || { for x in $f4v; do echo "      ★ 违规: $x"; done; echo "      ★ RED"; fail=1; }
 
 # ★ F-b 机器判据：**ADR 声明的码 == 引擎实际返回的码**（声明与行为不许分家）

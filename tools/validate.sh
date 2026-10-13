@@ -292,12 +292,13 @@ if [ -z "$paths" ]; then
   echo "★ 具名跳过: 本次扫描没有任何路径（scanned=0）⇒ 不判、不报绿" >&2
   exit 4
 fi
-scanned=0; skips=0; skips_named=""; hits=""; judged_ids=""; blocked_ids=""
+scanned=0; skips=0; skips_named=""; hits=""; judged_ids=""; blocked_ids=""; unmeas_ids=""; timing_ids=""; cache_ids=""
 while read -r id; do
   [ -n "$id" ] || continue
   if [ -n "$only_timing" ]; then
     t=$(grep '^timing:' "$DEC_DIR/$id.md" | head -1 | awk '{print $2}')
-    [ "${t:-post}" = "$only_timing" ] || continue
+    # ★ 五类逐门（2026-10-13）：**时序跳过要具名**（不是"没这门"，是"这次不该判它"）
+    [ "${t:-post}" = "$only_timing" ] || { timing_ids="$timing_ids $id"; continue; }
   fi
   while read -r gg; do
     gg=$(echo "$gg" | sed 's/^ *//;s/ *$//'); [ -n "$gg" ] || continue
@@ -322,6 +323,7 @@ while read -r id; do
           #   可靠信号是 bash 自己的语法错误。实测（2026-10-09）：用 rc 判会让 63 个文件全被判违规。
           if printf '%s' "$out" | grep -qE 'syntax error|unexpected EOF|unexpected token|command not found'; then
             out="[check 失败] 判据 ${id} 自己没能运行 —— 静默失败=伪证: $(printf '%s' "$out" | head -1)"
+            unmeas_ids="$unmeas_ids $id"    # ★ 五类之：unmeasurable（判不了 ≠ 判出违规）
           fi
         fi
         # ★ A-5（2026-10-13）：**逐门判定来源** —— "判过且绿"必须可读（此前它不落任何账 ⇒ 覆盖率只能靠猜）
@@ -342,7 +344,10 @@ if [ "$scanned" = 0 ]; then
   exit 4
 fi
 _jid=$(printf '%s' "$judged_ids" | sed 's/^ *//'); _bid=$(printf '%s' "$blocked_ids" | sed 's/^ *//')
-if [ -z "$hits" ]; then printf '{"verdict":"pass","scanned":%d,"hits":0,"skipped":%d,"judged":"%s"}\n' "$scanned" "$skips" "$_jid"; exit 0; fi
-printf '{"verdict":"block","scanned":%d,"hits":%d,"skipped":%d,"rule_id":"%s","judged":"%s","blocked":"%s"}\n' "$scanned" "$n_hits" "$skips" "$first" "$_jid" "$_bid"
+_uim=$(printf '%s' "$unmeas_ids" | sed 's/^ *//'); _tim=$(printf '%s' "$timing_ids" | tr ' ' '\n' | sort -u | tr '\n' ' ' | sed 's/ *$//')
+# ★ 五类之 skipped-by-cache：本引擎**无缓存** ⇒ 显式空串（**含 0**，不许省略）
+_cac=""
+if [ -z "$hits" ]; then printf '{"verdict":"pass","scanned":%d,"hits":0,"skipped":%d,"judged":"%s","unmeasurable":"%s","skipped_timing":"%s","skipped_cache":"%s"}\n' "$scanned" "$skips" "$_jid" "$_uim" "$_tim" "$_cac"; exit 0; fi
+printf '{"verdict":"block","scanned":%d,"hits":%d,"skipped":%d,"rule_id":"%s","judged":"%s","blocked":"%s","unmeasurable":"%s","skipped_timing":"%s","skipped_cache":"%s"}\n' "$scanned" "$n_hits" "$skips" "$first" "$_jid" "$_bid" "$_uim" "$_tim" "$_cac"
 echo "违规: $hits" >&2
 exit 2
