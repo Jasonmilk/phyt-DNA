@@ -28,3 +28,5 @@
 |---|---|---|---|
 | `d-phyt-phantom-reduction` | phyt-DNA | 2026-10-13 | **幽灵降本**（85s→1s 实为引擎空转）⇒ 双因已修（`core.quotePath` + 静默 `pass`）；批量**不采用**；见 `GROWTH.md` |
 | `d-phyt-rc-contract` | phyt-DNA | 2026-10-13 | **rc 契约**落 `ADR-20261011-failure-must-be-named-where-machines-can-read`（0/2/4/其他）+ step 4 四码区分 + ADR↔引擎 机器判据 |
+| `d-phyt-probe-fixture` | phyt-DNA | 未做 | 2026-10-13 | ⬜ 待做 | 2026-10-20 | **探针夹具只复制 `$F` 一个文件** ⇒ 判据体若读同目录的别的受管文件（如 `decisions/INDEX.md`）就会"跑不起来"⇒ 记 `unmeasurable`。**恢复命令**：改探针的临时目录为**同形目录**（复制判据引用的所有受管文件），再用一个"读同目录文件"的判据体验证它不再 unmeasurable | Pi |
+| `d-phyt-matrix` | phyt-DNA | 未做 | 2026-10-13 | ⬜ 待做 | 2026-10-20 | **rc 四码 × 四调用方矩阵"落在 ADR 里"**（现在只在对话/提交信息里）。**恢复命令**：把矩阵表补进 `ADR-20261011-failure-must-be-named-where-machines-can-read` 的 rc 契约段（含：`DNA.md` 是 **pre** 时段的 rc=2 数据样本这一口径） | Pi |
