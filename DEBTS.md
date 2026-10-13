@@ -49,6 +49,21 @@
 
 | `d-phyt-pre-gap-c` | phyt-DNA | **pre 面缺口/机制** | 2026-10-13 | ⬜ 待做 | 2026-10-20 | **pre 面缺口 (c)：CI** —— README 自称真门/兜底，但 **CI 只跑 ci-local（= post 面）**，pre 面**不在 CI 里**，且 CI 里也没有 Claude 工具调用可拦。**revisit-on 2026-10-20**。**恢复命令**：读 `.github/workflows/phyt.yml` ⇒ 只有 `tools/ci-local.sh`；再读 `examples/claude-code/hooks/pretooluse-gate.sh` ⇒ 无 CI 入口。 |
 
-| `d-phyt-run-summary` | phyt-DNA | **pre 面缺口/机制** | 2026-10-13 | ⬜ 待做 | 2026-10-20 | **A-5 run 摘要（已实现，消费规则待写进判据）**：每次 ci-local 落一行 `{"kind":"run", caller, timing, files, judged_gates, judged_ids, verdicts}`。**消费端规则**：① **只有 judged-green 计入 proven**；② `skipped-by-cache` 必须**具名**且**缓存失效可机检**；③ 其余（未判/异常/输入失效）**不计入**。**revisit-on 2026-10-20**。**恢复命令**：`tail -1 ledger/hits-$(date +%Y).jsonl \| grep '"kind":"run"'`；`grep -c '"kind":"run"' ledger/hits-$(date +%Y).jsonl`。 |
+| `d-phyt-run-summary` | phyt-DNA | **pre 面缺口/机制** | 2026-10-13 | ⬜ 待做 | 2026-10-20 | **A-5 run 摘要（已实现，消费规则待写进判据）**：每次 ci-local 落一行 `{"kind":"run", caller, timing, files, judged_gates, judged_ids, verdicts}`。**消费端规则**：① **只有 judged-green 计入 proven** · ★**`fail-closed`（坏 payload rc=2）与 `blocked`（真违规）必须分开记，不许混** · ★**"受债务影响"栏（C 并入 A-5 schema）**：标 `blocked-by` / "不能证"的条目**不得计入 proven**，违者**具名红**；② `skipped-by-cache` 必须**具名**且**缓存失效可机检**；③ 其余（未判/异常/输入失效）**不计入**。**revisit-on 2026-10-20**。**恢复命令**：`tail -1 ledger/hits-$(date +%Y).jsonl \| grep '"kind":"run"'`；`grep -c '"kind":"run"' ledger/hits-$(date +%Y).jsonl`。 |
 
 | `d-phyt-phantom-complete` | phyt-DNA | **pre 面缺口/机制** | 2026-10-13 | ⬜ 待做 | 2026-10-20 | **「幽灵完成」门**：**声明改了某文件 ⇒ `git diff --name-only` 必须含该文件**（本轮我声明"已实现"却随还原撤销 ⇒ 假账）。年轮已立族名。**revisit-on 2026-10-20**。**恢复命令**：把声明（提交信息/报告里的文件路径）与 `git diff --name-only HEAD~1` 比对；未落地者具名。 |
+| `d-phyt-run-summary-persist` | phyt-DNA | **阻断（A-5 不可信）** | 2026-10-13 | ⛔ blocked-by: 无 | 2026-10-14 | **run 摘要写进去却没活下来**：ci-local 打印 `追加 1 行 run 摘要 · 第 1517 行`，而账本 `wc -l = 1516` 且 `grep -c '"kind":"run"' = 0`；文件 mtime=18:37 但末行 ts=17:00 ⇒ **有东西把追加行回滚了**（疑：提交/恢复循环里账本被重写，未证）。⇒ **A-5 的「judged-green 可读」目前不可信**；① 的 per_gate/elapsed/差额点名**全部被它阻塞**。**恢复命令**：跑一次 `bash tools/ci-local.sh --fast`，立刻 `tail -1 ledger/hits-$(date +%Y).jsonl` 与 `grep -c '"kind":"run"'`；若为 0 ⇒ 在**追加处**打印路径与 `wc -l` 前后值，并查"谁在之后重写了账本"（`git log -p -- ledger/`）。 |
+
+| `d-phyt-per-gate-schema` | phyt-DNA | **A-5 补全** | 2026-10-13 | ⛔ blocked-by: d-phyt-run-summary-persist | 2026-10-14 | **逐门 `per_gate:{id, source_class, verdict}`**，四类显式（含 0）：`judged-green` / `judged-red` / `unmeasurable` / `skipped-by-cache`（**失效条件必须可机检**）/ `skipped-by-timing`；+ **`elapsed_ms`（电表第一栏）** + `caller`/`timing`；**差额点名 + 总数校验**（各分类之和 == 分母）；消费端：**fail-closed（坏 payload rc=2）与 blocked（真违规）分开记**。**已得**：差额点名的**静态**部分 = **4 门不在扫描面**（`applies-to` 全是 `ledger/*.jsonl` ⇒ `.jsonl` 不在 step 4 的扩展名列表里）：`appeals-must-be-parseable` · `ledger-must-be-valid-utf8` · `lesson-must-be-replayed` · `ledger-new-lines-parseable-and-referenced`；另 **2 门 `skipped-by-timing`**（pre）。**恢复命令**：`python3` 比对 `judged_ids` × `applies-to` 命中集（本轮的差额脚本）。 |
+
+## 日落机制（分型 · 2026-10-13 · 每型各带反例）
+
+| 型 | 对象 | **判据（可机检）** | **反例（必须红）** |
+|---|---|---|---|
+| **计数型** | 年轮（GROWTH） | `live ≤ 阈值` **∧** 被归档条目的 **id/指纹在 live 中不存在** | 「**只复制不删** ⇒ 具名红」（本轮真踩：复制后 5−3=2=归档数 ⇒ 计数门照样通过） |
+| **状态型** | DEBTS 条目 · 图纸 promote · skip 结案 | 状态翻转**必须绑本体证据**（见下表"本体判据"栏被满足） | 「**只翻状态** ⇒ 红」·「**只改 `hard:true`** ⇒ 红」·「**只写一行关闭行** ⇒ 红」 |
+| **时间型** | `revisit-on` / `expires-on` | 到期日可解析 **∧** 到期时**必须给出本体证据或续期理由** | 「到期了只改日期 ⇒ 红」 |
+
+### schema 增栏：【本体判据】—— 每条待办都要能回答"**什么叫真解决（可机检）**"
+
+> 缺此栏 ⇒ 该条**不成立**（登记即无效）。栏内必须是**命令**或**命令可判的断言**，不是形容词。
