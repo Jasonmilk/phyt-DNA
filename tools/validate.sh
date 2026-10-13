@@ -156,7 +156,9 @@ probe_one(){ # probe_one <gate-id> → 0=闸门活着（RED）· 2=腐化/拓扑
   #   判据半途炸掉时可能已经吐了半行，那半行不是"红"。
   if printf '%s' "$err" | grep -qE 'syntax error|unexpected EOF|unexpected token|command not found|unbound variable|IndentationError|SyntaxError|Traceback'; then
     echo "  [check 失败] 判据自己没能运行：$(printf '%s' "$err" | head -1)" >&2
-    rec "$id" block "check did not run: $(printf '%s' "$err" | head -1)"; return 2
+    # ★ 4（2026-10-13 裁定）：**判不了 ≠ 判出违规** —— 此前记 `block`（**假指控**：内容被冤枉成违规），
+  #   正确 = 记 **不可量（`unmeasurable`）** 并 `return 4`（rc 契约：4 = 本次无门可判 ⇒ 调用方不报绿也不冤红）。
+  rec "$id" unmeasurable "check did not run: $(printf '%s' "$err" | head -1)"; return 4
   fi
   if [ -z "$out" ]; then echo "  [${id}] 注入后: NOT RED — 闸门已腐化（夹具没能越过阈值）" >&2
     rec "$id" block "corrupted: fixture did not cross the threshold"; return 2; fi

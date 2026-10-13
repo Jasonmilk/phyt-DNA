@@ -64,7 +64,11 @@ step "2 · spec-lint";  if ./tools/spec-lint.sh docs/PROTECTION.md >/dev/null 2>
 #   ★ 第四条硬约束（人类 2026-10-13）：**改动落在 tools/ · .github/ · examples/ · fixtures/ ⇒ 快层放大为全量**
 #     （改引擎只跑一个门 = 第八次红推同族：漏重基线/漏跑全仓 ⇒ 降本在此点收益为负）。
 # ★ ⑪（2026-10-13）：**核心钩子未启用 ⇒ 具名提示**（不静默、不失败 —— CI 里本来就没有钩子）
-if [ -z "$(git config core.hooksPath || true)" ]; then
+_hp="$(git config core.hooksPath 2>/dev/null || true)"
+if [ -n "$_hp" ] && [ "$(cd "$_hp" 2>/dev/null && git rev-parse --show-toplevel 2>/dev/null || echo '')" != "$(git rev-parse --show-toplevel)" ]; then
+  echo "  ★ 具名警告: core.hooksPath=$_hp **指向别的仓** ⇒ 本仓钩子（pre-commit/pre-push）不会跑 ⇒ 覆盖：git config --local core.hooksPath tools/hooks"
+fi
+if [ -z "$_hp" ]; then
   echo "  ★ 具名提示: 核心钩子未启用（本克隆无 pre-commit / pre-push）⇒ 启用：git config core.hooksPath tools/hooks"
 fi
 FAST_MODE=0
@@ -152,7 +156,7 @@ for f in $(git -c core.quotePath=false ls-files '*.md' '*.py' '*.sh' '*.yml'); d
     0) judged=$((judged+1)) ;;
     2) f4=1; f4v="$f4v $f" ;;
     4) : ;;
-    *) bad=$((bad+1)); echo "      ★ 引擎异常 rc=$rc（非 0/2/4）于 $f"; f4=1 ;;
+    *) bad=$((bad+1)); echo "      ★ 引擎异常 rc=${rc}（非 0/2/4）于 ${f}"; f4=1 ;;
   esac
 done
 if [ "$judged" = 0 ]; then
@@ -162,12 +166,15 @@ fi
   || { for x in $f4v; do echo "      ★ 违规: $x"; done; echo "      ★ RED"; fail=1; }
 
 # ★ F-b 机器判据：**ADR 声明的码 == 引擎实际返回的码**（声明与行为不许分家）
-_adr="$DEC_DIR/ADR-20261011-failure-must-be-named-where-machines-can-read.md"
+_adr="decisions/ADR-20261011-failure-must-be-named-where-machines-can-read.md"   # ★ F-b 修：此处 DEC_DIR 未定义（set -u 下整脚本崩）⇒ 用具名相对路径
 _decl=$(grep -oE '^\| `[0-9]+`' "$_adr" | grep -oE '[0-9]+' | sort -n | paste -sd, -)
 _eng=""
 printf '{"tool":"Write","paths":["README.md"]}\n' | ./tools/validate.sh --timing post >/dev/null 2>&1; _eng="$_eng $?"
 printf '{"tool":"Write","paths":["a" "b"]}\n'   | ./tools/validate.sh --timing post >/dev/null 2>&1; _eng="$_eng $?"
 printf '{"tool":"Write","paths":[]}\n'          | ./tools/validate.sh --timing post >/dev/null 2>&1; _eng="$_eng $?"
+# ★ rc=2 的**数据样本**：`DNA.md`（权威卷门会判违规）—— **只读不写**，物件不动，无需夹具
+#   ★ 注意口径：权威卷门是 **pre** 时段 ⇒ 必须用 --timing pre 取（用 post 会得 rc=4，判据就会"分家"）
+printf '{"tool":"Write","paths":["DNA.md"]}\n'  | ./tools/validate.sh --timing pre  >/dev/null 2>&1; _eng="$_eng $?"
 _eng=$(echo $_eng | tr ' ' '\n' | sort -n | uniq | paste -sd, -)
 if [ "${_decl:-?}" = "${_eng:-?}" ]; then echo "OK（rc 契约：ADR 声明 {$_decl} == 引擎实返 {$_eng}）"
 else echo "      ★ RED: rc 契约分家 —— ADR 声明 {${_decl:-空}} != 引擎实返 {${_eng:-空}}"; fail=1; fi

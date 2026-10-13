@@ -12,7 +12,7 @@ redtest: "validate --probe ADR-20261013-protocol-named-files-must-exist"
 revisit-on: 2027-04-13
 expires-on: null
 owner: "@jason"
-origin: "2026-10-13：实测 `docs/MULTIMETER.md` 点名 `PLAN-PAUSED.md` 而它**从未存在**；游标类失效（点名却不落地）此前无人查。 ｜三要素：事件=2026-10-13 人类裁定（本轮 item 2） · 证据行=ledger/hits-2026.jsonl:1290 · 提交=见本条落盘提交"
+origin: "2026-10-13：实测 `docs/MULTIMETER.md` 点名 `PLAN-PAUSED.md` 而它**从未存在**；游标类失效（点名却不落地）此前无人查。 ｜三要素：事件=task-2026-10-13-protocol-named-files（账本 kind:task 行） · 证据行=ledger/hits-2026.jsonl:1367 · 提交=4c8d384"
 risk: normal
 check: |
   [ -f "$F" ] || { echo "输入失效: $F 不存在（静默失败=伪证）"; }
@@ -34,4 +34,4 @@ check: |
   [ -n "$miss" ] && echo "① 协议点名的文件不存在:${miss}（**指名=承诺**；"从未存在"比"被删除"更隐蔽）"
   # ② 自守：**门不许活在 INDEX 之外** —— 本门必须能被发现（自己检查自己是否被登记）
   id="ADR-20261013-protocol-named-files-must-exist"
-  grep -rqs -- "$id" decisions/INDEX.md docs/INDEX.md 2>/dev/null || echo "② 自守失败: 本门未出现在 INDEX 里（'没装门'看起来会像'门通过了'）"
+  grep -rqs -- "$id" decisions/INDEX.md docs/INDEX.md || echo "② 自守失败: 本门未出现在 INDEX 里（'没装门'看起来会像'门通过了'）"
