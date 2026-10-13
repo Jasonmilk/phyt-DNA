@@ -312,7 +312,9 @@ if [ -n "$_hookbad" ]; then red "钩子里自带了 spec-lint 调用（应只委
 # 有意回写（理由：这是检查器自身的**模式文本**，不是写回真件 —— 构造性自匹配）
 _cand=$(grep -rnE '(^|[^>])(cp|mv|tee)[^|]*( |$)|sed -i|rsync|git (checkout|restore)' tools/*.sh examples/*/*.sh 2>/dev/null \
         | grep -v '>>' | grep -vE '^[^:]+:[0-9]+: *#' \
-        | grep -v 'tools/spec-lint.sh:' \   # ★ 排除检查器自身（它的模式文本必然自匹配）；**补偿控制 = 待做的窄断言**（见 DEBTS d-phyt-selfwrite-compensate）
+# ★ 排除检查器自身（它的模式文本必然自匹配）；**补偿控制 = 待做的窄断言**（见 DEBTS d-phyt-selfwrite-compensate）
+# 窄豁免：检查器自身的模式/样本行（构造性自匹配）
+| grep -v 'tools/spec-lint.sh:' | grep -v '_dst=' | grep -v 'GNU_PAT=' | grep -v '_cmt=' | grep -v '_cmtsample=' \
          || true)   # ★ 排除检查器自身：它的**正则文本**里必然含这些模式（构造性自匹配），非写回
 _nb=""
 while IFS=: read -r _f _n _rest; do
@@ -326,6 +328,7 @@ while IFS=: read -r _f _n _rest; do
   # ★ 平台无关：用 `sed -E` 的 `(cp|mv)` —— **BSD sed 不支持 `\|`**（实测：抽取恒空 ⇒ 判据在 macOS 空转、在 GNU CI 才生效）
   # ★ 先剥掉行尾注释（否则 `cp "$F" "$BAK2"   # ★ 2：mktemp…` 会把注释当目标 —— 实测抽出 `并发相撞）`）
   _code=$(printf '%s' "$_line" | sed 's/#.*$//')
+# 有意回写（理由：这是检查器自身的**模式文本**（`cp|mv` 出现在它的正则里），不是写回真件 —— 构造性自匹配）
   _dst=$(printf '%s' "$_code" | sed -E 's/.*(cp|mv) *([^;]*).*/\2/' | awk '{print $NF}' | tr -d '\042'\047)
   case "${_dst:-}" in
     \$TMP*|/tmp/*|\$BAK*|\$BAK2*|mktemp*|/dev/null*) continue ;;   # 目标是临时件 ⇒ 不算写回真件
@@ -354,7 +357,15 @@ rm -f "$_self"
 if [ "${_selfn:-0}" -lt 1 ]; then red "C' 门自检失败：TMP 注入的 GNU 专属样本**未被命中** ⇒ 门是死的（它的 GRN 会是幽灵绿）"; fail=1
 else grn "C' 门自检：TMP 注入样本命中（门真在扫）"; fi
 
-if [ -n "$_gnu" ]; then red "未标注的 GNU 专属特性（BSD 会静默空转/报错；要么改可移植写法，要么同行标注「GNU 专属（理由…）」）"; printf '%s\n' "$_gnu" | head -5 | sed 's/^/      /' >&2; fail=1
+# ★ 5（2026-10-14）：**续行末尾带注释 ⇒ 具名红**（我已两次踩此坑：注释吞掉 `\` ⇒ 整条管道/命令被打断 ⇒ **静默失效**）
+_cmt=$(grep -rnE '\\[ \t]+#' tools/*.sh examples/*/*.sh .github/workflows/*.yml 2>/dev/null | grep -vE ':[0-9]+: *#' | grep -v '_cmtsample=' || true)   # 具名窄豁免：自检样本行（下方 `_cmtsample=`）本身必须含坏形态
+# 反例样本（自带正反样本）：下面这行必须被上面数到
+_cmtsample='echo a \\   # 这行必须被数到'
+_cn=$(printf '%s\n' "$_cmtsample" | grep -cE '\\[ \t]+#')
+if [ "${_cn:-0}" -lt 1 ]; then red "5 自检失败：反例样本（续行末尾带注释）**没被数到** ⇒ 断言不会响"; fail=1; fi
+if [ -n "$_cmt" ]; then red "续行末尾带注释（注释会吞掉反斜杠 ⇒ 命令被打断且静默失效）:$_cmt"; fail=1
+else grn "续行末尾无注释（\ 后不跟 #）"; fi
+if [ -n "$_gnu" ]; then red "非 POSIX 扩展（本仓两环境 macOS-BSD/GNU-CI 都支持，故非当前故障；但 **awk 的 \s 在 BSD 是真死** · `grep -P` 在 BSD rc=2）⇒ 要么改可移植写法，要么标注「GNU 专属（理由…）」"; printf '%s\n' "$_gnu" | head -5 | sed 's/^/      /' >&2; fail=1
 else grn "GNU 专属特性：0 处（判据只依赖 shell 内建 + git + python3 + 可移植 grep/sed）"; fi
 
 [ "$fail" = 0 ] && { echo "spec-lint: PASS"; exit 0; }
