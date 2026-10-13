@@ -75,6 +75,10 @@ if [ "$WIP" = 0 ]; then
     printf '%s\n' "$ci_out" | grep -E '★ RED|CI-LOCAL|违规' | head -6 | sed 's/^/   /' >&2
     exit 1
   fi
-  echo "  [pre-commit] ci-local 全绿（扫描 + spec-lint + 心跳 + 基线 —— 与 CI 同款）"
+  #   ★ ⑨补（人类 2026-10-13）：**让本步自己播报"本次具名跳过了哪些步骤 + 触发点"** ——
+  #   否则"有 3 步没在管"在提交那一刻**无人播报** = 读数没有消费者。
+  echo "  [pre-commit] ci-local（快层）全绿"
+  printf '%s\n' "$ci_out" | grep -E '慢层（本次跳过|触发点:' | sed 's/^/  [pre-commit] /'
+  printf '%s\n' "$ci_out" | grep -qE '慢层（本次跳过' || echo "  [pre-commit] 本次未跳过慢层（引擎/夹具面改动 ⇒ 快层已放大为全量）"
 fi
 exit 0
