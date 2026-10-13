@@ -1,0 +1,1 @@
+{"kind":"run","ts":"x","source":"ci-local","elapsed_ms":76000,"files":144,"judged_gates":16,"per_gate":{"judged-green":"A B","judged-red":"","unmeasurable":"","skipped-by-timing":"P","skipped-by-cache":""},"verdicts":{"pass":128,"block":0,"other":0}}
