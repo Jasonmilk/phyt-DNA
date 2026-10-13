@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+# post-commit —— ★ ④-5（2026-10-13）：**逃生门的账本行在这里写**。
+#   为什么不在 pre-commit：**sha 在 pre-commit 阶段还不存在**（提交尚未创建）。
+#   本钩子只做一件事：若 pre-commit 留了逃生门标记 ⇒ 追加一行 `kind=skip`，**带上本笔的 commit sha**。
+set -uo pipefail
+M=$(ls -t /tmp/phyt-wip-marker.* 2>/dev/null | head -1)
+[ -n "$M" ] || exit 0
+step=$(cat "$M" 2>/dev/null || echo unknown)
+rm -f "$M"
+SHA=$(git rev-parse HEAD 2>/dev/null || echo unknown)
+python3 - "$step" "$SHA" <<'PY' >> "ledger/hits-$(date +%Y).jsonl"
+import datetime, json, sys, time
+step, sha = sys.argv[1][:200], sys.argv[2]
+today = datetime.date.today()
+print(json.dumps({
+ "ts": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
+ "kind": "skip", "gate_id": "pre-commit-gate", "verdict": "skip", "override": True, "source": "hook",
+ "event_id": "wip-escape-%d" % int(time.time()),
+ "commit": sha,
+ "revisit_on": str(today + datetime.timedelta(days=2)),
+ "recovery": "先修门自身（spec-lint/清点器/死代码断言），再正常提交一次（不带 PHYT_WIP）；随后追加 kind=closure 行（ref_event_id 指向本行）",
+ "sunset": "revisit_on 之后仍未 closure ⇒ 心跳具名红（ci-local 步 3b）",
+ "note": "PHYT_WIP 逃生门（提交 %s）：%s" % (sha, step),
+}, ensure_ascii=False))
+PY
+echo "  [post-commit] 逃生门已落账（kind=skip · commit=$SHA · 含 revisit_on / recovery / sunset）"
