@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# pre-push —— ★ ⑤ 慢层的【真实触发点】（2026-10-13）。
+#   慢层 = 3 心跳（--probe-all · 夹具能红）· 5 spec-lint 必须真实可红 · 5a hook_test。
+#   快层（每次提交）含 step 4 全仓违规扫描；慢层在此处（以及 CI / 手动全量）跑 —— **不许"跳了就没人再跑"**。
+set -uo pipefail
+ROOT=$(git rev-parse --show-toplevel 2>/dev/null) || exit 1
+cd "$ROOT" || exit 1
+echo "  [pre-push] 跑【全量】ci-local（含慢层：心跳 / spec-lint-可红 / hook_test）"
+if bash tools/ci-local.sh >/tmp/phyt-prepush.out 2>&1; then
+  echo "  [pre-push] 全量 ci-local 全绿"
+  exit 0
+fi
+echo "⛔ pre-push: 全量 ci-local 未全绿 ⇒ 拒绝推送" >&2
+grep -E '★ RED|CI-LOCAL' /tmp/phyt-prepush.out | head -6 | sed 's/^/   /' >&2
+exit 1

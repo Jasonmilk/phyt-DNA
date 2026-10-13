@@ -57,11 +57,42 @@ step "2 · spec-lint";  if ./tools/spec-lint.sh docs/PROTECTION.md >/dev/null 2>
 # ★ 基线红必须作数（reviewer ② 2026-10-11）：心跳只验"夹具能否红"，**不验"仓库现在红不红"** ⇒
 #   实测后果：一条【数学上不可满足】的闸门（replay-window 10 < 硬闸门 22）长红，而**没有任何检查会失败**。
 #   ⇒ 这里把"基线红"变成**会失败的检查**（并把红的闸门具名列出）。
+# ── ⑤ 门禁降本（2026-10-13）：快/慢分层 ───────────────────────────────────────
+#   慢层（**具名**）：`3 · 心跳（--probe-all · 夹具能红）` · `5 · spec-lint 必须真实可红` · `5a · hook_test`
+#     触发点：**pre-push 钩子（tools/hooks/pre-push）** · **CI（.github/workflows/phyt.yml 逐步同款）** · **手动 `bash tools/ci-local.sh`**
+#   快层（每次提交）：`0/1 清单与基线` · `2 spec-lint` · `3b 快照与逃生门账` · **`4 全仓违规扫描（必跑！内容违规最后一道）`**
+#   ★ 第四条硬约束（人类 2026-10-13）：**改动落在 tools/ · .github/ · examples/ · fixtures/ ⇒ 快层放大为全量**
+#     （改引擎只跑一个门 = 第八次红推同族：漏重基线/漏跑全仓 ⇒ 降本在此点收益为负）。
+FAST_MODE=0
+[ "${1:-}" = "--fast" ] && FAST_MODE=1
+if [ "$FAST_MODE" = 1 ]; then
+  _chg=$(git diff --cached --name-only 2>/dev/null)
+  case "$_chg" in
+    *tools/*|*.github/*|*examples/*|*fixtures/*)
+      echo "  注：改动含引擎/夹具面（tools/ .github/ examples/ fixtures/）⇒ **快层放大为全量**（第四条硬约束）"
+      FAST_MODE=0
+      ;;
+  esac
+  if [ "$FAST_MODE" = 1 ]; then
+    echo "  慢层（本次跳过，具名）: 3 心跳 · 5 spec-lint-可红 · 5a hook_test"
+    echo "  触发点: pre-push 钩子 · CI workflow · 手动 \`bash tools/ci-local.sh\`（全量）"
+  fi
+fi
 step "3b · 基线红必须作数（红要具名）"
-_bl=$(bash tools/validate.sh --probe-all 2>&1 | grep -c '基线（未注入）: 红')
+_pa=$(mktemp)
+if [ "$FAST_MODE" = 1 ]; then
+  : > "$_pa"
+  _bl=0; _rot=0; _pa_rc=0
+  echo "OK（快层：心跳略；逃生门账仍查）"
+else
+  bash tools/validate.sh --probe-all > "$_pa" 2>&1
+  _pa_rc=$?
+  _bl=$(grep -c '基线（未注入）: 红' "$_pa")
+  _rot=$(grep -c '闸门已腐化' "$_pa")
+fi
 # ★ 0*（2026-10-13）：**"腐化"也算红** —— 此前只数"基线红" ⇒ **夹具跨不过阈值的死门对本步隐形**
 #   （实测：recopy 门 probe 报「腐化」，而本步报 OK）。死门 = 门不在工作 ⇒ 与基线红同等严重。
-_rot=$(bash tools/validate.sh --probe-all 2>&1 | grep -c '闸门已腐化')
+
 # ★ ①补（2026-10-13）：**逃生门逾期未结 ⇒ 具名红** —— 落账三项里的 sunset 由这里执行。
 #   结案方式：追加一行 kind=closure（ref_event_id 指向那行逃生门的 event_id）；append-only，不改旧行。
 _esc=$(python3 - <<'PY'
@@ -87,14 +118,16 @@ _miss=${_esc%% *}; _rest=${_esc#* }; _over=${_rest%% *}; _why=${_rest#* }
 if [ "$_miss" != "0" ]; then echo "★ RED: skip 账缺字段（commit/revisit_on/recovery）$_miss 处: $_why" >&2; fail=1; fi
 if [ "$_over" != "0" ]; then echo "★ RED: 逃生门逾期未结 $_over 处（日落触发，**点名 commit**）: $_why" >&2; fail=1; fi
 if [ "${_bl:-0}" = "0" ] && [ "${_rot:-0}" = "0" ]; then echo OK; else
-  echo "★ RED ($_bl 条闸门基线红 · ${_rot:-0} 条闸门腐化)"; bash tools/validate.sh --probe-all 2>&1 | grep -B4 -E '基线（未注入）: 红|闸门已腐化' | grep -E '^\s*[0-9]+:[A-Za-z]|红 →|腐化' | grep -E '^\s*[0-9]+:[A-Za-z]|红 →' | head -6 | sed 's/^/       /'; fail=1
+  echo "★ RED ($_bl 条闸门基线红 · ${_rot:-0} 条闸门腐化)"; grep -B4 -E '基线（未注入）: 红|闸门已腐化' "$_pa" | grep -E '^\s*[0-9]+:[A-Za-z]|红 →|腐化' | head -6 | sed 's/^/       /'; fail=1
 fi
 
 step "3 · 全部闸门能力心跳"
 # ★ 与 CI 同一步【同一条命令】—— 这里曾经把 CI 的 for 循环抄了一遍（第二份清单，A5）。
 # 现在它与 .github/workflows/phyt.yml 的第 3 步调用同一个入口 ⇒ 那一步不会两边漂。
-if ./tools/validate.sh --probe-all >/dev/null 2>&1; then
-  echo "OK（$(ls decisions/ADR-*.md | wc -l | tr -d ' ') 个 ADR）"
+if [ "$FAST_MODE" = 1 ]; then
+  echo "跳过（快层 · 慢层下次在 pre-push/CI 跑）"
+elif [ "$_pa_rc" = 0 ]; then
+  echo "OK（$(ls decisions/ADR-*.md | wc -l | tr -d ' ') 个 ADR · probe-all 只跑了一次）"
 else
   echo "★ RED"; fail=1
 fi
@@ -124,3 +157,4 @@ step "5 · spec-lint（必须真实可红）"; if ./tools/spec-lint.sh docs/PROT
 echo
 if [ "$fail" = 0 ]; then echo "CI-LOCAL: 全绿（9 项；其中 4b=unproven，不计入判据绿数）⇒ GitHub Actions 会过（不再有失败通知）"; exit 0; fi
 echo "CI-LOCAL: 有步骤红 ⇒ **不要推送**（推送会触发失败通知）" >&2; exit 1
+rm -f "$_pa" 2>/dev/null || true

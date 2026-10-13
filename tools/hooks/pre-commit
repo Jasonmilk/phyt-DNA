@@ -69,7 +69,7 @@ fi
 
 # ── ④ 门禁：ci-local（扫描 + spec-lint + 心跳 + 基线 —— 与 CI 同款）
 if [ "$WIP" = 0 ]; then
-  ci_out=$(bash tools/ci-local.sh 2>&1); ci_rc=$?
+  ci_out=$(bash tools/ci-local.sh --fast 2>&1); ci_rc=$?
   if [ "$ci_rc" != 0 ]; then
     echo "⛔ ci-local 未全绿 ⇒ 拒绝提交（红不许溜出本机 —— 第八/九次红着推的根因）" >&2
     printf '%s\n' "$ci_out" | grep -E '★ RED|CI-LOCAL|违规' | head -6 | sed 's/^/   /' >&2
