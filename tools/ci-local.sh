@@ -63,6 +63,10 @@ step "2 · spec-lint";  if ./tools/spec-lint.sh docs/PROTECTION.md >/dev/null 2>
 #   快层（每次提交）：`0/1 清单与基线` · `2 spec-lint` · `3b 快照与逃生门账` · **`4 全仓违规扫描（必跑！内容违规最后一道）`**
 #   ★ 第四条硬约束（人类 2026-10-13）：**改动落在 tools/ · .github/ · examples/ · fixtures/ ⇒ 快层放大为全量**
 #     （改引擎只跑一个门 = 第八次红推同族：漏重基线/漏跑全仓 ⇒ 降本在此点收益为负）。
+# ★ ⑪（2026-10-13）：**核心钩子未启用 ⇒ 具名提示**（不静默、不失败 —— CI 里本来就没有钩子）
+if [ -z "$(git config core.hooksPath || true)" ]; then
+  echo "  ★ 具名提示: 核心钩子未启用（本克隆无 pre-commit / pre-push）⇒ 启用：git config core.hooksPath tools/hooks"
+fi
 FAST_MODE=0
 [ "${1:-}" = "--fast" ] && FAST_MODE=1
 if [ "$FAST_MODE" = 1 ]; then
@@ -134,16 +138,16 @@ fi
 
 step "4 · 全仓违规扫描（timing:post）"
 f4=0
-# ★ ⑦补（2026-10-13）：**原来是一文件一次调用**（156 文件 × 引擎启动 ≈ 85s —— 实测快层 91s 的真凶）
-#   ⇒ 改为**一次喂全部路径**（引擎本来就接受 paths 数组）⇒ 实测 **1s**。语义不变：同样的门 × 同样的文件。
-_f4p=$(git ls-files '*.md' '*.py' '*.sh' '*.yml' | sed 's/.*/"&"/' | paste -sd, -)
-_out4=$(printf '{"tool":"Write","paths":[%s]}\n' "$_f4p" | ./tools/validate.sh --timing post 2>&1); _rc4=$?
-if [ "$_rc4" = 0 ]; then
-  echo "OK（$(git ls-files '*.md' '*.py' '*.sh' '*.yml' | wc -l | tr -d ' ') 文件 · 一次调用）"
-else
-  printf '%s\n' "$_out4" | grep -E '违规' | head -4 | sed 's/^/       /'
-  echo "      ★ RED"; fail=1
-fi
+# ★ ⑫（2026-10-13 · **回退**）：批量调用**不等价** —— 实测 `paths` 数组一大，引擎返回 `{"scanned":0,"hits":0}`
+#   （20 文件 681 字节即 `scanned:0`；3 文件才是 `scanned:4`）⇒ **批量版会"一个门都不扫"**，
+#   而它看起来只是"变快了"（**幽灵降本**）。**正确优先** ⇒ 回退为**逐文件**（原版）。
+#   批量价等价性未证 ⇒ 已登 DEBTS（带证据 + revisit-on）。
+f4=0
+for f in $(git ls-files '*.md' '*.py' '*.sh' '*.yml'); do
+  printf '{"tool":"Write","paths":["%s"]}\n' "$f" | ./tools/validate.sh --timing post >/dev/null 2>&1
+  [ $? = 2 ] && { echo; echo "      ★ 违规: $f"; f4=1; }
+done
+[ "$f4" = 0 ] && echo "OK（逐文件 · 等价性已证）" || { echo "      ★ RED"; fail=1; }
 [ "$f4" = 0 ] && echo "OK" || { echo "      ★ RED"; fail=1; }
 step "4b · 全池一致性（按文件判会漏的那些）"
 if bash tools/check-pool.sh >/dev/null 2>&1; then echo "OK（unproven · 待夹具：能红未证）"; else echo "★ RED"; bash tools/check-pool.sh 2>&1 | head -4 | sed 's/^/       /'; fail=1; fi

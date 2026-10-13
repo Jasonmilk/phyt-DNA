@@ -459,7 +459,7 @@ Hooks live in `tools/hooks/`, **not** in `.git/hooks/`, and `core.hooksPath` is 
 runs **no** hook at all (measured 2026-10-12). One line fixes it:
 
 ```bash
-git config core.hooksPath tools/hooks
+git config core.hooksPath tools/hooks    # 启用**全部**核心钩子：pre-commit（快层）+ pre-push（慢层）
 ```
 
 To bypass the scan on purpose (mid-state commits), use an **environment variable** — not a `[wip]` tag in the message:
@@ -469,5 +469,16 @@ git cannot see the pending message inside `pre-commit`, so a tag would only refl
 PHYT_WIP=1 git commit -m "…"
 ```
 ```bash
-git config core.hooksPath tools/hooks
+git config core.hooksPath tools/hooks    # 启用**全部**核心钩子：pre-commit（快层）+ pre-push（慢层）
 ```
+
+### What the two hooks do (adopter pack · 2026-10-13)
+
+| hook | layer | runs | when |
+|---|---|---|---|
+| `pre-commit` | **fast** | `0/1 manifest+baseline` · `2 spec-lint` · `3b escape-ledger` · **`4 whole-repo scan (always)`** | every commit |
+| `pre-push` | **slow** | **full** `ci-local` = fast + `3 heartbeat` · `5 spec-lint-red-able` · `5a hook_test` | every push · CI · manual |
+
+**Not enabled ⇒ nothing runs**: `core.hooksPath` is **per-clone** (measured 2026-10-13) — run the one-liner above, or
+`bash tools/ci-local.sh` manually. Layers are **enforcement by touched surface**, not just time saving:
+`tools/ .github/ examples/ fixtures/` ⇒ the fast layer escalates to **full**.
