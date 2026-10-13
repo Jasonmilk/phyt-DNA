@@ -26,7 +26,8 @@ if [ "${PHYT_WIP:-0}" = 1 ]; then
   if [ "$pre_rc" = 0 ]; then
     echo "  [pre-commit] 逃生门未被使用（ci-local 本来就绿）"
   else
-    step=$(printf '%s\n' "$pre" | grep -E '★ RED' -B1 | grep -E '^  [0-9]' | head -1 | sed 's/^ *//')
+    #   ★ 理由必须取【失败那一步】的名字：取 `★ RED` **前一行**里形如 `N · 步骤名` 的那行（不是任意一行）
+    step=$(printf '%s\n' "$pre" | grep -B1 '★ RED' | grep -E '^[[:space:]]*[0-9]+ · ' | head -1 | sed 's/^ *//')
     #   ★ 分类器只看【真正的违规行】（`★ 违规:`），不看【步骤名】（"全仓违规扫描"是步名 ⇒ 永远在场 ⇒ 会把一切判成内容违规）
     if printf '%s\n' "$pre" | grep -qE '★ 违规:'; then
       echo "⛔ 内容违规（**不是门坏了**）⇒ 逃生门不适用（PHYT_WIP 只对'门自身坏'有效）" >&2
