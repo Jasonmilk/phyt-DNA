@@ -31,3 +31,14 @@
 | `d-phyt-probe-fixture` | phyt-DNA | 未做 | 2026-10-13 | ⬜ 待做 | 2026-10-20 | **探针夹具只复制 `$F` 一个文件** ⇒ 判据体若读同目录的别的受管文件（如 `decisions/INDEX.md`）就会"跑不起来"⇒ 记 `unmeasurable`。**恢复命令**：改探针的临时目录为**同形目录**（复制判据引用的所有受管文件），再用一个"读同目录文件"的判据体验证它不再 unmeasurable | Pi |
 | `d-phyt-matrix` | phyt-DNA | 未做 | 2026-10-13 | ⬜ 待做 | 2026-10-20 | **rc 四码 × 四调用方矩阵"落在 ADR 里"**（现在只在对话/提交信息里）。**恢复命令**：把矩阵表补进 `ADR-20261011-failure-must-be-named-where-machines-can-read` 的 rc 契约段（含：`DNA.md` 是 **pre** 时段的 rc=2 数据样本这一口径） | Pi |
 | `d-phyt-matrix-impl` | phyt-DNA | 未做 | 2026-10-13 | ⬜ 待做 | 2026-10-20 | **把 rc 矩阵落成一条正经门（supersede 冻结体）**：本轮试过，连出三红（新条 spec-lint ×2 + 冻结体重基线反了）⇒ **按止损撤回**。恢复命令：立 `hard: true` 门 + 齐套元数据（三要素须用真 task 行/真 sha）+ 自检判据体 + 夹具；**且在动 `ADR-20261011` 前先跑 `tools/frozen-body.sh --write` 重基线** | Pi |
+| `d-phyt-timing-semantics` | phyt-DNA | 未做/分析 | 2026-10-13 | ⬜ 待做 | 2026-10-20 | **不同时段的门：入参语义不同（本轮重大发现）** —— `pre` 门吃的是**工具调用**（`file_path`/`command`），`post` 门吃的是**文件内容**。实测：把 step 4 的 `--timing post` 去掉（想覆盖 pre-only 门）⇒ **一次冤红 7+ 个文件**（`DNA.md`/`VISION.md`/各 ADR）⇒ 按文件扫 pre 门是**范畴错误**。**恢复命令**：`printf '{"tool":"Write","paths":["DNA.md"]}' | ./tools/validate.sh --timing pre`（rc=2）vs `--timing post`（rc=0）⇒ 两者的**入参**分别是工具调用与文件内容。 |
+
+| `d-phyt-coverage` | phyt-DNA | 未做/分析 | 2026-10-13 | 🟨 部分已做 | 2026-10-20 | **配对覆盖断言（A）**：门 × 调用方必须在账本里被真判过 —— **但"判过且绿"不落账**（账本只有违规/跳过/夹具）⇒ 按账本判会**冤红**（实测红 3+ 门）。**改判**：静态可达性（`hard` 门 × `applies-to` 命中 ≥1 受管文件）= **本轮已实现且绿（无死门）**；**未做**：让"绿"也可见（每次运行追加一行 **run-summary**：`kind:scan` + 文件数 + 触达门数）⇒ 那时"真判过"才可从账本读。**恢复命令**：`bash tools/ci-local.sh` 看 `OK（配对覆盖…）`。 |
+
+| `d-phyt-edit-probe-same-batch` | phyt-DNA | 未做/分析 | 2026-10-13 | ⬜ 待做 | 2026-10-20 | **A2 编辑与探针不得同批** ⇒ 机检：probe 步骤前必须 dirty=0 且清单/基线已重生。**现状**：清单/基线**已是机检**（第 0/1 步，本轮抓我两次）；`dirty=0` 那一半**未做**（全量若跑在 dirty 上，读数与物件不同批）。**恢复命令**：全量运行末尾打印 `读数与物件不同批: dirty=N`（具名可 grep），并在 pre-push/CI 上要求 dirty=0。 |
+
+| `d-phyt-git-three` | phyt-DNA | 未做/分析 | 2026-10-13 | 🟨 部分已做 | 2026-10-20 | **E git 三态三断言**：① `git ls-files` 的文件必须在工作区存在（**本轮已实现**：删了没 `add` ⇒ 具名红）② **禁裸 `git checkout -- <file>`**（从**索引**恢复 ⇒ 会把 stage 过的版本搬回工作区；应用 `git checkout HEAD -- <file>`）③ **重基线必须具名**（`frozen-body.sh --write --rebaseline <ADR> "理由"`；`--write` 拒绝静默重记）。**恢复命令**：三条各写反例（②③未做）。 |
+
+| `d-phyt-reuse-check` | phyt-DNA | 未做/分析 | 2026-10-13 | ⬜ 待做 | 2026-10-20 | **G 新机制写一行【复用检查】**：这轮的新机制必须写清"是否在**复用**既有能力"。本轮实例：① `safe_edit.patch(old,new,must_contain_new,expect_old_count)` **早就存在**（我却手搓 replace ⇒ 两次翻车）② 引擎的 `paths` JSON 入参**早就支持批量**（只是批量语义不等价）③ `--rebaseline` **早就有**（我却在改冻结体正文）。**恢复命令**：加机制前先 `grep` 既有工具（`safe_edit.py` / `validate.sh` / `frozen-body.sh`）的同名能力。 |
+
+| `d-phyt-five-class-debt-col` | phyt-DNA | 未做/分析 | 2026-10-13 | ⬜ 待做 | 2026-10-20 | **C 五分类增一栏【受已知债务影响的门（门名 + 债务 id）】** + `DEBTS 标"不能证"却算 proven ⇒ 具名红`。**现状**：五分类（proven/腐化/基线红/待夹具/另器）已有读数；**"受债务影响"这一栏未做**。**恢复命令**：在心跳（第 3 步）里对 `blocked-by` 的债务行逐条点名，并断言它们**不在** proven 计数里。 |
