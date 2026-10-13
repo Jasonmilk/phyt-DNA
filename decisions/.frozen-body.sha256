@@ -22,6 +22,7 @@ f26a98a3cb04497b3c4334ddbb4f0b6dd3f68547dde45ca54f4d544a3c297fad  ADR-20261009-s
 d324a3d6233a6de68694cfb3e253e90c113e4b4e7c2429078e5983ac509e1580  ADR-20261011-derivation-must-carry-origin.md
 67af532f9e29ef5b580273cd56e9e2855b52fb02cffffca8de031959eb9194f9  ADR-20261011-dna-modification-first-exercise.md
 0859b004ef4d264d41eb9893c56937d6f06682a272de613dadeb2c2e407f82a6  ADR-20261011-failure-must-be-named-where-machines-can-read.md
+# rebaseline ADR-20261011-failure-must-be-named-where-machines-can-read.md 理由: 回退到已提交正文（本轮 supersede 尝试撤回矩阵段）；正文=rc 契约本体
 bafc8a095eb14a4975e9dd861454f87e750e2ed57e8d3132a582fb0859bdfe03  ADR-20261011-frozen-body-immutable.md
 ef6c49f99683f565e9cfab22a2e933e912eceab3d3f8a1ee78dcbd816975ac8d  ADR-20261011-layer1-budget-is-attention-not-maintenance.md
 bbd12d8b7b22bbf4c91cbc339571a08cf0b48972ffbc58f7c40a54e69e17a626  ADR-20261011-layer1-threshold-calibrated-by-premiere.md
