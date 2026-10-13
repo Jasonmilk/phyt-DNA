@@ -13,7 +13,10 @@ set -uo pipefail
 _d=$(dirname "$0"); [ -f "$_d/paths.env" ] && . "$_d/paths.env"
 DEC_DIR="${PHYT_DECISIONS:-decisions}"
 FIX_DIR="${PHYT_FIXTURES:-fixtures}"
-LED_DIR="${PHYT_LEDGER:-ledger}"
+# ★ 守卫修（2026-10-13）：**账本路径必须绝对锚定** —— 此前 `LED_DIR="${PHYT_LEDGER:-ledger}"` 是**相对**的，
+#   于是"在别的 cwd 里跑判据"会把行写进 `<那个 cwd>/ledger/hits-XXXX.jsonl`（实测 `/tmp/tmp.*/ledger/hits-2026.jsonl` **十几份**、1174–1534 行）。
+#   ⇒ 单一写入点 + 绝读改写 + **cwd 无关**。
+LED_DIR="${PHYT_LEDGER:-$(git rev-parse --show-toplevel 2>/dev/null || echo .)/ledger}"
 # ★ trap 用的临时态一律【全局】（trap 在脚本退出时触发，local 那时已不在作用域）
 BAK=""; BAK2=""; TMP=""
 # ★ 轻件 d（2026-10-09）：把"我用的布局"说出来 —— **但只在它与约定不同时才响**。

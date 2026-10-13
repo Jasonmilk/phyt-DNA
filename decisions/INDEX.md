@@ -1,3 +1,4 @@
+validate: 布局 decisions=decisions fixtures=fixtures ledger=/Users/jason/Developer/Jasonmilk/phyt-DNA/ledger （非约定布局）
 | 闸门 id | applies-to | 正例 inject.sh | 反例 counter.sh | timing |
 |---|---|---|---|---|
 | `ADR-20261009-DEPRECATE-must-exist` | `["DEPRECATE.md"]` | yes | yes | post |

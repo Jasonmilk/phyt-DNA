@@ -14,10 +14,12 @@ set -uo pipefail
 # ⚠️ 第一版我改成 PHYT_LEDGER=<临时目录> —— 那是错的：**判据读临时账本，而夹具仍写 ${F}（真实账本）**
 # ⇒ **注入目标 ≠ 检测目标**（第 29 条 / P5 —— 我一直在拿这条管别人）。实测它让 replay 闸门假红。
 # ⇒ 正确做法与本仓夹具的惯例一致：**备份 + 还原**，不改读取路径。
-LED="ledger/hits-$(date +%Y).jsonl"
-LED_BAK="$(mktemp)"
-cp "$LED" "$LED_BAK" 2>/dev/null || true
-trap 'cp "$LED_BAK" "$LED" 2>/dev/null; rm -f "$LED_BAK"' EXIT
+LED="$(git rev-parse --show-toplevel)/ledger/hits-$(date +%Y).jsonl"
+# ★ 守卫修（2026-10-13 · 阻断项 1 的根因）：**删掉"退出时回写账本"的 trap** ——
+#   原设计想的是"本地跑一遍别把账本弄脏"，但它**把本次运行的所有行（含 run 摘要！）在退出时整个擦掉**：
+#   实测脚本内 `wc -l=1539 · 末行 source="ci-local"`，出脚本后 `1538 · sha1 改了 · 末行 source=空`。
+#   ⇒ 账本是**追加型**：**单一写入点 + 原子追加（`>>`）+ 绝不读改写**。
+#   要"本地不脏账本"请显式改路径（`PHYT_LEDGER=/tmp/x bash tools/ci-local.sh`），而不是悄悄回写。
 fail=0
 # ★ 定义必须先于调用（2026-10-11 实测）：`step` 原定义在第 37 行、第 32 行就被调用 ⇒
 #   `step: command not found` ⇒ 第一行输出缺失 ⇒ 且**掩盖了 step 0 的真实红灯**（引擎清单过期）。
@@ -165,7 +167,7 @@ for f in $(git -c core.quotePath=false ls-files '*.md' '*.py' '*.sh' '*.yml'); d
 done
 # ★ A-5（2026-10-13）：**每次运行落一行 run 摘要** —— "判过且绿"第一次可读（此前它不落账 ⇒ 覆盖率只能靠猜、判据只能靠穷举）。
 #   消费端规则（见 DEBTS d-phyt-run-summary）：**只有 judged-green 计入 proven**；`skipped-by-cache` 具名且缓存失效可机检；其余不计入。
-_led="ledger/hits-$(date +%Y).jsonl"
+_led="${PHYT_LEDGER:-$(git rev-parse --show-toplevel)/ledger}/hits-$(date +%Y).jsonl"   # ★ 绝对锚定 + 尊重 PHYT_LEDGER（同一写入点）
 _uni=$(printf '%s' "$_jids" | tr ' ' '\n' | grep . | sort -u | tr '\n' ' ' | sed 's/ *$//')
 _ng=$(printf '%s' "$_uni" | wc -w | tr -d ' ')
 _led0=$(wc -l < "$_led" | tr -d ' ')
