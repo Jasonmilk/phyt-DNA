@@ -143,7 +143,7 @@ f4=0
 #   而它看起来只是"变快了"（**幽灵降本**）。**正确优先** ⇒ 回退为**逐文件**（原版）。
 #   批量价等价性未证 ⇒ 已登 DEBTS（带证据 + revisit-on）。
 f4=0
-for f in $(git ls-files '*.md' '*.py' '*.sh' '*.yml'); do
+for f in $(git -c core.quotePath=false ls-files '*.md' '*.py' '*.sh' '*.yml'); do   # ★ G：不依赖宿主 config（CJK 文件名不再被加引号）
   printf '{"tool":"Write","paths":["%s"]}\n' "$f" | ./tools/validate.sh --timing post >/dev/null 2>&1
   [ $? = 2 ] && { echo; echo "      ★ 违规: $f"; f4=1; }
 done
