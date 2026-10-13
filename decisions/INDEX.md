@@ -20,3 +20,4 @@
 | `ADR-20261011-layer1-threshold-calibrated-by-premiere` | `["PLAN.md", "RNA.md"]` | yes | yes | post |
 | `ADR-20261011-supersede-must-be-paired` | `["decisions/ADR-*.md"]` | yes | yes | post |
 | `ADR-20261012-ledger-new-lines-parseable-and-referenced` | `["ledger/hits-*.jsonl"]` | yes | yes | post |
+| `ADR-20261013-protocol-named-files-must-exist` | `["RNA.md", "DNA.md", "PLAN.md", "PLAN-PAUSED.md", "docs/MULTIMETER.md"]` | yes | yes | post |
