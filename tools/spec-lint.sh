@@ -341,12 +341,19 @@ else grn "已标注写回站点 = ${_nw}（不含检查器自身；数字变化 
 
 # ★ C'（2026-10-14）：**GNU 专属特性 ⇒ 必须标注**（判据只许依赖：shell 内建 + git + python3 + 可移植 grep/sed 基本语法）
 #   为什么：`awk '\s'`/`grep '\s'` 在 **BSD 是死模式（静默永不命中）**、`grep -P` 在 BSD rc=2 ⇒ **门会静默空转**（比红更坏）。
-# ★ C' 的**模式行自身**用「GNU 专属（理由：检查器自身的模式文本）」标注（有了标注就不必排除自身 ⇒ 不留盲区）
-# GNU 专属（理由：下面这一行是**检查器自身的模式文本**，本身不在 BSD 上执行；标注放独立行，避免注释吞掉续行反斜杠）
-_gnu=$(grep -rnE 'grep[^|]*-P\b|sed[^|]*-r\b|sort[^|]*-V\b|readlink[^|]*-f\b|xargs[^|]*-r\b|mktemp[^;)]*-p\b|\\s|gawk\b|gensub\(|asort\(|find[^|]*-printf|--wildcards' tools/*.sh examples/*/*.sh decisions/*.md .github/workflows/*.yml docs/*.md docs/*/*.md 2>/dev/null \
+GNU_PAT='grep[^|]*-P\b|sed[^|]*-r\b|sort[^|]*-V\b|readlink[^|]*-f\b|xargs[^|]*-r\b|mktemp[^;)]*-p\b|\\s|gawk\b|gensub\(|asort\(|find[^|]*-printf|--wildcards'   # GNU 专属（理由：这是检查器自身的模式文本，本身不在 BSD 上执行；抽成变量以免注释吞掉续行）
+_gnu=$(grep -rnE "$GNU_PAT" tools/*.sh examples/*/*.sh decisions/*.md .github/workflows/*.yml docs/*.md docs/*/*.md 2>/dev/null \
        | grep -vE ':[0-9]+: *#'  | grep -v 'timeout=' | grep -v 'GNU 专属' \
-       | grep -vE 're\.(compile|finditer|search|match|sub|fullmatch)|import re|python3 -c' \   # python 的空白类元字符合法，非 GNU 专属
+       | grep -vE 're\.(compile|finditer|search|match|sub|fullmatch)|import re|python3 -c' \
        | grep -v '^tools/regex-census.sh:' || true)
+# ★ C' 常驻自检（2026-10-14 · 阻断项 1）：**注入必红** —— 用 TMP 样本验证"门真在扫"（否则它的 GRN 是幽灵绿；本轮就真发生过一次）
+_self=$(mktemp /tmp/gnu-self.XXXXXX)
+printf 'grep -E "^\\s*X" f\n' > "$_self"   # GNU 专属（理由：这是自检样本，本身就是要被命中的字符串）
+_selfn=$(grep -cE "$GNU_PAT" "$_self" 2>/dev/null || echo 0)
+rm -f "$_self"
+if [ "${_selfn:-0}" -lt 1 ]; then red "C' 门自检失败：TMP 注入的 GNU 专属样本**未被命中** ⇒ 门是死的（它的 GRN 会是幽灵绿）"; fail=1
+else grn "C' 门自检：TMP 注入样本命中（门真在扫）"; fi
+
 if [ -n "$_gnu" ]; then red "未标注的 GNU 专属特性（BSD 会静默空转/报错；要么改可移植写法，要么同行标注「GNU 专属（理由…）」）"; printf '%s\n' "$_gnu" | head -5 | sed 's/^/      /' >&2; fail=1
 else grn "GNU 专属特性：0 处（判据只依赖 shell 内建 + git + python3 + 可移植 grep/sed）"; fi
 

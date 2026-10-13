@@ -39,7 +39,7 @@ wrongN.jsonl         N=2  链1: RED 非run行,elapsed_ms<=0,…   链2: PASS
 
 **两链措辞不同 ⇒ 逻辑确实不同**（"坏JSON/空行" vs "该行不是合法 JSON"；"elapsed_ms<=0" vs "elapsed_ms 非正整数"）。
 **共享环境依赖 = `python3`**（可移植所需，**非共享逻辑**）。
-**GNU CI 列 = unmeasurable（rc=4）**：本机 **无 GNU 工具**（`gsed`/`gawk`/`ggrep` 全无）⇒ **不填 0**；可移植性由"只用 `[[:space:]]` 类可移植写法"保证。
+**GNU CI 列 = unmeasurable（rc=4）**：本机 **无 GNU 工具**（`gsed`/`gawk`/`ggrep` 全无）⇒ **不填 0**；可移植性由"只用 `[[:space:]]` 类可移植写法"保证。  <!-- GNU 专属（理由：此处只是在列举"被检查的工具名"，不是使用它们） -->
 
 ## B') 审计：自洽表 + 应有表（命令派生）
 
