@@ -142,12 +142,35 @@ f4=0
 #   （20 文件 681 字节即 `scanned:0`；3 文件才是 `scanned:4`）⇒ **批量版会"一个门都不扫"**，
 #   而它看起来只是"变快了"（**幽灵降本**）。**正确优先** ⇒ 回退为**逐文件**（原版）。
 #   批量价等价性未证 ⇒ 已登 DEBTS（带证据 + revisit-on）。
-f4=0
-for f in $(git -c core.quotePath=false ls-files '*.md' '*.py' '*.sh' '*.yml'); do   # ★ G：不依赖宿主 config（CJK 文件名不再被加引号）
+# ★ F-b（2026-10-13）：**四码必须区分**（rc 契约见 ADR-20261011-failure-must-be-named…）
+#   0=判过 · 2=判出违规 ⇒ 红 · 4=本次无门可判（逐文件常见，不计）· **其他非零=引擎异常 ⇒ 红**（此前一律忽略 ⇒ 引擎坏了会静默通过）
+f4=0; f4v=""; judged=0; bad=0
+for f in $(git -c core.quotePath=false ls-files '*.md' '*.py' '*.sh' '*.yml'); do
   printf '{"tool":"Write","paths":["%s"]}\n' "$f" | ./tools/validate.sh --timing post >/dev/null 2>&1
-  [ $? = 2 ] && { echo; echo "      ★ 违规: $f"; f4=1; }
+  rc=$?
+  case "$rc" in
+    0) judged=$((judged+1)) ;;
+    2) f4=1; f4v="$f4v $f" ;;
+    4) : ;;
+    *) bad=$((bad+1)); echo "      ★ 引擎异常 rc=$rc（非 0/2/4）于 $f"; f4=1 ;;
+  esac
 done
-[ "$f4" = 0 ] && echo "OK（逐文件 · 等价性已证）" || { echo "      ★ RED"; fail=1; }
+if [ "$judged" = 0 ]; then
+  echo "      ★ RED: **覆盖面为零** —— 逐文件扫完但无一门命中（judged=0）⇒ 不报绿"; f4=1
+fi
+[ "$f4" = 0 ] && echo "OK（逐文件 · 判过 $judged · 无门可判 $(( $(git -c core.quotePath=false ls-files '*.md' '*.py' '*.sh' '*.yml' | wc -l | tr -d ' ') - judged ))）" \
+  || { for x in $f4v; do echo "      ★ 违规: $x"; done; echo "      ★ RED"; fail=1; }
+
+# ★ F-b 机器判据：**ADR 声明的码 == 引擎实际返回的码**（声明与行为不许分家）
+_adr="$DEC_DIR/ADR-20261011-failure-must-be-named-where-machines-can-read.md"
+_decl=$(grep -oE '^\| `[0-9]+`' "$_adr" | grep -oE '[0-9]+' | sort -n | paste -sd, -)
+_eng=""
+printf '{"tool":"Write","paths":["README.md"]}\n' | ./tools/validate.sh --timing post >/dev/null 2>&1; _eng="$_eng $?"
+printf '{"tool":"Write","paths":["a" "b"]}\n'   | ./tools/validate.sh --timing post >/dev/null 2>&1; _eng="$_eng $?"
+printf '{"tool":"Write","paths":[]}\n'          | ./tools/validate.sh --timing post >/dev/null 2>&1; _eng="$_eng $?"
+_eng=$(echo $_eng | tr ' ' '\n' | sort -n | uniq | paste -sd, -)
+if [ "${_decl:-?}" = "${_eng:-?}" ]; then echo "OK（rc 契约：ADR 声明 {$_decl} == 引擎实返 {$_eng}）"
+else echo "      ★ RED: rc 契约分家 —— ADR 声明 {${_decl:-空}} != 引擎实返 {${_eng:-空}}"; fail=1; fi
 [ "$f4" = 0 ] && echo "OK" || { echo "      ★ RED"; fail=1; }
 step "4b · 全池一致性（按文件判会漏的那些）"
 if bash tools/check-pool.sh >/dev/null 2>&1; then echo "OK（unproven · 待夹具：能红未证）"; else echo "★ RED"; bash tools/check-pool.sh 2>&1 | head -4 | sed 's/^/       /'; fail=1; fi
