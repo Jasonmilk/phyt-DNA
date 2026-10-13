@@ -289,7 +289,7 @@ if [ -z "$paths" ]; then
   echo "★ 具名跳过: 本次扫描没有任何路径（scanned=0）⇒ 不判、不报绿" >&2
   exit 4
 fi
-scanned=0; skips=0; skips_named=""; hits=""
+scanned=0; skips=0; skips_named=""; hits=""; judged_ids=""; blocked_ids=""
 while read -r id; do
   [ -n "$id" ] || continue
   if [ -n "$only_timing" ]; then
@@ -321,6 +321,8 @@ while read -r id; do
             out="[check 失败] 判据 ${id} 自己没能运行 —— 静默失败=伪证: $(printf '%s' "$out" | head -1)"
           fi
         fi
+        # ★ A-5（2026-10-13）：**逐门判定来源** —— "判过且绿"必须可读（此前它不落任何账 ⇒ 覆盖率只能靠猜）
+        if [ -z "$out" ]; then judged_ids="$judged_ids $id"; else blocked_ids="$blocked_ids $id"; fi
         [ -n "$out" ] && hits="$hits|$id:$out"
         break
       fi
@@ -336,7 +338,8 @@ if [ "$scanned" = 0 ]; then
   echo "★ 具名跳过: 给了路径但**无一门命中**（scanned=0）⇒ 覆盖面为零，不报绿" >&2
   exit 4
 fi
-if [ -z "$hits" ]; then printf '{"verdict":"pass","scanned":%d,"hits":0,"skipped":%d}\n' "$scanned" "$skips"; exit 0; fi
-printf '{"verdict":"block","scanned":%d,"hits":%d,"skipped":%d,"rule_id":"%s"}\n' "$scanned" "$n_hits" "$skips" "$first"
+_jid=$(printf '%s' "$judged_ids" | sed 's/^ *//'); _bid=$(printf '%s' "$blocked_ids" | sed 's/^ *//')
+if [ -z "$hits" ]; then printf '{"verdict":"pass","scanned":%d,"hits":0,"skipped":%d,"judged":"%s"}\n' "$scanned" "$skips" "$_jid"; exit 0; fi
+printf '{"verdict":"block","scanned":%d,"hits":%d,"skipped":%d,"rule_id":"%s","judged":"%s","blocked":"%s"}\n' "$scanned" "$n_hits" "$skips" "$first" "$_jid" "$_bid"
 echo "违规: $hits" >&2
 exit 2

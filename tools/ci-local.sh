@@ -149,9 +149,13 @@ f4=0
 # ★ F-b（2026-10-13）：**四码必须区分**（rc 契约见 ADR-20261011-failure-must-be-named…）
 #   0=判过 · 2=判出违规 ⇒ 红 · 4=本次无门可判（逐文件常见，不计）· **其他非零=引擎异常 ⇒ 红**（此前一律忽略 ⇒ 引擎坏了会静默通过）
 f4=0; f4v=""; judged=0; bad=0
+_jids=""; _nfiles=0
 for f in $(git -c core.quotePath=false ls-files '*.md' '*.py' '*.sh' '*.yml'); do
-  printf '{"tool":"Write","paths":["%s"]}\n' "$f" | ./tools/validate.sh --timing post >/dev/null 2>&1
+  _nfiles=$((_nfiles+1))
+  _o=$(printf '{"tool":"Write","paths":["%s"]}\n' "$f" | ./tools/validate.sh --timing post 2>/dev/null)
   rc=$?
+  _j=$(printf '%s' "$_o" | sed -n 's/.*"judged":"\([^"]*\)".*/\1/p')
+  [ -n "$_j" ] && _jids="$_jids $_j"
   case "$rc" in
     0) judged=$((judged+1)) ;;
     2) f4=1; f4v="$f4v $f" ;;
@@ -159,10 +163,21 @@ for f in $(git -c core.quotePath=false ls-files '*.md' '*.py' '*.sh' '*.yml'); d
     *) bad=$((bad+1)); echo "      ★ 引擎异常 rc=${rc}（非 0/2/4）于 ${f}"; f4=1 ;;
   esac
 done
+# ★ A-5（2026-10-13）：**每次运行落一行 run 摘要** —— "判过且绿"第一次可读（此前它不落账 ⇒ 覆盖率只能靠猜、判据只能靠穷举）。
+#   消费端规则（见 DEBTS d-phyt-run-summary）：**只有 judged-green 计入 proven**；`skipped-by-cache` 具名且缓存失效可机检；其余不计入。
+_led="ledger/hits-$(date +%Y).jsonl"
+_uni=$(printf '%s' "$_jids" | tr ' ' '\n' | grep . | sort -u | tr '\n' ' ' | sed 's/ *$//')
+_ng=$(printf '%s' "$_uni" | wc -w | tr -d ' ')
+_led0=$(wc -l < "$_led" | tr -d ' ')
+printf '{"kind":"run","ts":"%s","source":"ci-local","caller":"ci-local","timing":"post","files":%d,"judged_gates":%d,"judged_ids":"%s","verdicts":{"pass":%d,"block":%d,"other":%d}}\n' "$(date '+%Y-%m-%dT%H:%M:%S%z')" "$_nfiles" "$_ng" "$_uni" "$judged" "$f4" "$bad" >> "$_led"
+_led1=$(wc -l < "$_led" | tr -d ' ')
+# ★ A-6（2026-10-13）：**读数声明来源** + **stdout ⇄ 账本一致性断言**（摘要行必须真落地，否则读数无出处）
+echo "  读数来源: stdout（本行以上）+ 账本 ${_led}（追加 $(( _led1 - _led0 )) 行 run 摘要 · 第 ${_led1} 行）"
+[ $(( _led1 - _led0 )) -eq 1 ] || { echo "      ★ RED: run 摘要未落地（期望 +1 行，实得 +$(( _led1 - _led0 ))）⇒ 读数无出处"; fail=1; }
 if [ "$judged" = 0 ]; then
   echo "      ★ RED: **覆盖面为零** —— 逐文件扫完但无一门命中（judged=0）⇒ 不报绿"; f4=1
 fi
-[ "$f4" = 0 ] && echo "OK（逐文件 · 判过 $judged · 无门可判 $(( $(git -c core.quotePath=false ls-files '*.md' '*.py' '*.sh' '*.yml' | wc -l | tr -d ' ') - judged ))）" \
+[ "$f4" = 0 ] && echo "OK（逐文件 · 判过 $judged · 无门可判 $(( _nfiles - judged )) · 逐门来源已入账 ${_ng} 门）" \
   || { for x in $f4v; do echo "      ★ 违规: $x"; done; echo "      ★ RED"; fail=1; }
 
 # ★ F-b 机器判据：**ADR 声明的码 == 引擎实际返回的码**（声明与行为不许分家）

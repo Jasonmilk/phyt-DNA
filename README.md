@@ -482,3 +482,19 @@ git config core.hooksPath tools/hooks    # 启用**全部**核心钩子：pre-co
 **Not enabled ⇒ nothing runs**: `core.hooksPath` is **per-clone** (measured 2026-10-13) — run the one-liner above, or
 `bash tools/ci-local.sh` manually. Layers are **enforcement by touched surface**, not just time saving:
 `tools/ .github/ examples/ fixtures/` ⇒ the fast layer escalates to **full**.
+
+### ★ The **pre face** has exactly one entry (2026-10-13)
+
+| face | gates | only entry | covered by |
+|---|---|---|---|
+| **post** (file content) | 22 `hard` gates | `tools/ci-local.sh` step 4 (per-file, `--timing post`) | pre-commit hook · **CI** (so CI is real) |
+| **pre** (tool calls: `file_path`/`command`) | 2 `hard` gates | `examples/claude-code/hooks/pretooluse-gate.sh` | **nothing else** |
+
+**Why this matters**: `git commit` via **bash / `git apply` / merge / hand-edit** never passes the execute gate ⇒ the pre face is *silent* there.
+A **fresh clone has no `core.hooksPath`** (measured) ⇒ the adopter's default is *no gate at all*. See `DEBTS.md` `d-phyt-pre-gap-a/b/c`.
+**Restore-command for the execute gate's own receipts** (not borrowed from `hook_test.sh`):
+```bash
+printf '{"tool_name":"Bash","tool_input":{"command":"rm -rf /tmp/x"}}' | bash examples/claude-code/hooks/pretooluse-gate.sh; echo "rc=$? (expect 2)"
+printf '{"tool_name":"Bash","tool_input":{"command":"git push --force origin main"}}' | bash examples/claude-code/hooks/pretooluse-gate.sh; echo "rc=$? (expect 2)"
+printf '{"tool_name":"Write","bad":' | bash examples/claude-code/hooks/pretooluse-gate.sh; echo "rc=$? (expect 2, fail-closed)"
+```
