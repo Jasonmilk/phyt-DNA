@@ -67,3 +67,10 @@
 ### schema 增栏：【本体判据】—— 每条待办都要能回答"**什么叫真解决（可机检）**"
 
 > 缺此栏 ⇒ 该条**不成立**（登记即无效）。栏内必须是**命令**或**命令可判的断言**，不是形容词。
+| `d-phyt-a6-counterexample` | phyt-DNA | 未做/登记 | 2026-10-13 | ⬜ 待做 | 2026-10-14 | **A-6 之外的具名反例**（DS④ + 终止条件三条）：反例必须**不由 A-6 自己的代码路径产生**、有**独立收据**、**真场景**（如 `PHYT_LEDGER` 指向只读路径 ⇒ append 真失败）。**本体判据**：`PHYT_LEDGER=/nonexistent-ro bash tools/ci-local.sh --fast` ⇒ 该次运行**必须红**且在 stdout 点名"读数无出处"，收据落在 DEBTS/观测层。**满足三条即停止递归**。 |
+
+| `d-phyt-ledger-gates-unenforced` | phyt-DNA | 未做/登记 | 2026-10-13 | ⬜ 待做 | 2026-10-14 | **4 门账本面门标 unenforced**：`appeals-must-be-parseable` · `ledger-must-be-valid-utf8` · `lesson-must-be-replayed` · `ledger-new-lines-parseable-and-referenced` —— 其 `applies-to` 全是 `ledger/*.jsonl`，而 step 4 只扫 `*.md/*.py/*.sh/*.yml` ⇒ **无 caller 覆盖**。**本体判据**：`grep -c '"kind":"run"' ledger/hits-$(date +%Y).jsonl` 的行里，这 4 个 id **不出现在 `per_gate.judged-green`** ⇒ 它们**不得计入 proven**（分母里单列）。 |
+
+| `d-phyt-growth-counttype` | phyt-DNA | 未做/登记 | 2026-10-13 | ⬜ 待做 | 2026-10-14 | **日落·计数型（本批只做这一型）**：GROWTH 判据改为 `live ≤ 阈值 ∧ 被归档条目 id/指纹在 live 中不存在`。**本体判据**：注入"把归档里的 `## 年轮 · X` 标题复制回 GROWTH" ⇒ **必须红**（现行门只数条数 ⇒ 5−3=2=归档数 **照样过**，本轮真踩）；反例（只 touch）⇒ 必须绿。 |
+
+| `d-phyt-sunset-rest` | phyt-DNA | 未做/登记 | 2026-10-13 | ⬜ 待做 | 2026-10-14 | **日落·其余四处（各自独立登记，不压批）**：DEBTS 结案 · 图纸 promote · skip 结案 · 时间型 revisit-on。**本体判据（各自）**：结案行必须引**本体证据**（真 task 行/真 sha/真命令输出）；promote 必须**新立门并三态齐**；skip 结案必须**由真实事故或具名豁免**；revisit-on 到期必须**给本体证据或具名续期理由**，只改日期 ⇒ 红。 |
