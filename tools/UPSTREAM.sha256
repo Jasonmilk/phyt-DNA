@@ -11,5 +11,5 @@ e98364dc156d1ec865218fe76cbdb1b356ebd748  tools/redrate.sh
 c13477ff1f4703c542a22ec37f36f278e3e882bf  tools/regex-census.sh
 2f77cf36e347995ded2a081de1beaee974c9b2f2  tools/spec-lint.sh
 1a29eef48923128bd715923b8b9edd06728c8657  tools/sync-upstream.sh
-c59e95958fc6472ecdfcd100af4a1e831ba4851a  tools/validate.sh
+68b0387161445f53335b91a586600d762e936a25  tools/validate.sh
 a3ec83c801e065fd77a5cffe946dc5164fdd255d  tools/xray.sh

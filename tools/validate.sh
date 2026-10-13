@@ -264,10 +264,18 @@ try:
     d = json.load(sys.stdin)
     p = d.get("paths") or []
     print("\n".join(str(x) for x in p if isinstance(x, str)))
-except Exception:
-    pass
+except Exception as e:
+    # ★ C（2026-10-13）：**读不懂的 payload 不许静默放行** —— 此前是 `pass` ⇒ paths 空 ⇒ 下面打印 `pass, scanned:0` 并 exit 0
+    sys.stderr.write("★ payload 解析失败（静默失败=伪证）: %s\n" % e)
+    raise SystemExit(4)
 ')
-[ -z "$paths" ] && { printf '{"verdict":"pass","scanned":0,"hits":0}\n'; exit 0; }
+# ★ C：**`scanned=0` ⇒ 不许 pass**（具名 exit 4）—— "什么都没判"与"判过且绿"必须可区分。
+#   调用方可自行区分：`rc=4` = 本次没命中任何门（逐文件场景常见，非失败）；批量的 rc=4 = 覆盖面为零（失败）。
+if [ -z "$paths" ]; then
+  printf '{"verdict":"skip","scanned":0,"hits":0,"reason":"payload 为空或无路径"}\n'
+  echo "★ 具名跳过: 本次扫描没有任何路径（scanned=0）⇒ 不判、不报绿" >&2
+  exit 4
+fi
 scanned=0; skips=0; skips_named=""; hits=""
 while read -r id; do
   [ -n "$id" ] || continue
@@ -310,6 +318,11 @@ done < <(gates)
 n_hits=$(echo "$hits"|tr '|' '\n'|grep -c .); first=$(echo "$hits"|sed 's/^|//'|cut -d: -f1)
 [ "$skips" -gt 0 ] && echo "具名跳过 $skips 个（缺历史 ⇒ 判据不判，不是绿也不是红）: $skips_named" >&2
 if [ "$scanned" = 0 ]; then echo "具名提示: 本次扫描【没有任何路径被 post 闸门覆盖】（scanned=0）—— 绿不代表合规，代表【没有判】" >&2; fi
+if [ "$scanned" = 0 ]; then
+  printf '{"verdict":"skip","scanned":0,"hits":0,"reason":"有路径但无一门命中"}\n'
+  echo "★ 具名跳过: 给了路径但**无一门命中**（scanned=0）⇒ 覆盖面为零，不报绿" >&2
+  exit 4
+fi
 if [ -z "$hits" ]; then printf '{"verdict":"pass","scanned":%d,"hits":0,"skipped":%d}\n' "$scanned" "$skips"; exit 0; fi
 printf '{"verdict":"block","scanned":%d,"hits":%d,"skipped":%d,"rule_id":"%s"}\n' "$scanned" "$n_hits" "$skips" "$first"
 echo "违规: $hits" >&2
