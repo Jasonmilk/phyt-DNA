@@ -54,8 +54,12 @@ case "$paths" in
 esac
 
 # 送检引擎：合法 JSON 直通 stdin（含引号命令不再被 grep 截断）
+# ★ C（2026-10-13）：**`rc=4` = "没有门可判"（scanned=0）⇒ 放行**，不是违规。
+#   引擎新增了 exit 4（不许拿"什么都没判"当绿）—— 钩子必须区分：
+#   `rc=2` = 判出违规 ⇒ 拦；`rc=4` = 本次无门可判 ⇒ 放行；**其他非零 = 引擎异常 ⇒ fail-closed 拦**。
 out=$(printf '%s' "$parsed" | ./tools/validate.sh 2>&1)
 rc=$?
+if [ "$rc" = 4 ]; then exit 0; fi
 
 # L3 · 引擎异常：仅 0（放行）与 2（拦截）是合法结局，其余一律 fail-closed
 if [ "$rc" != 0 ] && [ "$rc" != 2 ]; then
