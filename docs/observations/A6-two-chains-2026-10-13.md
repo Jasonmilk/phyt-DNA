@@ -50,3 +50,11 @@ wrongN.jsonl         N=2  链1: RED 非run行,elapsed_ms<=0,…   链2: PASS
 verdict 口径：{pass:1612, block:89, correction:85, unmeasurable:8, skip:1} = 1795；不带 verdict 字段 31 行 ⇒ 1795+31=1826 ✅
 差 = 被擦（trap 期）∪ 不可量 ⇒ 不填 0
 ```
+
+## C) GNU / Linux CI 列 = 未证（2026-10-14）
+
+**本机无 GNU 工具**（`gsed`/`gawk`/`ggrep` 全无）⇒ **GNU 列不可执行 ⇒ 记未证，不填 0**。 <!-- GNU 专属（理由：此处是**文档列举被检查的方言/工具名**，非使用它们） -->
+**可移植性不靠"两列都跑过"支撑，而靠写法规避**：只用 shell 内建 + `git` + `python3` + 可移植 grep/sed 基本语法（`[[:space:]]` 类）。
+**已知平台方言（真问题，非推测）**：`grep -P` 在 BSD **rc=2** · `awk` 的反斜杠-s 在 BSD **真死** · `sed` 的反斜杠-竖线 在 BSD **不生效**。 <!-- GNU 专属（理由：此处是**文档列举被检查的方言/工具名**，非使用它们） -->
+**已撤回**：`grep -E` 的反斜杠-s"在 BSD 是死模式" —— 干净测量证明 BSD grep **支持**它（**不是**死模式）⇒ 该断言作废，**不许重跑**。
+**若 adopt 宿主为 Linux**：GNU 列实跑（CI）为 **M1 开门前提**。

@@ -198,7 +198,15 @@ if ! : >> "$_led" 2>/dev/null; then
   echo "      ★ RED: 账本不可写（${_led}）⇒ **读数无出处**（PHYT_LEDGER 指向只读或不存在的目录）"; fail=1
 fi
 _led0=$(wc -l < "$_led" 2>/dev/null | tr -d ' '); _led0=${_led0:-0}
-printf '{"kind":"run","ts":"%s","source":"ci-local","caller":"ci-local","timing":"post","elapsed_ms":%d,"files":%d,"judged_gates":%d,"judged_ids":"%s","per_gate":{"judged-green":"%s","judged-red":"%s","unmeasurable":"%s","skipped-by-timing":"%s","skipped-by-cache":"%s"},"verdicts":{"pass":%d,"block":%d,"other":%d},"fail_closed_note":"坏 payload 的 rc=2 属 fail-closed，与 blocked 分开记"}\n' "$(date '+%Y-%m-%dT%H:%M:%S%z')" "$(( _elapsed * 1000 ))" "$_nfiles" "$_nj" "$_uj" "$_uj" "$_ub" "$_uu" "$_ut" "$_uc" "$judged" "$f4" "$bad" >> "$_led"
+# ★ A（2026-10-14 · DS 二①）：**不变量机检** —— judged_gates == len(judged-green) ∧ 各分类计数 == 列表长度
+#   成立 ⇒ valid=true；否则 valid=false（**该行自动视为不可量**，消费端必须校验 valid；schema_v1，见 DEBTS d-phyt-invariant-schema-version）
+_valid=true
+[ "$_nj" = "$(printf '%s' "$_uj" | wc -w | tr -d ' ')" ] || _valid=false
+[ "$_nb" = "$(printf '%s' "$_ub" | wc -w | tr -d ' ')" ] || _valid=false
+[ "$_nu" = "$(printf '%s' "$_uu" | wc -w | tr -d ' ')" ] || _valid=false
+[ "$_nt" = "$(printf '%s' "$_ut" | wc -w | tr -d ' ')" ] || _valid=false
+[ "$_nc" = "$(printf '%s' "$_uc" | wc -w | tr -d ' ')" ] || _valid=false
+printf '{"kind":"run","ts":"%s","source":"ci-local","caller":"ci-local","timing":"post","elapsed_ms":%d,"files":%d,"judged_gates":%d,"valid":"%s","invariant_schema":"v1","judged_ids":"%s","per_gate":{"judged-green":"%s","judged-red":"%s","unmeasurable":"%s","skipped-by-timing":"%s","skipped-by-cache":"%s"},"verdicts":{"pass":%d,"block":%d,"other":%d},"fail_closed_note":"坏 payload 的 rc=2 属 fail-closed，与 blocked 分开记"}\n' "$(date '+%Y-%m-%dT%H:%M:%S%z')" "$(( _elapsed * 1000 ))" "$_nfiles" "$_nj" "$_valid" "$_uj" "$_uj" "$_ub" "$_uu" "$_ut" "$_uc" "$judged" "$f4" "$bad" >> "$_led"
 _led1=$(wc -l < "$_led" | tr -d ' ')
 echo "  读数来源: stdout（本行以上）+ 账本 ${_led}（追加 $(( _led1 - _led0 )) 行 run 摘要 · 第 ${_led1} 行）"
 [ $(( _led1 - _led0 )) -eq 1 ] || { echo "      ★ RED: run 摘要未落地（期望 +1 行，实得 +$(( _led1 - _led0 ))）⇒ 读数无出处"; fail=1; }
@@ -208,6 +216,7 @@ if ! sed -n "${_led1}p" "$_led" | python3 -c '
 import sys, json
 d = json.load(sys.stdin)
 assert d.get("kind") == "run", "不是 run 行"
+assert d.get("valid") == "true", "valid != true ⇒ per_gate 错位 ⇒ 该行自动视为不可量"
 assert int(d.get("elapsed_ms", 0)) > 0, "elapsed_ms 必须 > 0"
 assert int(d.get("files", 0)) > 0, "files 必须 > 0"
 pg = d.get("per_gate") or {}

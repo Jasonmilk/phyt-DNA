@@ -22,6 +22,12 @@ if int(d.get("files", 0)) <= 0: bad.append("files<=0")
 pg = d.get("per_gate") or {}
 for k in ["judged-green", "judged-red", "unmeasurable", "skipped-by-timing", "skipped-by-cache"]:
     if k not in pg: bad.append("缺" + k)
+# ★ B（2026-10-14 · DS 二④ 独立性重定义）：**链1 查"计数-列表"关系**（第六类：语义错）
+ids = (pg.get("judged-green") or "").split()
+try:
+    if int(d.get("judged_gates", -1)) != len(ids): bad.append("judged_gates(%s)!=列表长度(%d)" % (d.get("judged_gates"), len(ids)))
+except Exception:
+    bad.append("judged_gates 非整数")
 for v in (d.get("verdicts") or {}).values():
     try:
         if int(v) < 0: bad.append("verdicts<0")

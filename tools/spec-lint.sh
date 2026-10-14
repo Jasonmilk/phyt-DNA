@@ -365,6 +365,12 @@ _cn=$(printf '%s\n' "$_cmtsample" | grep -cE '\\[ \t]+#')
 if [ "${_cn:-0}" -lt 1 ]; then red "5 自检失败：反例样本（续行末尾带注释）**没被数到** ⇒ 断言不会响"; fail=1; fi
 if [ -n "$_cmt" ]; then red "续行末尾带注释（注释会吞掉反斜杠 ⇒ 命令被打断且静默失效）:$_cmt"; fail=1
 else grn "续行末尾无注释（\ 后不跟 #）"; fi
+# ★ A(iv)（2026-10-14）：**读 per_gate 者必须校验 valid** —— 否则会把"错位读数"当真好数（活死模式·错位型）
+_pgread=$(grep -rln 'per_gate' tools/*.sh docs/*.md 2>/dev/null | grep -v 'spec-lint.sh' || true)
+_pgbad=""
+for _f in $_pgread; do grep -q 'valid' "$_f" || _pgbad="$_pgbad $_f"; done
+if [ -n "$_pgbad" ]; then red "读 per_gate 却未校验 valid（会把错位读数当真）:$_pgbad"; fail=1
+else grn "per_gate 的读者都校验了 valid"; fi
 if [ -n "$_gnu" ]; then red "非 POSIX 扩展（本仓两环境 macOS-BSD/GNU-CI 都支持，故非当前故障；但 **awk 的 \s 在 BSD 是真死** · `grep -P` 在 BSD rc=2）⇒ 要么改可移植写法，要么标注「GNU 专属（理由…）」"; printf '%s\n' "$_gnu" | head -5 | sed 's/^/      /' >&2; fail=1
 else grn "GNU 专属特性：0 处（判据只依赖 shell 内建 + git + python3 + 可移植 grep/sed）"; fi
 
