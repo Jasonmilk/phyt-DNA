@@ -84,3 +84,14 @@
 | `d-phyt-step3b-read-ledger` | phyt-DNA | 待做/登记 | 2026-10-14 | ⬜ 待做 | 2026-10-21 | **原则：step 3b 的读数改为读账本**（现依赖 `--probe-all` 的 stdout 文本 ⇒ 文本一变读数就漂；账本是唯一真值源）。**本体判据**：把 `_bl`/`_rot` 改为从账本 `verdict==block/unmeasurable` 的 probe 行统计，且与 `--probe-all` 的文本计数一致（不一致 ⇒ 红）。 |
 
 | `d-phyt-growth-antidrift` | phyt-DNA | 待做/登记 | 2026-10-14 | ⬜ 待做 | 2026-10-21 | **年轮防漂移门**：**年轮不得原地改写**（旧版必须进 archive 且新版引用它）。**本体判据**：`archive/growth/` 里出现被改圈的同名/同指纹条目，且 GROWTH 里的该圈标题含"修订自旧版"；否则红。 |
+| `d-phyt-invariants（已降级）` | phyt-DNA | **已降级（不阻断）** | 2026-10-14 | ⬜ 待做 | 2026-10-21 | ③ 不变量（**已降级，不阻断 P0-5**）：≥3 次运行 · 多流 · 多退出场景；**未声明 archive ⇒ 行数单调不减**（跌 ⇒ 具名红）；archive 具名（`kind:archive` + 前后行数 + target 存在）。**本体判据**：连续 ≥3 次运行的 `wc -l` 非减且任一减少处有 `kind:archive` 行。**恢复命令**：`for i in 1 2 3; do bash tools/ci-local.sh --fast >/dev/null 2>&1; wc -l < ledger/hits-$(date +%Y).jsonl; done` |
+
+| `d-phyt-unenforced-gates（已降级）` | phyt-DNA | **已降级（不阻断）** | 2026-10-14 | ⬜ 待做 | 2026-10-21 | ⑤ 4 门账本面门标 unenforced（**已降级**）：四门的 `applies-to` 是 `ledger/*.jsonl`，step 4 不扫 `.jsonl` ⇒ **无 caller ⇒ 不计 proven**（分母单列）。**本体判据**：run 摘要 `per_gate.judged-green` 不含这 4 个 id。 |
+
+| `d-phyt-growth-counttype（已降级）` | phyt-DNA | **已降级（不阻断）** | 2026-10-14 | ⬜ 待做 | 2026-10-21 | ⑥ GROWTH 计数型（**已降级**）：`live ≤ 阈值` ∧ **归档指纹不在 live**。**本体判据**：把 archive 某圈标题复制回 GROWTH ⇒ 必红；只 touch ⇒ 必绿。 |
+
+| `d-phyt-denominator（已降级）` | phyt-DNA | **已降级（不阻断）** | 2026-10-14 | ⬜ 待做 | 2026-10-21 | ⑦ 分母裁定 + 电表口径（**已降级；上工只需 `elapsed_ms` 与调用数**）：权威分母 = 活 hard:true 非 deprecated **20**；`elapsed_ms` 入电表（标 caller/timing）；账本 dirty 口径（每次追加必 dirty=1）。**本体判据**：MULTIMETER 电表栏含 `elapsed_ms` 且标 caller/timing。 |
+
+| `d-phyt-f-a2-e1-a4（已降级）` | phyt-DNA | **已降级（不阻断）** | 2026-10-14 | ⬜ 待做 | 2026-10-21 | ⑧ F/A2/E-①/A-4（**已降级**）：F（分母机检 + `frozen-body --check`）· A2（全量前 dirty=0；**账本自身致 dirty=1** ⇒ 按⑦口径）· E-①（`git ls-files` 存在性）· A-4（声明改了却不在 `git diff --name-only` ⇒ 红）成机器门 + 反例。 |
+
+| `d-phyt-coldstart（已降级·可选）` | phyt-DNA | **已降级（不阻断）** | 2026-10-14 | ⬜ 待做 | 2026-10-21 | ⑨ 冷启动复测（**已降级为可选，非门**）：新会话只给仓库 + 启动协议；对照密封答案五条；记录五个数。**本体判据**：能独立产出"当前一件 + 验收命令 + 五个读数"。 |
