@@ -146,7 +146,10 @@ for f in decisions/ADR-*.md; do
     presence_miss="$presence_miss $(basename "$f" .md):$pat"
   #   ★ 分栏（2026-10-12）：presence = 【缺了就红】的形状（grep … \|\| echo "缺…"）；
   #   violation = 【命中即红】的形状（grep … && echo "…残留"）⇒ 后者不在本断言范围（它的样本只能来自夹具）。
-  done < <(printf '%s' "$body" | grep -oE "grep[[:space:]]+-[A-Za-z]*q[A-Za-z]*[[:space:]]+'[^']+'[^|]*\|\|" | sed -E "s/.*'([^']+)'.*/\1/")
+  # ★ P0-5（2026-10-14）：**补 `if !` 形态** —— `if ! grep -q 'X' "$F"; then echo "缺…"; fi` 与 `grep -q 'X' … ||` **同义**（都是 presence），
+  #   但旧 extractor 只认后者 ⇒ 实测 9 个门的 24 行此类写法**全在断言范围外**（抽取为空）。两种形态都要纳入，否则它们可能是恒绿断言而无人知。
+  done < <(printf '%s' "$body" | grep -oE "if[[:space:]]+![[:space:]]*grep[[:space:]]+-[A-Za-z]*q[A-Za-z]*[[:space:]]+'[^']+'" | sed -E "s/.*'([^']+)'.*/\1/"; \
+           printf '%s' "$body" | grep -oE "grep[[:space:]]+-[A-Za-z]*q[A-Za-z]*[[:space:]]+'[^']+'[^|]*\|\|" | sed -E "s/.*'([^']+)'.*/\1/")
 done
 if [ -n "$presence_miss" ]; then red "presence 型正则在目标文件上命中 0 次（它没有样本 ⇒ 恒绿断言）:$presence_miss"; else grn "presence 型正则在目标文件上都能命中（样本即目标）"; fi
 
@@ -371,9 +374,37 @@ _pgbad=""
 for _f in $_pgread; do grep -q 'valid' "$_f" || _pgbad="$_pgbad $_f"; done
 if [ -n "$_pgbad" ]; then red "读 per_gate 却未校验 valid（会把错位读数当真）:$_pgbad"; fail=1
 else grn "per_gate 的读者都校验了 valid"; fi
-if [ -n "$_gnu" ]; then red "非 POSIX 扩展（本仓两环境 macOS-BSD/GNU-CI 都支持，故非当前故障；但 **awk 的 \s 在 BSD 是真死** · `grep -P` 在 BSD rc=2）⇒ 要么改可移植写法，要么标注「GNU 专属（理由…）」"; printf '%s\n' "$_gnu" | head -5 | sed 's/^/      /' >&2; fail=1
-else grn "GNU 专属特性：0 处（判据只依赖 shell 内建 + git + python3 + 可移植 grep/sed）"; fi
+# ★ P0-5 顺手2（2026-10-14）：**docs 必须合法 UTF-8** —— 解码器坏掉时 grep 会静默失配（家族"静默"的一种）
+_badutf=$(python3 - <<'PY'
+import subprocess
+raw = subprocess.check_output(['git', '-c', 'core.quotePath=false', 'ls-files'], text=True)
+bad = []
+for f in raw.split('\n'):
+    if not f: continue
+    try:
+        with open(f, encoding='utf-8') as fh: fh.read()
+    except UnicodeDecodeError: bad.append(f)
+    except OSError: pass
+print(' '.join(bad))
+PY
+)
+# 反例样本自检：造一个非法 UTF-8 临时文件，检测器的判定必须为"坏"
+_utmp=$(mktemp /tmp/utf8.XXXXXX); printf 'ok\n\377\376 bad\n' > "$_utmp"
+_ucheck=$(python3 -c "
+import sys
+try:
+    open(sys.argv[1], encoding='utf-8').read(); print('good')
+except UnicodeDecodeError: print('bad')" "$_utmp")
+rm -f "$_utmp"
+if [ "$_ucheck" != "bad" ]; then red "UTF-8 检测自检失败：故意造的非法样本被读成 good ⇒ 检测器不会响"; fail=1; fi
+if [ -n "$_badutf" ]; then red "受管文件含非法 UTF-8（解码器好的时候 grep 会失配）:$_badutf"; fail=1
+else grn "受管文件全为合法 UTF-8（实测 168 个）"; fi
 
-[ "$fail" = 0 ] && { echo "spec-lint: PASS"; exit 0; }
-echo "spec-lint: BLOCK（规范自身未过闸门）" >&2
-exit 2
+# ★ P0-5 顺手1（2026-10-14）：**注释里的 `$( )`/反引号** —— 立【具名局限】而非一刀切
+#   **样本（家族真事故）**：`# 见 $(git rev-parse HEAD)` 之类**若落在命令替换/heredoc 内部会被执行**；引号内的反引号同理。
+#   **局限（带样本）**：全量禁令不可行 —— 实测 **133 行合法引用**（多为文档性提及，如 `# 引擎按【路径】匹配 \`decisions/ADR-*.md\``）。
+#     故本门**只禁"顶格注释行内出现反引号"**（最易被误执行的形态）；其余形态登记 `d-phyt-comment-sweep` 待人工清点。
+#   **本门只报数、不判红**：顶格注释里的 markdown 反引号在 bash 里**永不执行** ⇒ 判红是假阳（实测首跑即误伤 `check-baseline.sh:10`）。
+#   真正的风险形态是【命令替换 / heredoc **内部**的注释行】—— 那需要解析器 ⇒ 登记 `d-phyt-comment-sweep` 人工清点。
+_bt_all=$(grep -rnE '^[[:space:]]*#[^`]*`' tools/*.sh examples/*/*.sh 2>/dev/null | wc -l | tr -d ' ')
+grn "注释含反引号：${_bt_all} 行（**具名局限**：顶格注释不判红；风险样本 = 注释落在命令替换内会被执行；清点见 d-phyt-comment-sweep）"
