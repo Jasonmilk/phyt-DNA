@@ -291,9 +291,10 @@ if [ -n "$trunc" ]; then red "编号判据在【提取后的体】里缺失（�
 #   （"在分母量准之前，任何分类读数都只是子集读数"）。反例：一份 ADR 缺 hard 字段 ⇒ 和必然不等。
 _t=$(ls decisions/ADR-*.md | wc -l | tr -d ' ')
 _a=$(for f in decisions/ADR-*.md; do grep -q '^hard: true$' "$f" || continue; grep -q '^status: deprecated' "$f" && continue; echo x; done | wc -l | tr -d ' ')
+    _r=$(for f in decisions/ADR-*.md; do grep -q '^hard: report$' "$f" || continue; grep -q '^status: deprecated' "$f" && continue; echo x; done | wc -l | tr -d ' ')
 _b=$(for f in decisions/ADR-*.md; do grep -q '^hard: false' "$f" || continue; grep -q '^status: deprecated' "$f" && continue; echo x; done | wc -l | tr -d ' ')
 _d=$(grep -l '^status: deprecated' decisions/ADR-*.md | wc -l | tr -d ' ')
-if [ "$((_a+_b+_d))" = "$_t" ]; then grn "分母自检：总 $_t = 活 $_a + 图纸 $_b + deprecated $_d"; else red "分母自检失败：总 $_t ≠ 活 $_a + 图纸 $_b + deprecated $_d ⇒ 有 ADR 缺 hard 字段（分类读数会漏）"; fi
+if [ "$((_a+_r+_b+_d))" = "$_t" ]; then grn "分母自检：总 $_t = 活 $_a + report $_r + 图纸 $_b + deprecated $_d"; else red "分母自检失败：总 $_t ≠ 活 $_a + report $_r + 图纸 $_b + deprecated $_d ⇒ 有 ADR 的 hard 取值不在 {true,report,false} 或计数重复"; fi
 # ★ ④-6（2026-10-13）：**钩子只许委派** —— `tools/hooks/*` 里对 `spec-lint` 的**调用**数必须为 **0**
 #   （它跑 `ci-local`，而 ci-local 里就那一次/两次同一脚本 ⇒ 这是"就一套"的机器判据）。
 #   ★ 反例（内联样本）：构造一行调用 ⇒ 判定函数必须报红 —— 证明这条断言会响。

@@ -241,6 +241,12 @@ gates(){ for f in "$DEC_DIR"/ADR-*.md; do [ -e "$f" ] || continue
   grep -q '^hard: true$' "$f" || continue
   grep -q '^status: deprecated' "$f" && continue
   basename "$f" .md; done; }
+# report 态门（2026-10-26 · B 方案）：**跑，但永不红** ⇒ 结果只写 ledger/reports-<year>.jsonl，
+# 不进五类、不进 judged_gates ⇒ 分母与并集两侧同时不变（见 spec-lint 分母自检四类）。
+report_gates(){ for f in "$DEC_DIR"/ADR-*.md; do [ -e "$f" ] || continue
+  grep -q '^hard: report$' "$f" || continue
+  grep -q '^status: deprecated' "$f" && continue
+  basename "$f" .md; done; }
 glob_first(){ local id="$1" g p
   while read -r g; do
     g=$(printf '%s' "$g" | sed 's/^ *//;s/ *$//'); [ -n "$g" ] || continue
