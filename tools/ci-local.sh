@@ -151,6 +151,34 @@ if [ "${_bl:-0}" = "0" ] && [ "${_rot:-0}" = "0" ]; then echo OK; else
   echo "★ RED ($_bl 条闸门基线红 · ${_rot:-0} 条闸门腐化)"; grep -B4 -E '基线（未注入）: 红|闸门已腐化' "$_pa" | grep -E '^[[:space:]]*[0-9]+:[A-Za-z]|红 →|腐化' | head -6 | sed 's/^/       /'; fail=1
 fi
 
+# ★ 2026-10-25（自维护闭环最后一环）：**DEBTS 本身的日落审计** —— 此前 ci-local 只审 ledger 里的
+#   kind:skip / kind:question，**不读 DEBTS 表** ⇒ 本仓 5 条逾期 5 天无人知（宿主侧同病）。
+#   判据（本体）：DEBTS 里「revisit-on < 今天 且 状态不是 ✅」的行数必须为 0；缺 revisit-on 的行**报数不判红**
+#   （历史行多为散文式，硬判会砸门）；本条只读，不改任何账。
+step "3c · DEBTS 日落审计（账本之外的债）"
+_debt=$(python3 - <<'PY'
+import datetime, io, re
+today = datetime.date.today()
+over, nofield = [], 0
+for l in io.open('DEBTS.md', encoding='utf-8', errors='replace'):
+    if not l.startswith('| '):
+        continue
+    m = re.search(r'revisit-on[: ]*(\d{4}-\d{2}-\d{2})', l)
+    if not m:
+        nofield += 1
+        continue
+    if datetime.date.fromisoformat(m.group(1)) < today and '✅' not in l:
+        name = re.sub(r'[*`]', '', l.split('|')[1])[:46].strip()
+        over.append('%s(日落%s)' % (name, m.group(1)))
+print('逾期未销 %d 条%s' % (len(over), ('：' + '；'.join(over[:4])) if over else ''))
+print('缺 revisit-on 的行（报数不判红）%d 条' % nofield)
+if over:
+    raise SystemExit(2)
+PY
+) ; _drc=$?
+echo "$_debt" | sed 's/^/      /'
+if [ "$_drc" = 0 ]; then echo "OK"; else echo "★ RED: DEBTS 有逾期未销的债"; fail=1; fi
+
 step "3 · 全部闸门能力心跳"
 # ★ 与 CI 同一步【同一条命令】—— 这里曾经把 CI 的 for 循环抄了一遍（第二份清单，A5）。
 # 现在它与 .github/workflows/phyt.yml 的第 3 步调用同一个入口 ⇒ 那一步不会两边漂。
@@ -312,6 +340,6 @@ else
 fi
 
 echo
-if [ "$fail" = 0 ]; then echo "CI-LOCAL: 全绿（10 项；其中 4b=unproven，不计入判据绿数）⇒ GitHub Actions 会过（不再有失败通知）"; exit 0; fi
+if [ "$fail" = 0 ]; then echo "CI-LOCAL: 全绿（11 项；其中 4b=unproven，不计入判据绿数）⇒ GitHub Actions 会过（不再有失败通知）"; exit 0; fi
 echo "CI-LOCAL: 有步骤红 ⇒ **不要推送**（推送会触发失败通知）" >&2; exit 1
 rm -f "$_pa" 2>/dev/null || true
