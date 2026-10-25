@@ -22,9 +22,17 @@ while read -r g; do
   f="$DEC_DIR/$g.md"
   findings_json='[]'; cnt=0
   at=$(grep '^applies-to:' "$f" | sed 's/^applies-to: *//')
+  ck=$(grep -m1 '^check:' "$f" | awk '{print $2}')
+  if [ "${ck:-}" = dangling-pointer ]; then
+    while IFS= read -r ref; do
+      [ -n "$ref" ] || continue
+      [ -e "$ref" ] || { cnt=$((cnt+1)); findings_json=$(printf '%s' "$findings_json" | python3 -c 'import json,sys;d=json.load(sys.stdin);d.append(sys.argv[1]);print(json.dumps(d,ensure_ascii=False))' "悬空: $ref"); }
+    done < <(grep -ohE '(docs|tools|decisions|ledger|fixtures|ecosystem)/[A-Za-z0-9_./-]+\.[a-z]+' $at 2>/dev/null | sort -u)
+  else
   for p in $at; do
     [ -e "$p" ] || { cnt=$((cnt+1)); findings_json=$(printf '%s' "$findings_json" | python3 -c 'import json,sys;d=json.load(sys.stdin);d.append(sys.argv[1]);print(json.dumps(d,ensure_ascii=False))' "applies-to 不存在: $p"); }
   done
+  fi
   total=$((total+cnt))
   python3 -c '
 import json,sys,time
