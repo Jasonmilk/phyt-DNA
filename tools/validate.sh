@@ -155,6 +155,9 @@ sys.stdout.write(json.dumps(rec, ensure_ascii=False) + "\n")
 #   bash tools/validate.sh --ask answer=<event_id> note=<答复>     # 结案：追加 closure，不改旧行
 #   bash tools/validate.sh --ask-list                              # 列出未结问句（逾期具名）
 ask_act(){
+  # ★ 2026-10-25 修：gate_id 缺省时写哨兵 "none"（显式"无门"）。
+  #   原写字符串 "null" —— 与 JSON null 混淆，且 ledger-new-lines 门只把【falsy】视作无门 ⇒ 字符串 "null" 被当"悬空 gate_id"判红（实测 2 行）。
+  #   语义：gate_id="none" = 本行不是某门裁决（问句/收口）⇒ 由 ledger-new-lines 门的 allow 集显式接纳。
   local topic="" reason="" sunset="" signer="" compensation="" recovery="" gate_id="" ans="" note=""
   local kv k v
   for kv in "$@"; do
@@ -169,7 +172,7 @@ ask_act(){
   # 结案 = 收窄（把开口关上）⇒ 可自动，无需换人签署；append-only，不回改旧行
   if [ -n "$ans" ]; then
     [ -n "$note" ] || { echo "★ 结案缺 note（答复内容）—— 没有答复的结案是抹账" >&2; return 2; }
-    ov_rec "{\"kind\":\"closure\",\"gate_id\":\"${gate_id:-null}\",\"override\":false,\"source\":\"cli\",\"event_id\":\"cl-ask-${ans}-$(date +%s)-$$\",\"ref_event_id\":\"${ans}\",\"note\":\"${note}\"}"
+    ov_rec "{\"kind\":\"closure\",\"gate_id\":\"${gate_id:-none}\",\"override\":false,\"source\":\"cli\",\"event_id\":\"cl-ask-${ans}-$(date +%s)-$$\",\"ref_event_id\":\"${ans}\",\"note\":\"${note}\"}"
     echo "问句已结案（${ans}）—— 收窄可自动，已留痕"
     return 0
   fi
@@ -194,7 +197,7 @@ ask_act(){
       echo "★ signer 不得是 Agent（${signer}）⇒ Agent 只能提问，不能自己答复自己" >&2; return 2;;
   esac
   local sha; sha=$(git rev-parse --short HEAD 2>/dev/null || echo unknown)
-  ov_rec "{\"kind\":\"question\",\"gate_id\":\"${gate_id:-null}\",\"verdict\":\"open\",\"override\":false,\"source\":\"cli\",\"event_id\":\"q-$(date +%s)-$$\",\"topic\":\"${topic}\",\"signer\":\"${signer}\",\"commit\":\"${sha}\",\"revisit_on\":\"${sunset}\",\"compensation\":\"${compensation}\",\"recovery\":\"${recovery}\",\"note\":\"${reason}\"}"
+  ov_rec "{\"kind\":\"question\",\"gate_id\":\"${gate_id:-none}\",\"verdict\":\"open\",\"override\":false,\"source\":\"cli\",\"event_id\":\"q-$(date +%s)-$$\",\"topic\":\"${topic}\",\"signer\":\"${signer}\",\"commit\":\"${sha}\",\"revisit_on\":\"${sunset}\",\"compensation\":\"${compensation}\",\"recovery\":\"${recovery}\",\"note\":\"${reason}\"}"
   echo "问句已落账（topic=${topic} · 日落 ${sunset} · 答复者 ${signer} · 答复前默认：${compensation}）"
   return 0
 }

@@ -46,7 +46,10 @@ check: |
   dec_dir = os.path.join(sys.argv[3], 'decisions')   # ★ 由 ROOT 出（不从 $F 推：临时副本也能跑）
   adrs = {os.path.basename(p)[:-3] for p in glob.glob(os.path.join(dec_dir, 'ADR-*.md'))}
   # 具名豁免：hook 拦截执行点（PROTECTION 三执行点）的形状名闸门，不属于闸门池命名空间
-  allow = adrs | {'hook-bash-command', 'hook-fail-closed'}
+  # ★ 2026-10-25：接入哨兵 "none"（= 本行不是某门裁决：kind:question 问句 / kind:closure 收口）。
+  #   理由：问句与收口【本来就不属于某个门】；旧通道写字符串 "null" 是混淆（已改哨兵），此处只接纳显式哨兵。
+  # 具名兼容：'null' = 2026-10-25 --ask 首版误写的【字符串】哨兵（已修为 'none'）；账本 append-only ⇒ 只接纳不复写历史行。
+  allow = adrs | {'hook-bash-command', 'hook-fail-closed', 'none', 'null'}
   lines = open(F, encoding='utf-8').read().split('\n')
   red = []
   for i, l in enumerate(lines, 1):
