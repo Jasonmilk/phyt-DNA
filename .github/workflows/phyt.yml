@@ -68,7 +68,7 @@ jobs:
           bash tools/emit-failures.sh || true
           # ★ 2026-10-25：**CI 取证兜底** —— emit-failures 认不出时会把证据吞掉（实测 annotations 里只有 exit code）。
           #   这里直接把日志关键行发成 error annotation ⇒ 远端无需 admin 也能看到"哪道门、哪个文件"。
-          _ev=$(grep -aE '违规|REJECT|悬崖|RED|error|失败|红' /tmp/phyt-gate.log 2>/dev/null | tail -10 | tr '\n' '~' | cut -c1-900)
+          _ev=$(tail -40 /tmp/phyt-gate.log 2>/dev/null | tr '\n' '~' | cut -c1-2500)
           if [ -n "$_ev" ]; then
             echo "::error title=CI 取证（日志关键行）::$(printf '%s' "$_ev" | sed 's/~$//; s/~~/~/g')"
           else
