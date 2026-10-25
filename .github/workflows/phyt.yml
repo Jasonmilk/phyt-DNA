@@ -38,8 +38,14 @@ jobs:
           {
             fail=0
             for f in $(git -c core.quotePath=false ls-files '*.md' '*.py' '*.sh' '*.yml'); do
-              out=$(printf '{"tool":"Write","paths":["%s"]}\n' "$f" | ./tools/validate.sh --timing post 2>&1)
-              rc=$?
+              # ★ 2026-10-25 关键修：GitHub 的 bash 步骤默认 `-e` ⇒ `out=$(cmd)` 在 cmd 返回 2 时会**立即中止脚本**，
+              #   连下面的 rc=$? 和 echo 都跑不到 ⇒ 步骤红了却**一个字都没打印**（实测：日志里只有 step 3 的内容）。
+              #   惯用法：放进 if 条件里，失败不再触发 -e。
+              if out=$(printf '{"tool":"Write","paths":["%s"]}\n' "$f" | ./tools/validate.sh --timing post 2>&1); then
+                rc=0
+              else
+                rc=$?
+              fi
               if [ "$rc" = 2 ]; then
                 rid=$(printf '%s' "$out" | grep -oE '"rule_id":"[^"]+' | head -1 | sed 's/"rule_id":"//')
                 echo "违规: $f ⇒ 门=${rid:-（未解析）}"
