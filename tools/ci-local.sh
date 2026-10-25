@@ -155,6 +155,7 @@ fi
 #   kind:skip / kind:question，**不读 DEBTS 表** ⇒ 本仓 5 条逾期 5 天无人知（宿主侧同病）。
 #   判据（本体）：DEBTS 里「revisit-on < 今天 且 状态不是 ✅」的行数必须为 0；缺 revisit-on 的行**报数不判红**
 #   （历史行多为散文式，硬判会砸门）；本条只读，不改任何账。
+#   ★ 具名局限（2026-10-25 实测）：**只认显式 `revisit-on: YYYY-MM-DD` 写法** —— 只有裸日期的行会被算进"缺 revisit-on"，不判红。
 step "3c · DEBTS 日落审计（账本之外的债）"
 _debt=$(python3 - <<'PY'
 import datetime, io, re

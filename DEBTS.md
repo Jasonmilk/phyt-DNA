@@ -111,3 +111,4 @@
 - **★ 新登记根因 `d-phyt-debts-audit`**：**本仓的 DEBTS 文件本身没有机器审计**（`ci-local` 只审 `ledger` 里的 `kind:skip`/`kind:question`，**不读 DEBTS 表**）⇒ 本表 5 条逾期 5 天无人知，与宿主侧同病。
   **本体判据**：`DEBTS.md` 里「`revisit-on` < 今天 且 状态不是 ✅」的行数 **必须为 0 且由机器报警**（不是人肉对账）。
   **恢复命令**：在 `ci-local` 增一步只读检查（python 解析 DEBTS 表：逾期且未销 ⇒ 具名红），与 ledger 的 sunset 审计并列。
+| `d-phyt-3c-scope` | phyt-DNA | 具名局限 | 2026-10-25 | 🟨 有意为之 | revisit-on: 2026-11-08 | **3c 只认显式 `revisit-on: YYYY-MM-DD` 写法**（实测：裸日期行不判红，只计入"缺 revisit-on 报数"）。**本体判据**：注入带 `revisit-on: <过去日>` 的未销行 ⇒ 必红（已测）；裸日期行的数量在 3c 输出里报数。**恢复命令**：`bash tools/ci-local.sh --fast \| grep -A2 3c` |
