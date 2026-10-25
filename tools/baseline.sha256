@@ -45,6 +45,7 @@ f08e431d7421178553972219fb194a39151d452fc719aa5419f5ca7157290ad9  decisions/ADR-
 51682a39b3bb1509aa19f56208090cc5ea293362c18cf5bc1911e2bb0ea3eaf1  decisions/ADR-20261023-design-nomos-are-posture-not-contract.md
 efcb98bd813645f8fbcdc6095db35597ec78bc023d246cd8c0b6e22c61162d6a  decisions/ADR-20261023-open-question-must-have-sunset.md
 f33fca1df0b00b11f1a49a930f42ff578344b045023448a983d925f44dcd75ee  decisions/ADR-20261023-override-must-carry-six-elements.md
+7193377d89d361a7354d3c997bdf1265754aa93e98e7dcea9bde4d515346d2c7  decisions/ADR-20261025-failure-diagnosis-must-be-positive.md
 59c7bda728462f3f69ac1669c0ff02ec14903fa3eb425c4a7db78cc2f87cb1c5  decisions/ADR-20261025-meter-must-be-on-duty.md
 5eb3c0939ef9634e18da09f873a505dd90a666f015ce79e0ef57fe2cb552930a  decisions/INDEX.md
 ae99c70970cb254c3dbe46567a8213027490b738cdd58b19a499fbb35c75ef7a  decisions/README.md
