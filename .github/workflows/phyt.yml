@@ -35,10 +35,17 @@ jobs:
         run: |
           exec > >(tee -a /tmp/phyt-gate.log) 2>&1
           fail=0
-          for f in $(git ls-files '*.md' '*.py' '*.sh' '*.yml'); do
-            printf '{"tool":"Write","paths":["%s"]}\n' "$f" \
-              | ./tools/validate.sh --timing post >/dev/null 2>&1
-            [ $? = 2 ] && { echo "违规: $f"; fail=1; }
+          # ★ 2026-10-25：**失败必须带门名** —— 原来只打文件名（且把引擎 stdout 丢进 /dev/null）
+          #   ⇒ CI 红了也说不清是哪道门（annotations 里只有 exit code）。这里保留引擎 JSON 并抽出 rule_id。
+          for f in $(git -c core.quotePath=false ls-files '*.md' '*.py' '*.sh' '*.yml'); do
+            out=$(printf '{"tool":"Write","paths":["%s"]}\n' "$f" | ./tools/validate.sh --timing post 2>&1)
+            rc=$?
+            if [ "$rc" = 2 ]; then
+              rid=$(printf '%s' "$out" | grep -oE '"rule_id":"[^"]+' | head -1 | sed 's/"rule_id":"//')
+              echo "违规: $f ⇒ 门=${rid:-（未解析）}"
+              printf '%s' "$out" | head -3 | sed 's/^/         /'
+              fail=1
+            fi
           done
           [ "$fail" = 0 ] || exit 1
 
