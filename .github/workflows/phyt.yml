@@ -31,23 +31,24 @@ jobs:
 
       - name: 4 · 全仓库违规扫描（只跑 timing:post 闸门）
         # timing:pre 是路径黑名单，事后全仓扫描必然误报 ⇒ 只扫 post 型
-        # 含 *.yml：lesson ADR（ADR-20261009-lesson-must-land-in-artifact）判定对象是 CI 工件
+        # ★ 2026-10-25：**用 { …; } | tee 落盘**，不用 `exec > >(tee …)`（后者 tee 未 flush ⇒ 日志空 ⇒ 失败具名拿不到东西）；
+        #   且失败时打印【文件 + 门名 + 引擎前 3 行】⇒ annotations 里能直接看到哪道门。
         run: |
-          exec > >(tee -a /tmp/phyt-gate.log) 2>&1
-          fail=0
-          # ★ 2026-10-25：**失败必须带门名** —— 原来只打文件名（且把引擎 stdout 丢进 /dev/null）
-          #   ⇒ CI 红了也说不清是哪道门（annotations 里只有 exit code）。这里保留引擎 JSON 并抽出 rule_id。
-          for f in $(git -c core.quotePath=false ls-files '*.md' '*.py' '*.sh' '*.yml'); do
-            out=$(printf '{"tool":"Write","paths":["%s"]}\n' "$f" | ./tools/validate.sh --timing post 2>&1)
-            rc=$?
-            if [ "$rc" = 2 ]; then
-              rid=$(printf '%s' "$out" | grep -oE '"rule_id":"[^"]+' | head -1 | sed 's/"rule_id":"//')
-              echo "违规: $f ⇒ 门=${rid:-（未解析）}"
-              printf '%s' "$out" | head -3 | sed 's/^/         /'
-              fail=1
-            fi
-          done
-          [ "$fail" = 0 ] || exit 1
+          set -o pipefail
+          {
+            fail=0
+            for f in $(git -c core.quotePath=false ls-files '*.md' '*.py' '*.sh' '*.yml'); do
+              out=$(printf '{"tool":"Write","paths":["%s"]}\n' "$f" | ./tools/validate.sh --timing post 2>&1)
+              rc=$?
+              if [ "$rc" = 2 ]; then
+                rid=$(printf '%s' "$out" | grep -oE '"rule_id":"[^"]+' | head -1 | sed 's/"rule_id":"//')
+                echo "违规: $f ⇒ 门=${rid:-（未解析）}"
+                printf '%s' "$out" | head -3 | sed 's/^/         /'
+                fail=1
+              fi
+            done
+            exit $fail
+          } 2>&1 | tee -a /tmp/phyt-gate.log
 
       - name: 5 · 规范自检（spec-lint）· 必须真实可红
         # ⚠️ 永绿装饰 = 伪证（T0-2）。本步曾被「git diff --exit-code 检查 .claude/」占据
