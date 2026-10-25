@@ -110,16 +110,32 @@ fi
 # ★ ①补（2026-10-13）：**逃生门逾期未结 ⇒ 具名红** —— 落账三项里的 sunset 由这里执行。
 #   结案方式：追加一行 kind=closure（ref_event_id 指向那行逃生门的 event_id）；append-only，不改旧行。
 _esc=$(python3 - <<'PY'
-import datetime, io, json, glob
+import datetime, io, json, glob, os, subprocess
+# ★ 2026-10-24 修【空转 · 同族于 BASH_ENV 那次】：原为 `glob.glob('ledger/hits-*.jsonl')`
+#   —— **相对路径硬编码**。而本文件头部明确建议 `PHYT_LEDGER=/tmp/x bash tools/ci-local.sh`
+#   （本地跑别弄脏账本）⇒ 一旦改了 PHYT_LEDGER，本段扫的是【cwd 下的 ./ledger】，扫空 ⇒
+#   **报「0 处逾期」并放行** ⇒ 日落审计静默空转（读不到 ≠ 没有；缺席是信号，不是空白）。
+#   ⇒ 与 validate.sh 的 LED_DIR 同源：`PHYT_LEDGER` 优先，否则 git rev-parse 锚定（cwd 无关）。
+led = os.environ.get('PHYT_LEDGER')
+if not led:
+    try:
+        root = subprocess.check_output(['git', 'rev-parse', '--show-toplevel'],
+                                       stderr=subprocess.DEVNULL, text=True).strip()
+    except Exception:
+        root = '.'
+    led = os.path.join(root, 'ledger')
 today = datetime.date.today().isoformat()
 closed = set(); rows = []
 need = ('commit', 'revisit_on', 'recovery')          # ★ ④-7补：三字段缺一即红
-for f in sorted(glob.glob('ledger/hits-*.jsonl')):
+for f in sorted(glob.glob(os.path.join(led, 'hits-*.jsonl'))):
     for l in io.open(f, encoding='utf-8'):
         try: d = json.loads(l)
         except Exception: continue
         if d.get('kind') == 'closure' and d.get('ref_event_id'): closed.add(d['ref_event_id'])
-        if d.get('kind') == 'skip': rows.append(d)
+        # ★ 2026-10-23：问句账并入同一段日落审计 —— 开口没有日落 = 永久悬空
+        #   （实证：RNA.md:13「请园丁确认」自 2026-10-11 悬空 12 天，无任何机制报警）
+        #   单一真源：不写第二份扫描，问句与逃生门共用同一段代码 ⇒ 不可能只修一边。
+        if d.get('kind') in ('skip', 'question'): rows.append(d)
 missing = [r for r in rows if any(not r.get(k) for k in need)]
 open_ = [r for r in rows if r.get('event_id') not in closed]
 overdue = [r for r in open_ if (r.get('revisit_on') or '9999') < today]
@@ -130,7 +146,7 @@ PY
 )
 _miss=${_esc%% *}; _rest=${_esc#* }; _over=${_rest%% *}; _why=${_rest#* }
 if [ "$_miss" != "0" ]; then echo "★ RED: skip 账缺字段（commit/revisit_on/recovery）$_miss 处: $_why" >&2; fail=1; fi
-if [ "$_over" != "0" ]; then echo "★ RED: 逃生门逾期未结 $_over 处（日落触发，**点名 commit**）: $_why" >&2; fail=1; fi
+if [ "$_over" != "0" ]; then echo "★ RED: 逃生门/问句逾期未结 $_over 处（日落触发，**点名 commit**）: $_why" >&2; fail=1; fi
 if [ "${_bl:-0}" = "0" ] && [ "${_rot:-0}" = "0" ]; then echo OK; else
   echo "★ RED ($_bl 条闸门基线红 · ${_rot:-0} 条闸门腐化)"; grep -B4 -E '基线（未注入）: 红|闸门已腐化' "$_pa" | grep -E '^[[:space:]]*[0-9]+:[A-Za-z]|红 →|腐化' | head -6 | sed 's/^/       /'; fail=1
 fi
@@ -254,6 +270,24 @@ _eng=$(echo $_eng | tr ' ' '\n' | sort -n | uniq | paste -sd, -)
 if [ "${_decl:-?}" = "${_eng:-?}" ]; then echo "OK（rc 契约：ADR 声明 {$_decl} == 引擎实返 {$_eng}）"
 else echo "      ★ RED: rc 契约分家 —— ADR 声明 {${_decl:-空}} != 引擎实返 {${_eng:-空}}"; fail=1; fi
 [ "$f4" = 0 ] && echo "OK" || { echo "      ★ RED"; fail=1; }
+# ★ 节律（2026-10-25）：**电表上工** —— 仪器只给数，不判红（判读归园丁；样本不足会自己具名）
+#   为什么放进 ci-local：仪表盘若没有 caller，它就是装饰品（本轮之前 meter.sh 零调用方）。
+step "6 · 电表（f / T_gate / 分类可信度）· 只给数"
+_meter_line=$(bash tools/meter.sh --json 2>/dev/null | python3 -c '
+import json, sys
+try: d = json.load(sys.stdin)
+except Exception: sys.exit(3)
+f, t, c, den = d["f"], d["T_gate"], d["classification"], d["denominator"]
+print("f: 样本%s（task %d · block %d）· T_gate p50=%sms(p90=%sms,n=%d) · 分类不自洽 %d/%d · 分母 活%d/dep%d" % (
+    "充足" if f["sample_sufficient"] else "不足",
+    f["real_task_rows"], f["real_block_rows"],
+    t["p50_ms"], t["p90_ms"], t["elapsed_ms_samples"],
+    c["rows_with_broken_sum"], c["run_rows"],
+    den["live_hard_gates"], den["deprecated"]))
+' 2>/dev/null)
+if [ -n "$_meter_line" ]; then echo "OK"; echo "      ${_meter_line}"
+else echo "★ 具名跳过：电表读数不可得（meter.sh 失败或输出非 JSON）⇒ 不判红、不报绿"; fi
+
 step "4b · 全池一致性（按文件判会漏的那些）"
 if bash tools/check-pool.sh >/dev/null 2>&1; then echo "OK（unproven · 待夹具：能红未证）"; else echo "★ RED"; bash tools/check-pool.sh 2>&1 | head -4 | sed 's/^/       /'; fail=1; fi
 
@@ -278,6 +312,6 @@ else
 fi
 
 echo
-if [ "$fail" = 0 ]; then echo "CI-LOCAL: 全绿（9 项；其中 4b=unproven，不计入判据绿数）⇒ GitHub Actions 会过（不再有失败通知）"; exit 0; fi
+if [ "$fail" = 0 ]; then echo "CI-LOCAL: 全绿（10 项；其中 4b=unproven，不计入判据绿数）⇒ GitHub Actions 会过（不再有失败通知）"; exit 0; fi
 echo "CI-LOCAL: 有步骤红 ⇒ **不要推送**（推送会触发失败通知）" >&2; exit 1
 rm -f "$_pa" 2>/dev/null || true

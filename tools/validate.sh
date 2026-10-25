@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 # validate.sh v2 · 真数据驱动：闸门全部来自 decisions/，引擎零硬编码
 set -uo pipefail
+# ★ 宿主环境隔离（健壮性修复 · 2026-10-19）：BASH_ENV 会让 bash 在【非交互】下 source 启动文件；
+#   叠加 -u 后，宿主 .bashrc 里的未定义变量（实测 PS1）会被引擎误判为【判据自身失败】
+#   ⇒ 全部闸门记 unmeasurable —— 环境脏被当成判据坏（假指控）。判据宿主必须环境无关。
+unset BASH_ENV ENV 2>/dev/null || true
 # ── P2 · 路径声明式（BACKFLOW 2026-10-09）──────────────────────────────────────
 # 本文件已有 `PHYT_LEDGER`；此处把另外两处也做成配置，理由同一条：
 # 硬编码路径会逼采用者【改脚本】，而改脚本 = 分叉 = 漂移。
@@ -32,14 +36,199 @@ if [ "${PHYT_QUIET:-0}" != "1" ] && { [ -f "$_d/paths.env" ] || [ "$DEC_DIR" != 
     "$DEC_DIR" "$FIX_DIR" "$LED_DIR" \
     "$( [ -f "$_d/paths.env" ] && echo ' （来自 tools/paths.env）' || echo ' （非约定布局）')" >&2
 fi
+# ── 例外通道（override / appeal）：留痕必须是【完整的例外】，不是一句话 ──────────────
+# ★ 为什么（2026-10-23 · 吸收 JM-Zen 例外审批六要素）：
+#   原实现里 override 的 note 默认值就是「无理由」⇒ 一道门可以被一句话放行，
+#   且没有日落、没有签署者、没有补偿、没有回退 ⇒ 护栏从"有出口"退化成"没护栏"。
+#   本仓 WIP 逃生门【已有】更严的规格（ci-local ①补：commit/revisit_on/recovery 缺一即红 + 逾期具名红）
+#   ⇒ 同机制两副规格 = 漂移。此处提到同一规格，并补本仓缺的两条：
+#     ① 签署者必须是人类（Agent 只能提议，不能自批 —— 与"守卫不自签 / 他证禁自评"同族）
+#     ② 不对称性：收窄（撤销放行）可自动；扩大（续期）必须【换人】签署。
+# 用法（六要素缺一即拒绝，且【不写账本】—— 半条 override 比没有更坏）：
+#   bash tools/validate.sh --override <gate_id> reason=… sunset=YYYY-MM-DD signer=@human compensation=… recovery=…
+#   bash tools/validate.sh --override <gate_id> revoke=<event_id>                      # 收窄：可自动，无需签署
+#   bash tools/validate.sh --override <gate_id> extend=<event_id> sunset=… signer=@other …  # 扩大：必须换人
+ov_rec(){ # ov_rec <json> —— 唯一写入点 · 转义由 json 负责（与 rec() 同规格）
+  LED_APPEND=1 python3 -c '
+import json, sys, time
+d = json.loads(sys.argv[1])
+d.setdefault("ts", time.strftime("%Y-%m-%dT%H:%M:%S%z", time.localtime()))
+sys.stdout.write(json.dumps(d, ensure_ascii=False) + "\n")
+' "$1" >> "$LED_DIR"/hits-$(date +%Y).jsonl
+}
+override_act(){
+  local gid="${1:-}" kv k v reason="" sunset="" signer="" compensation="" recovery="" extend="" revoke=""
+  [ -n "$gid" ] || { echo "★ override 缺 gate_id（用法见本文件例外通道注释）" >&2; return 2; }
+  shift
+  for kv in "$@"; do
+    k="${kv%%=*}"; v="${kv#*=}"
+    case "$k" in
+      reason) reason="$v";; sunset) sunset="$v";; signer) signer="$v";;
+      compensation) compensation="$v";; recovery) recovery="$v";;
+      extend) extend="$v";; revoke) revoke="$v";;
+      *) echo "★ override 未知参数: ${kv}（允许 reason/sunset/signer/compensation/recovery/extend/revoke）" >&2; return 2;;
+    esac
+  done
+  # 收窄 = 撤销一次放行 ⇒ 更安全 ⇒ 可自动（不改旧行，只追加 closure：append-only）
+  if [ -n "$revoke" ]; then
+    ov_rec "{\"kind\":\"closure\",\"gate_id\":\"${gid}\",\"override\":false,\"source\":\"cli\",\"event_id\":\"cl-${gid}-$(date +%s)-$$\",\"ref_event_id\":\"${revoke}\",\"note\":\"收窄覆盖：撤销放行（可自动，无需换人签署）\"}"
+    echo "override 已收窄（撤销 ${revoke}）—— 收窄可自动，已留痕"
+    return 0
+  fi
+  local miss=""
+  for kv in "reason:${reason}" "sunset:${sunset}" "signer:${signer}" "compensation:${compensation}" "recovery:${recovery}"; do
+    [ -n "${kv#*:}" ] || miss="$miss ${kv%%:*}"
+  done
+  if [ -n "$miss" ]; then
+    echo "★ override 缺要素:${miss} ⇒ 拒绝放行，且不写账本（半条例外 = 无出处的放行）" >&2
+    echo "  六要素: reason（理由）· sunset（日落 YYYY-MM-DD）· signer（人类签署者）· compensation（补偿控制）· recovery（回退命令）" >&2
+    return 2
+  fi
+  case "$sunset" in
+    [0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]) ;;
+    *) echo "★ sunset 格式非法: ${sunset}（须 YYYY-MM-DD）" >&2; return 2;;
+  esac
+  if [[ ! "$sunset" > "$(TZ=CST-8 date +%F)" ]]; then
+    echo "★ sunset 不在未来: ${sunset} ⇒ 逾期未结的例外就是永久豁免（例外必须有时限）" >&2; return 2
+  fi
+  # 不对称性 ①：Agent 只能提议，不能自批（他证禁自评 / 守卫不自签）
+  case "$(printf '%s' "$signer" | tr 'A-Z' 'a-z')" in
+    agent*|ai|auto*|bot|claude*|yuanbao|copilot|automation|system|llm|model)
+      echo "★ signer 不得是 Agent / 自动化（${signer}）⇒ Agent 只能提议，不能自批" >&2; return 2;;
+  esac
+  # 不对称性 ②：扩大（续期）必须【换人】签署 —— 自己给自己延期 = 自批延期
+  local prev=""
+  if [ -n "$extend" ]; then
+    prev=$(python3 -c '
+import glob, io, json, sys
+eid, led = sys.argv[1], sys.argv[2]
+for f in sorted(glob.glob(led + "/hits-*.jsonl")):
+    for l in io.open(f, encoding="utf-8"):
+        try: d = json.loads(l)
+        except Exception: continue
+        if d.get("event_id") == eid:
+            print(d.get("signer") or ""); sys.exit(0)
+print("")
+' "$extend" "$LED_DIR")
+    [ -n "$prev" ] || { echo "★ extend 指向的 event_id 不在账本里: ${extend} ⇒ 无的放矢的续期（伪例外）" >&2; return 2; }
+    if [ "$prev" = "$signer" ]; then
+      echo "★ 扩大覆盖必须换人签署：原签署者 ${prev} 不得给自己续期（自批延期 = 例外无限延长）" >&2; return 2
+    fi
+  fi
+  local sha; sha=$(git rev-parse --short HEAD 2>/dev/null || echo unknown)
+  ov_rec "{\"kind\":\"override\",\"gate_id\":\"${gid}\",\"verdict\":\"block\",\"override\":true,\"source\":\"cli\",\"event_id\":\"ov-${gid}-$(date +%s)-$$\",\"signer\":\"${signer}\",\"commit\":\"${sha}\",\"revisit_on\":\"${sunset}\",\"compensation\":\"${compensation}\",\"recovery\":\"${recovery}\",\"note\":\"${reason}\",\"ref_event_id\":\"${extend:-null}\"}"
+  echo "override 已留痕（六要素齐 · 日落 ${sunset} · 签署者 ${signer}${extend:+ · 续期自 ${extend}}）"
+  return 0
+}
+appeal_act(){
+  local gid="${1:-}"
+  [ -n "$gid" ] || { echo "★ appeal 缺 gate_id" >&2; return 2; }
+  shift || true
+  local note="$*"
+  [ -n "$note" ] || { echo "★ appeal 缺理由 ⇒ 拒绝（'无理由'的申诉是不留痕的抱怨）" >&2; return 2; }
+  LED_APPEND=1 python3 -c '
+import json, sys, time
+rec = {"ts": time.strftime("%Y-%m-%dT%H:%M:%S%z", time.localtime()), "gate_id": sys.argv[1],
+       "verdict": "appeal", "override": False, "source": "user-appeal", "event_id": "manual", "note": sys.argv[2]}
+sys.stdout.write(json.dumps(rec, ensure_ascii=False) + "\n")
+' "$gid" "$note" >> "$LED_DIR"/appeals-$(date +%Y).jsonl
+  echo "申诉已独立留痕"
+  return 0
+}
+# ── 问句账（--ask）：无人执守时的开口 —— 不问也能走，但问了就必须有人答 ──────────
+# ★ 为什么（2026-10-23 · 自生长闭环）：
+#   终局 = agent 在宿主项目里独立跑完一圈，人只修正歧义与丰满 VISION。
+#   ⇒ 前提不是"起初问清楚"（那是预建，违反 DNA「不预写未来的 ADR」），
+#     而是【遇到 VISION 未覆盖处 ⇒ 落一条带日落的问句 ⇒ 按名目默认继续】。
+#   与 override 同族：开口没有日落 ⇒ 变永久悬空（实证：RNA.md:13 那句"请园丁确认"
+#   自 2026-10-11 悬空至今，12 天无人答，且无任何机制让它报警）。
+# ★ 为何写进 hits 而非独立账：问句的风险是【逾期不结】，必须与 kind:skip 同账，
+#   才能被 ci-local ①补 的日落审计同一段代码抓到（单一真源，不抄第二份扫描）。
+#   申诉才需要独立账（它破解"运营者自己分类自己"）；问句不涉不服裁决，无需分账。
+# ★ signer 的语义：= 被指派答复的人（Accountable）。**agent 不得自签**
+#   ⇒ 与 override 同一条不对称性：Agent 只能提问，不能自己答复自己。
+# ★ compensation 的语义（问句专有）：= 【答复前的默认动作】（按名目默认继续 / 暂停该分支）
+#   ⇒ 它让"问"不再阻塞：无人执守时 agent 照走，人来时读账即可。
+# 用法：
+#   bash tools/validate.sh --ask topic=VISION.md#scope reason=… sunset=YYYY-MM-DD \
+#        signer=@human compensation=按名目默认继续 recovery="bash tools/validate.sh --ask-list"
+#   bash tools/validate.sh --ask answer=<event_id> note=<答复>     # 结案：追加 closure，不改旧行
+#   bash tools/validate.sh --ask-list                              # 列出未结问句（逾期具名）
+ask_act(){
+  local topic="" reason="" sunset="" signer="" compensation="" recovery="" gate_id="" ans="" note=""
+  local kv k v
+  for kv in "$@"; do
+    k="${kv%%=*}"; v="${kv#*=}"
+    case "$k" in
+      topic) topic="$v";; reason) reason="$v";; sunset) sunset="$v";; signer) signer="$v";;
+      compensation) compensation="$v";; recovery) recovery="$v";; gate_id) gate_id="$v";;
+      answer) ans="$v";; note) note="$v";;
+      *) echo "★ --ask 未知参数: ${kv}（允许 topic/reason/sunset/signer/compensation/recovery/gate_id/answer/note）" >&2; return 2;;
+    esac
+  done
+  # 结案 = 收窄（把开口关上）⇒ 可自动，无需换人签署；append-only，不回改旧行
+  if [ -n "$ans" ]; then
+    [ -n "$note" ] || { echo "★ 结案缺 note（答复内容）—— 没有答复的结案是抹账" >&2; return 2; }
+    ov_rec "{\"kind\":\"closure\",\"gate_id\":\"${gate_id:-null}\",\"override\":false,\"source\":\"cli\",\"event_id\":\"cl-ask-${ans}-$(date +%s)-$$\",\"ref_event_id\":\"${ans}\",\"note\":\"${note}\"}"
+    echo "问句已结案（${ans}）—— 收窄可自动，已留痕"
+    return 0
+  fi
+  local miss=""
+  for kv in "topic:${topic}" "reason:${reason}" "sunset:${sunset}" "signer:${signer}" "compensation:${compensation}" "recovery:${recovery}"; do
+    [ -n "${kv#*:}" ] || miss="$miss ${kv%%:*}"
+  done
+  if [ -n "$miss" ]; then
+    echo "★ 问句缺要素:${miss} ⇒ 拒绝落账（没日落的问句 = 永久悬空，等于没问）" >&2
+    echo "  六要素: topic（歧义在哪）· reason（为什么它改变决策）· sunset（YYYY-MM-DD）· signer（人类答复者）· compensation（答复前的默认动作）· recovery（怎么读回这本账）" >&2
+    return 2
+  fi
+  case "$sunset" in
+    [0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]) ;;
+    *) echo "★ sunset 格式非法: ${sunset}（须 YYYY-MM-DD）" >&2; return 2;;
+  esac
+  if [[ ! "$sunset" > "$(TZ=CST-8 date +%F)" ]]; then
+    echo "★ sunset 不在未来: ${sunset} ⇒ 逾期的问句不会有人答，只会变成装饰" >&2; return 2
+  fi
+  case "$(printf '%s' "$signer" | tr 'A-Z' 'a-z')" in
+    agent*|ai|auto*|bot|claude*|yuanbao|copilot|automation|system|llm|model)
+      echo "★ signer 不得是 Agent（${signer}）⇒ Agent 只能提问，不能自己答复自己" >&2; return 2;;
+  esac
+  local sha; sha=$(git rev-parse --short HEAD 2>/dev/null || echo unknown)
+  ov_rec "{\"kind\":\"question\",\"gate_id\":\"${gate_id:-null}\",\"verdict\":\"open\",\"override\":false,\"source\":\"cli\",\"event_id\":\"q-$(date +%s)-$$\",\"topic\":\"${topic}\",\"signer\":\"${signer}\",\"commit\":\"${sha}\",\"revisit_on\":\"${sunset}\",\"compensation\":\"${compensation}\",\"recovery\":\"${recovery}\",\"note\":\"${reason}\"}"
+  echo "问句已落账（topic=${topic} · 日落 ${sunset} · 答复者 ${signer} · 答复前默认：${compensation}）"
+  return 0
+}
+ask_list(){
+  python3 -c '
+import datetime, glob, io, json, sys
+led, today = sys.argv[1], datetime.date.today().isoformat()
+rows, closed = [], set()
+for f in sorted(glob.glob(led + "/hits-*.jsonl")):
+    for l in io.open(f, encoding="utf-8"):
+        try: d = json.loads(l)
+        except Exception: continue
+        if d.get("kind") == "closure" and d.get("ref_event_id"): closed.add(d["ref_event_id"])
+        if d.get("kind") == "question": rows.append(d)
+open_ = [r for r in rows if (r.get("event_id") or "") not in closed]
+over = [r for r in open_ if (r.get("revisit_on") or "9999") < today]
+print("问句账: 未结 %d · 逾期 %d" % (len(open_), len(over)))
+for r in open_:
+    flag = "★逾期" if (r.get("revisit_on") or "9999") < today else "  待答"
+    print("  %s %s  topic=%s  答复者=%s  日落=%s  [默认: %s]" % (
+        flag, (r.get("event_id") or "?")[:22], r.get("topic"), r.get("signer"), r.get("revisit_on"), (r.get("compensation") or "缺")[:30]))
+if over: sys.exit(2)
+' "$LED_DIR"
+}
 mode=check; target=""; only_timing=""
 case "${1:-}" in
   --index) mode=index;;
   --probe-all) mode=probe; target="";;
   --probe) mode=probe; target="$2";;
   --timing) only_timing="$2";;
-  --override) printf '{"ts":"%s","gate_id":"%s","verdict":"block","override":true,"source":"cli","event_id":"manual","note":"%s"}\n' "$(TZ=CST-8 date +%Y-%m-%dT%H:%M:%S%z)" "$2" "${4:-无理由}" >> "$LED_DIR"/hits-$(date +%Y).jsonl; echo "override 已留痕"; exit 0;;
-  --appeal) printf '{"ts":"%s","gate_id":"%s","verdict":"appeal","override":false,"source":"user-appeal","event_id":"manual","note":"%s"}\n' "$(TZ=CST-8 date +%Y-%m-%dT%H:%M:%S%z)" "$2" "${4:-无理由}" >> "$LED_DIR"/appeals-$(date +%Y).jsonl; echo "申诉已独立留痕"; exit 0;;
+  --override) shift; override_act "$@"; exit $?;;
+  --appeal)   shift; appeal_act   "$@"; exit $?;;
+  --ask)      shift; ask_act      "$@"; exit $?;;
+  --ask-list) ask_list; exit $?;;
   --cull) mode=cull;;
 esac
 

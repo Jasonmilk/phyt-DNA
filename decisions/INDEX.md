@@ -22,3 +22,7 @@ validate: 布局 decisions=decisions fixtures=fixtures ledger=/Users/jason/Devel
 | `ADR-20261011-supersede-must-be-paired` | `["decisions/ADR-*.md"]` | yes | yes | post |
 | `ADR-20261012-ledger-new-lines-parseable-and-referenced` | `["ledger/hits-*.jsonl"]` | yes | yes | post |
 | `ADR-20261013-protocol-named-files-must-exist` | `["RNA.md", "DNA.md", "PLAN.md", "PLAN-PAUSED.md", "docs/MULTIMETER.md"]` | yes | yes | post |
+| `ADR-20261023-borrowing-must-name-the-gap` | `["decisions/ADR-*.md"]` | yes | yes | post |
+| `ADR-20261023-open-question-must-have-sunset` | `["ledger/hits-*.jsonl"]` | yes | yes | post |
+| `ADR-20261023-override-must-carry-six-elements` | `["ledger/hits-*.jsonl"]` | yes | yes | post |
+| `ADR-20261025-meter-must-be-on-duty` | `["ledger/hits-*.jsonl"]` | yes | yes | post |

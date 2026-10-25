@@ -57,6 +57,7 @@ numbers, this one prints the command that replaces them:
 | gate counts — total / hard / retired / active | `bash tools/validate.sh --index` (per-gate) · `bash tools/check-pool.sh` (pool-wide) |
 | gate heartbeats — three lines per gate | `bash tools/validate.sh --probe-all` |
 | full-pool consistency | `bash tools/check-pool.sh` |
+| **the meter** — f (real-hit frequency) · T_gate (`elapsed_ms`) · classification integrity | `bash tools/meter.sh` (`--json` for CI) |
 | budget · usage · countdown · debts · replay coverage | the ecosystem repo's `tools/todo-ready.sh` (the report head is ecosystem-scoped — see the note below) |
 | the whole local CI, verbatim | `bash tools/ci-local.sh` |
 

@@ -33,3 +33,9 @@ e69afe4c22b78925b52743b3ec3c5d0ea08ec70c334e97fa03d0ebe684efc964  ADR-20261012-p
 0bceae24296fe1a66a83e4d4bd974eea5c46f4b028a0acb0e5f91938fb48855a  ADR-20261013-probe-scope-must-be-tagged.md
 cca558c15910c6f3f7d8d25e462b701b2ea9acb70f4467d29ef46af0cb8ee4d8  ADR-20261013-protocol-named-files-must-exist.md
 32cf2f4cd934d3206dea3b1d3e4a3db0dbf3a4d57ad78df62bbf5d0dd1dec0f9  ADR-20261014-portability-principle.md
+70545ca55814ef8e2f07b426fe2101105e2393f6bdf515c205a506801ffcaf20  ADR-20261023-borrowing-must-name-the-gap.md
+0d38502150d54c3e2401bd36d7507476dc8e98bff9cadbc91856f37e19008634  ADR-20261023-design-nomos-are-posture-not-contract.md
+2318cd108e25a2b6d1ddfa3e7beef6203c1d7db529551d04c6e0e28a53593a9d  ADR-20261023-open-question-must-have-sunset.md
+255c8fae6debd763f4c4b1246fdddda7131b8efed3211758032f4fc50611dccd  ADR-20261023-override-must-carry-six-elements.md
+29a9d66c8cdf09a4d172dc59f941012212403d600f5fd49d66ac44dd1fe31c98  ADR-20261025-meter-must-be-on-duty.md
+# rebaseline ADR-20261025-meter-must-be-on-duty.md 理由: 同日落地：origin 坐标改实（证据行→本仓采用裁定任务行 2545 · 提交→落地前基线 6b5fdf3）；borrowing 门自我应用补 差异=/缺口=；判据体未动

@@ -313,11 +313,14 @@ if [ -n "$_hookbad" ]; then red "钩子里自带了 spec-lint 调用（应只委
 #   负兜底：**非追加**地写【真件/受管】的语句，必须在**同一行或上一行**带 `有意回写（理由：…）` 标注，否则红。
 #   ★ 判据看**目标**（cp/mv 的最后一个 token），不是看整行 —— 否则 `cp /tmp/x tools/X`（源在 /tmp、目标在仓内）会漏（实测漏过一次）。
 # 有意回写（理由：这是检查器自身的**模式文本**，不是写回真件 —— 构造性自匹配）
-_cand=$(grep -rnE '(^|[^>])(cp|mv|tee)[^|]*( |$)|sed -i|rsync|git (checkout|restore)' tools/*.sh examples/*/*.sh 2>/dev/null \
-        | grep -v '>>' | grep -vE '^[^:]+:[0-9]+: *#' \
 # ★ 排除检查器自身（它的模式文本必然自匹配）；**补偿控制 = 待做的窄断言**（见 DEBTS d-phyt-selfwrite-compensate）
 # 窄豁免：检查器自身的模式/样本行（构造性自匹配）
-| grep -v 'tools/spec-lint.sh:' | grep -v '_dst=' | grep -v 'GNU_PAT=' | grep -v '_cmt=' | grep -v '_cmtsample=' \
+# ★ 2026-10-23 修【空转】：上两行注释原先插在 `_cand=$( ... )` 的管道续行【中间】⇒ 续行被打断
+#   ⇒ 后面的 `| grep -v ...` 变成另一条命令的开头 ⇒ bash 语法错误（实测 line 324）⇒ `_cand` 恒空
+#   ⇒ 本闸门【空转且报绿】（静默失败=伪证，GROWTH 判据形态②）。注释一律移出管道续行。
+_cand=$(grep -rnE '(^|[^>])(cp|mv|tee)[^|]*( |$)|sed -i|rsync|git (checkout|restore)' tools/*.sh examples/*/*.sh 2>/dev/null \
+        | grep -v '>>' | grep -vE '^[^:]+:[0-9]+: *#' \
+        | grep -v 'tools/spec-lint.sh:' | grep -v '_dst=' | grep -v 'GNU_PAT=' | grep -v '_cmt=' | grep -v '_cmtsample=' \
          || true)   # ★ 排除检查器自身：它的**正则文本**里必然含这些模式（构造性自匹配），非写回
 _nb=""
 while IFS=: read -r _f _n _rest; do

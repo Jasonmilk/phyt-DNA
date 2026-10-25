@@ -46,7 +46,7 @@ paths=$(printf '%s' "$parsed" | python3 -c 'import sys,json; print(" ".join(json
 case "$paths" in
   *"rm -rf"*|*"rm -fr"*|*"rm -r -f"*|*"rm --recursive --force"*)
     echo "⛔ 危险动作形状 · 递归强制删除：$paths" >&2
-    echo "出口: 先在 ledger 留痕（--override 带 note），或改用可逆写法" >&2
+    echo "出口: 先在 ledger 留痕（--override 须六要素：reason/sunset/signer/compensation/recovery），或改用可逆写法" >&2
     exit 2 ;;
   *"git push --force "*|*"git push -f "*|*"git push --force")
     echo "⛔ 危险动作形状 · 强推（--force-with-lease 不在此列）：$paths" >&2
@@ -70,7 +70,7 @@ fi
 if [ "$rc" = 2 ]; then
   echo "⛔ 闸门拦截: $tool $paths" >&2
   printf '%s\n' "$out" | grep 违规 >&2 || printf '%s\n' "$out" >&2
-  echo "出口: validate.sh --override <id> --note \"理由\"（留痕放行）" >&2
+  echo "出口: validate.sh --override <gate_id> reason=<理由> sunset=YYYY-MM-DD signer=@human compensation=<补偿> recovery=<回退>（六要素缺一即拒；Agent 不得自签）" >&2
   exit 2
 fi
 exit 0
