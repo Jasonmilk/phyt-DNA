@@ -273,6 +273,12 @@ if [ "$mode" = index ]; then
     tm=$(grep -m1 '^timing:' "$DEC_DIR/$g.md" | awk '{print $2}')
     inj=$([ -f "$FIX_DIR/$g/inject.sh" ] && echo yes || echo NO)
     cnt=$([ -f "$FIX_DIR/$g/counter.sh" ] && echo yes || echo NO)
+    # ★ 「声明了不可能」≠「缺席」。这一列原来把两种都印 NO ——
+    #   而 `probe: none` + `probe-why` 是【具名声明】：它的回归判据在别处（如 hook_test.sh）。
+    #   印成 NO 会让读者以为漏了夹具，于是下一个人去补一个 probe 表达不了的夹具。
+    if [ "$(grep -m1 '^probe:' "$DEC_DIR/$g.md" | awk '{print $2}')" = "none" ]; then
+      inj='n/a'; cnt='n/a'
+    fi
     printf '| `%s` | `%s` | %s | %s | %s |\n' "$g" "$at" "$inj" "$cnt" "${tm:-未声明}"
   done < <(gates)
   exit 0
@@ -425,7 +431,7 @@ if [ "$mode" = probe ]; then
     fi
     probe_one "$target"; exit $?
   fi
-  rc=0; ran=0; skipped=""
+  rc=0; ran=0; skipped=""; nont=0
   while read -r g; do [ -n "$g" ] || continue
     # ★ `probe: none` = 具名的"本闸门不可 probe"（它的回归判据在别处）。
     # 为什么要这个档：有些判据的对象是【任意输入字符串】而不是文件（例：危险动作的形状），
@@ -435,7 +441,10 @@ if [ "$mode" = probe ]; then
       why=$(grep -m1 '^probe-why:' "$DEC_DIR/$g.md" | sed 's/^probe-why: *//')
       echo "  [具名·不可 probe] $g —— ${why:-未给理由}" >&2
       [ -z "$why" ] && rc=2   # 不给理由 ⇒ 不算具名 ⇒ 失败
-      continue
+      nont=$((nont+1))        # ★ 计【本次真的跳过】的，不 grep 全集：
+      continue                #   实测 24 跑 + 2 声明 = 26 ≠ 25 个活闸门（算术不闭合）。
+                              #   多出来的那个是 `hard: report` 的门：它不在 gates() 里，
+                              #   却因为文件里有 `probe: none` 被 grep 数进来。
     fi
     if [ -f "$FIX_DIR/$g/inject.sh" ]; then ran=$((ran+1)); probe_one "$g" || rc=2
     else skipped="$skipped $g"; fi
@@ -448,7 +457,10 @@ if [ "$mode" = probe ]; then
     echo "           ⇒ 各补一个 fixtures/<id>/counter.sh 与 inject.sh；证据不足时不得算通过" >&2
     rc=2
   fi
-  echo "  probe-all: 跑了 $ran 个闸门$( [ -n "$skipped" ] && echo "，无夹具 $(echo $skipped | wc -w | tr -d ' ')" )$(grep -l '^probe: none' "$DEC_DIR"/ADR-*.md 2>/dev/null | wc -l | tr -d ' ' | sed 's/^/，具名不可probe /')"
+  # ★ 算术必须闭合：跑了的 + 无夹具的 + 具名不可 probe 的 = 活闸门总数。
+  #   旧版最后一项是 `grep -l '^probe: none' decisions/ADR-*.md | wc -l`（全集），
+  #   会把【不在 gates() 里】的门（如 hard: report）也算进来 ⇒ 24+2=26≠25。
+  echo "  probe-all: 跑了 $ran 个闸门$( [ -n "$skipped" ] && echo "，无夹具 $(echo $skipped | wc -w | tr -d ' ')" )，具名不可probe ${nont}（合计 $((ran + $(echo $skipped | wc -w | tr -d ' ') + nont)) / 活闸门 $(gates | wc -l | tr -d ' ')）"
   exit $rc
 fi
 

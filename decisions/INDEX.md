@@ -9,7 +9,7 @@ validate: 布局 decisions=decisions fixtures=fixtures ledger=/Users/jason/Devel
 | `ADR-20261009-README-must-carry-the-one-command` | `["README.md"]` | yes | yes | post |
 | `ADR-20261009-VISION-must-exist-and-be-a-seed` | `["VISION.md"]` | yes | yes | post |
 | `ADR-20261009-appeals-must-be-parseable` | `["ledger/appeals-*.jsonl"]` | yes | yes | post |
-| `ADR-20261009-dangerous-action-shapes-must-be-blocked` | `["DNA.md", "VISION.md", "decisions/**"]` | NO | NO | pre |
+| `ADR-20261009-dangerous-action-shapes-must-be-blocked` | `["DNA.md", "VISION.md", "decisions/**"]` | n/a | n/a | pre |
 | `ADR-20261009-docs-must-be-indexed` | `["docs/INDEX.md"]` | yes | yes | post |
 | `ADR-20261009-index-must-be-regenerated` | `["decisions/INDEX.md"]` | yes | yes | post |
 | `ADR-20261009-ledger-must-be-valid-utf8` | `["ledger/*.jsonl"]` | yes | yes | post |
