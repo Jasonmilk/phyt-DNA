@@ -334,6 +334,32 @@ else
 fi
 
 fi
+
+step "5b · examples 夹具行使（G6-②：例子从未被跑过）"
+# G6-② 原文：`examples/fixtures/inject.sh` 加一次行使。
+# 为什么需要：真夹具在 `fixtures/<id>/inject.sh`（心跳在用），`examples/` 那份是**教学副本**。
+#   教学副本也会腐烂——① 阈值被上调（150 → 某值）⇒ 151 行的示范**不再越过阈值**，
+#   示范变成空转且没人会知道；② 示范从 `$F` 改回写死路径 ⇒ 学到的变成「改某个具体文件」，
+#   「与 applies-to 同源」这个要点被抽掉。两种腐烂都不会让任何别的判据变红。
+# 判据只认两件：用 `$F`（不写死路径）+ **真跑一次**后行数越过 ADR 自己写的阈值（不是我们记的 150）。
+_ex_inject="${EX_INJECT:-examples/fixtures/inject.sh}"
+_ex_adr="decisions/ADR-20261009-PLAN-must-stay-under-150-lines.md"
+if [ ! -f "$_ex_inject" ]; then echo "★ RED 示范文件不存在: $_ex_inject"; fail=1
+elif ! grep -qF '"$F"' "$_ex_inject"; then echo "★ RED 示范没用「\${F}」（写死路径 ⇒ 学不到「与 applies-to 同源」）: $_ex_inject"; fail=1
+else
+  _thr=$(grep -oE -- '-gt [0-9]+' "$_ex_adr" 2>/dev/null | grep -oE '[0-9]+' | head -1)
+  if [ -z "$_thr" ]; then echo "★ RED 在 $_ex_adr 里找不到「-gt N」阈值 ⇒ 判不了（不许当成通过）"; fail=1
+  else
+    _d=$(mktemp -d); printf 'x\n' > "$_d/PLAN.md"; _b=$(wc -l < "$_d/PLAN.md" | tr -d ' ')
+    if F="$_d/PLAN.md" bash "$_ex_inject" >/dev/null 2>&1; then
+      _a=$(wc -l < "$_d/PLAN.md" | tr -d ' '); _inj=$((_a - _b))
+      if [ "$_a" -gt "$_thr" ]; then echo "OK  (真跑一次：${_inj} 行注入 ⇒ ${_b} → ${_a} 行 > 阈值 ${_thr})"
+      else echo "★ RED 真跑后只有 ${_a} 行，未越过阈值 ${_thr} ⇒ 示范已空转（阈值上调后没跟着改）"; fail=1; fi
+    else echo "★ RED 示范跑不起来: $_ex_inject"; fail=1; fi
+    rm -rf "$_d"
+  fi
+fi
+
 if [ "$FAST_MODE" = 1 ]; then
   step "5 · spec-lint（必须真实可红）"; echo "跳过（快层 · 慢层下次在 pre-push/CI 跑）"
 else
@@ -341,6 +367,6 @@ else
 fi
 
 echo
-if [ "$fail" = 0 ]; then echo "CI-LOCAL: 全绿（11 项；其中 4b=unproven，不计入判据绿数）⇒ GitHub Actions 会过（不再有失败通知）"; exit 0; fi
+if [ "$fail" = 0 ]; then echo "CI-LOCAL: 全绿（12 项；其中 4b=unproven，不计入判据绿数）⇒ GitHub Actions 会过（不再有失败通知）"; exit 0; fi
 echo "CI-LOCAL: 有步骤红 ⇒ **不要推送**（推送会触发失败通知）" >&2; exit 1
 rm -f "$_pa" 2>/dev/null || true
