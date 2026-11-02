@@ -62,6 +62,17 @@ jobs:
         # 变红；与 step2 双保险，防止装饰性检查被重写回去（ADR-…-lesson-must-land-in-artifact）。
         run: ./tools/spec-lint.sh docs/PROTECTION.md
 
+      - name: 5b · 全池一致性（check-pool）· 在 CI 上必须**能红**
+        # ★ 接它之前先答一个问题：这一步在 CI 上会不会恒绿？
+        #   会恒绿的理由只有一个 —— 判据读的东西在 CI 里不存在或读不到。这里不是：
+        #   · check-pool 的真假由**引擎调用是否成功**决定（`rc != 0 ⇒ exit 2`），
+        #     而 2>&1 早把引擎 stderr 吞进了 $out ⇒ 想靠"有没有 fatal 字样"判断会抓空；
+        #   · 该判据与 sed 方言无关（不匹配文本，只用 rc）。
+        # ⇒ 所以它能稳定复现红，且红因不随机器变化。
+        # mutation（本地真跑，不是声明）：把 tools/validate.sh 换成 `exit 3` 的假货 ⇒
+        #   ★ RED: 引擎调用失败（rc=3）…  check-pool rc=2
+        run: ./tools/check-pool.sh
+
       - name: 6 · 失败具名（annotations 公开可读 · 总会运行）
         # ★ 为什么存在：读 CI 失败的四条通道里，logs 需 admin(403) · artifacts 需凭据(401) ·
         #   job summary 只在网页（API 的 output.summary 为 null）⇒ **annotation 是唯一机器可读的**。
