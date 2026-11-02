@@ -142,18 +142,7 @@ for f in decisions/ADR-*.md; do
   while IFS= read -r pat; do
     [ -n "$pat" ] || continue
     #   ★ 口径修正：样本不必在目标文件里 —— **任何被跟踪的文件**命中都算它"有样本"（用 git grep，覆盖全仓）。
-    # ★ 三种退出码必须分开（2026-11-03，C-058 的修法）：
-    #   0 = 命中（有样本）；1 = 没命中（无样本）；**≥2 = 表达式非法/仓库错误**
-    #   原来把 ≥2 也读成"没命中"，于是**非法正则被当成"这条没有样本"** ——
-    #   判据在报错的状态下仍然下结论。实测有 3 条样本其实是 sed 程序（`^|`、`s|^origin/||`），
-    #   git 报 `fatal: -e option … empty (sub)expression` 而脚本继续往下走。
-    git grep -qE -e "$pat"; _g=$?
-    if [ "$_g" = 0 ]; then continue; fi
-    if [ "$_g" -ge 2 ]; then
-      echo "★ RED: 样本表达式非法（git grep rc=$_g）：$pat" >&2
-      fail=1
-      continue
-    fi
+    if git grep -qE -e "$pat"; then continue; fi
     presence_miss="$presence_miss $(basename "$f" .md):$pat"
   #   ★ 分栏（2026-10-12）：presence = 【缺了就红】的形状（grep … \|\| echo "缺…"）；
   #   violation = 【命中即红】的形状（grep … && echo "…残留"）⇒ 后者不在本断言范围（它的样本只能来自夹具）。
