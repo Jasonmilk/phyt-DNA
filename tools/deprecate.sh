@@ -37,7 +37,7 @@ miss=""
 [ -n "$rc_" ] || miss="$miss --root-cause"
 [ -n "$disp" ] || miss="$miss --disposition"
 if [ -n "$miss" ]; then
-  echo "★ RED: 退役参数不全（缺:$miss）—— 缺字段的死亡证明就是伪证（DEPRECATE.md:33 / I2 红线）" >&2
+  echo "★ RED: 退役参数不全（缺:${miss}）—— 缺字段的死亡证明就是伪证（DEPRECATE.md:33 / I2 红线）" >&2
   exit 2
 fi
 
@@ -66,8 +66,8 @@ EOF
 # 自检：8 个字段都要**非空**（存在性不算合规，见 C-053）
 for f in 死者 出生 死亡 享年 引用判据 合规性审查 根因 处置; do
   if ! grep -qE "^- $f: .+" "$cert"; then
-    echo "★ RED: $cert 的字段「$f」为空 —— 这已是伪证边缘，删掉重来" >&2
+    echo "★ RED: $cert 的字段「${f}」为空 —— 这已是伪证边缘，删掉重来" >&2
     exit 2
   fi
 done
-echo "OK: $cert（8 字段齐）· 指针: $([ -e "$ptr" ] && echo 在 || echo 缺)"
+echo "OK: ${cert}（8 字段齐）· 指针: $([ -e "$ptr" ] && echo 在 || echo 缺)"
