@@ -29,6 +29,13 @@ PY
 )
 if [ -z "$files" ]; then echo "OK: 目录 $DIR 下没有 ADR（无可扫）"; exit 0; fi
 out=$(PHYT_DECISIONS="$BASE" PHYT_QUIET=1 bash "$ROOT/tools/validate.sh" --timing post 2>&1 <<< "$payload"); rc=$?
+# ★ 2>&1 把引擎的 stderr 也吞进了 $out ⇒ 想靠"脚本 stderr 里有没有 fatal"来抓，结构上抓不到主路。
+# 所以这里用【已经捕获的 rc】：子命令失败就是失败，不必读它的措辞（事实 vs 代理）。
+if [ "$rc" -ne 0 ]; then
+  echo "★ RED: 引擎调用失败（rc=${rc}）—— 引擎输出如下（红了要能说出为什么）" >&2
+  printf '%s\n' "$out" | sed 's/^/    /' >&2
+  exit 2
+fi
 # ★ H#3（2026-10-12 · 生长轴结构判据）：**退休要可见于一处** —— 每个 status: deprecated 的 ADR
 #   必须在 archive/deprecated/ 留【指针记录】。这是【池形状】判据（对象是整个池，不是某一个文件）
 #   ⇒ 按已立纪律住进池扫描（红侧用隔离目录证明，不进"unproven"）。

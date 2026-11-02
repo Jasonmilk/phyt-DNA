@@ -108,7 +108,7 @@ unassigned=""
 for f in decisions/ADR-*.md; do
   grep -q '^check: |' "$f" || continue
   body=$(awk '/^check: \|/{f=1;next} f&&/^[^ ]/{f=0} f&&NF{print}' "$f" | sed 's/^  //')
-  #   ★ 收紧（同轮）：① 先剥【单引号串】—— 判据里被搜索的模式串（如 `\$var（`）不是变量；
+  #   ★ 收紧（同轮）：① 先剥【单引号串】—— 判据里被搜索的模式串（如 `\${var}（`）不是变量；
   #   ② 豁免名单**从引擎的注入点派生**（不手写约定）：引擎实际注入哪些变量，就读它哪一行 ——
   #      判据 `F="$F" bash -u -c …` ⇒ 注入集 = {F}；并接受 `${VAR:-…}` 自带默认值的形态。
   #      ★ 反面教训：首版写"全大写 = 环境提供" ⇒ ROOT 也是全大写 ⇒ **该抓的抓不到，断言形同虚设**。
@@ -142,7 +142,13 @@ for f in decisions/ADR-*.md; do
   while IFS= read -r pat; do
     [ -n "$pat" ] || continue
     #   ★ 口径修正：样本不必在目标文件里 —— **任何被跟踪的文件**命中都算它"有样本"（用 git grep，覆盖全仓）。
-    if git grep -qE -e "$pat"; then continue; fi
+    # 0 = 命中 / 1 = 没命中 / >=2 = 表达式非法或仓库错误。
+    # 旧写法把 >=2 也读成"没命中"⇒ 非法正则会静默变成"这条没有样本"（C-058）。
+    git grep -qE -e "$pat"; _g=$?
+    if [ "$_g" = 0 ]; then continue; fi
+    if [ "$_g" -ge 2 ]; then
+      echo "★ RED: 样本表达式非法（git grep rc=${_g}）：$pat" >&2; fail=1; continue
+    fi
     presence_miss="$presence_miss $(basename "$f" .md):$pat"
   #   ★ 分栏（2026-10-12）：presence = 【缺了就红】的形状（grep … \|\| echo "缺…"）；
   #   violation = 【命中即红】的形状（grep … && echo "…残留"）⇒ 后者不在本断言范围（它的样本只能来自夹具）。
