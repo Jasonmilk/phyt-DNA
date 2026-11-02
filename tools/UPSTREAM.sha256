@@ -3,6 +3,7 @@
 5cab82780f5c6fc5c4e59f4c5d89e70345d71686  tools/ci-local.sh
 942772c3179b1773d03b234b34b9ec14436e5751  tools/ci-matrix.sh
 2fd530a674ee7e9966bb21225a22e71d03768b70  tools/claim-check.sh
+6fdbf4725a6f95b9b8a8e438b86d73d9705a9a22  tools/deprecate.sh
 43006122bfb2b383f97da3a1abd3bc32d805bb17  tools/deprecated_skip_test.sh
 e57f9871929c3fc66b67a7136011ec2a5dc8bd39  tools/emit-failures.sh
 9c31e23fec5665fb4194d98187ad25d86c833495  tools/frozen-body.sh
