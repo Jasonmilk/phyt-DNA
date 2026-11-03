@@ -27,7 +27,15 @@ paths=[p for p in (os.environ.get('POOL_PATHS') or '').split() if p]
 print(json.dumps({"tool":"Write","paths":paths}))
 PY
 )
-if [ -z "$files" ]; then echo "OK: 目录 $DIR 下没有 ADR（无可扫）"; exit 0; fi
+# 空集不是成功（C-071）：0 个 ADR 时「没有违规」与「什么都没读到」读数上不可分。
+#   目录不存在 ⇒ rc=2（配置错）  目录在但无 ADR ⇒ rc=4（不可量，不是通过）
+if [ ! -d "$DIR" ]; then
+  echo "★ RED: $DIR 不存在 —— 配置错，不是空集（rc=2）" >&2; exit 2
+fi
+if [ -z "$files" ]; then
+  echo "UNMEASURABLE: $DIR 下扫到 0 个 ADR —— 没有可判的对象，不是通过（rc=4）" >&2
+  exit 4
+fi
 out=$(PHYT_DECISIONS="$BASE" PHYT_QUIET=1 bash "$ROOT/tools/validate.sh" --timing post 2>&1 <<< "$payload"); rc=$?
 # ★ 2>&1 把引擎的 stderr 也吞进了 $out ⇒ 想靠"脚本 stderr 里有没有 fatal"来抓，结构上抓不到主路。
 # 所以这里用【已经捕获的 rc】：子命令失败就是失败，不必读它的措辞（事实 vs 代理）。
