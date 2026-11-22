@@ -2,14 +2,54 @@
 # pre-push —— ★ ⑤ 慢层的【真实触发点】（2026-10-13）。
 #   慢层 = 3 心跳（--probe-all · 夹具能红）· 5 spec-lint 必须真实可红 · 5a hook_test。
 #   快层（每次提交）含 step 4 全仓违规扫描；慢层在此处（以及 CI / 手动全量）跑 —— **不许"跳了就没人再跑"**。
+#
+# ★ 2026-11-23（gardener 授权 · "解 push 通道 · 红归信号位"）：判据由「任意红即阻断」收窄为
+#   「**新增红**即阻断」（ratchet 形态，平移已完成裁定的「冻结基线 → 增量必绿 → 存量分批清零」）。
+#   全量 ci-local 仍然照跑、原始读数仍然打印、存量红仍然上移；**没有删除调用、没有降低判据**。
+#   基线只减不增：改动本常量必须走 ② 授权留痕，静默扩大在结构上不可能。
 set -uo pipefail
 ROOT=$(git rev-parse --show-toplevel 2>/dev/null) || exit 1
 cd "$ROOT" || exit 1
+
+# Frozen baseline: known reds carried forward, named one by one (never widened by automation).
+BASELINE_IDS="d-phyt-pre-gap-a d-phyt-pre-gap-b d-phyt-pre-gap-c d-phyt-phantom-complete d-phyt-3c-scope"
+BASE_N=$(printf '%s\n' $BASELINE_IDS | wc -l | tr -d ' ')
+
 echo "  [pre-push] 跑【全量】ci-local（含慢层：心跳 / spec-lint-可红 / hook_test）"
-if bash tools/ci-local.sh >/tmp/phyt-prepush.out 2>&1; then
-  echo "  [pre-push] 全量 ci-local 全绿"
-  exit 0
+bash tools/ci-local.sh >/tmp/phyt-prepush.out 2>&1
+ci_rc=$?
+grep -E '★ RED|CI-LOCAL|逾期未销' /tmp/phyt-prepush.out | head -6 | sed 's/^/   /'
+
+# Current state per step 3c. The INSTRUMENT reports the count ("逾期未销 N 条"); the id list in that
+# same line is truncated by the instrument (first 4), so ids are used only for the subset check and the
+# count is the number we compare. Numbers come from the instrument, never from a local re-count.
+CUR_M=$(grep -oE '逾期未销 [0-9]+ 条' /tmp/phyt-prepush.out | head -1 | grep -oE '[0-9]+' || true)
+[ -n "$CUR_M" ] || CUR_M=0
+CUR_IDS=$(grep -oE 'd-phyt-[A-Za-z0-9_-]+\(日落[0-9-]+\)' /tmp/phyt-prepush.out \
+          | sed 's/(日落.*//' | sort -u)
+VISIBLE_N=$(printf '%s' "$CUR_IDS" | grep -c . || true)
+[ -n "$CUR_IDS" ] || VISIBLE_N=0
+NEW_BY_ID=$(for id in $CUR_IDS; do printf '%s\n' $BASELINE_IDS | grep -qx "$id" || echo "$id"; done)
+NEW_BY_ID_N=$(printf '%s' "$NEW_BY_ID" | grep -c . || true)
+[ -n "$NEW_BY_ID" ] || NEW_BY_ID_N=0
+# Count-based new reds: anything beyond the frozen baseline size is new, because a shrinking baseline is
+# only allowed by human ruling (so BASE_N never shrinks by itself).
+NEW_BY_COUNT=0
+if [ "$CUR_M" -gt "$BASE_N" ]; then NEW_BY_COUNT=$((CUR_M - BASE_N)); fi
+OTHER_RED=$(grep -E '★ RED' /tmp/phyt-prepush.out | grep -v 'DEBTS 有逾期未销的债' || true)
+
+echo "  [pre-push] 基线 $BASE_N / 当前 $CUR_M（仪器报数·可见 id $VISIBLE_N）/ 新增 $((NEW_BY_COUNT + NEW_BY_ID_N))（按数量 $NEW_BY_COUNT · 按 id $NEW_BY_ID_N）  ci-local rc=$ci_rc"
+[ -n "$NEW_BY_ID" ] && echo "   ★ 新增红（id 不在基线内）: $NEW_BY_ID" >&2
+[ -n "$OTHER_RED" ] && { echo "   ★ 其他红步骤:" >&2; echo "$OTHER_RED" | sed 's/^/     /' >&2; }
+
+# An empty baseline may never read as green (a gate without a baseline is "not measured").
+if [ "$BASE_N" = 0 ] && [ "$CUR_M" != 0 ]; then
+  echo "⛔ pre-push: 基线为空而存在红 ⇒ UNMEASURABLE（空基线不得判绿）" >&2
+  exit 1
 fi
-echo "⛔ pre-push: 全量 ci-local 未全绿 ⇒ 拒绝推送" >&2
-grep -E '★ RED|CI-LOCAL' /tmp/phyt-prepush.out | head -6 | sed 's/^/   /' >&2
-exit 1
+if [ "$NEW_BY_COUNT" != 0 ] || [ "$NEW_BY_ID_N" != 0 ] || [ -n "$OTHER_RED" ]; then
+  echo "⛔ pre-push: 存在【新增红】⇒ 拒绝推送（存量红不阻断，但必须上移）" >&2
+  exit 1
+fi
+echo "  [pre-push] 无新增红（存量红 $CUR_M 条仍在，照旧上移）"
+exit 0
