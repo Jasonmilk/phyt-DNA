@@ -18,6 +18,9 @@ BASELINE_IDS="d-phyt-pre-gap-a d-phyt-pre-gap-b d-phyt-pre-gap-c d-phyt-phantom-
 # automation; changing it must go through ② authorisation. Currently one: `3b` (ADR-20261012 baseline red on
 # ledger row 5010, a known old debt). Everything else red is still blocked.
 KNOWN_RED_STEPS="3b"
+# And the *size* of that step's red is frozen too: white-listing a step by name alone would mask a NEW red inside it
+# (a second non-conforming ledger line would print "2 条" and still be filtered). Count-based, same ratchet rule.
+KNOWN_RED_COUNT="3b:1"
 BASE_N=$(printf '%s\n' $BASELINE_IDS | wc -l | tr -d ' ')
 
 echo "  [pre-push] 跑【全量】ci-local（含慢层：心跳 / spec-lint-可红 / hook_test）"
@@ -44,7 +47,11 @@ if [ "$CUR_M" -gt "$BASE_N" ]; then NEW_BY_COUNT=$((CUR_M - BASE_N)); fi
 OTHER_RED=$(grep -E '★ RED' /tmp/phyt-prepush.out | grep -v 'DEBTS 有逾期未销的债' || true)
 # Narrow OTHER_RED to **new** red steps only: a step named in KNOWN_RED_STEPS is 存量, it moves up rather than blocks.
 for _k in $KNOWN_RED_STEPS; do
-  OTHER_RED=$(printf '%s\n' "$OTHER_RED" | grep -v "^\s*$_k · " || true)
+  _cur=$(printf '%s\n' "$OTHER_RED" | grep -oE "$_k · [^\n]*\(([0-9]+) 条" | grep -oE '\(([0-9]+)' | tr -dc '0-9' | head -1)
+  _base=$(printf '%s\n' $KNOWN_RED_COUNT | grep "^$_k:" | cut -d: -f2)
+  if [ -n "$_cur" ] && [ -n "$_base" ] && [ "$_cur" -le "$_base" ]; then
+    OTHER_RED=$(printf '%s\n' "$OTHER_RED" | grep -v "^\s*$_k · " || true)
+  fi
 done
 
 echo "  [pre-push] 基线 $BASE_N / 当前 $CUR_M（仪器报数·可见 id $VISIBLE_N）/ 新增 $((NEW_BY_COUNT + NEW_BY_ID_N))（按数量 $NEW_BY_COUNT · 按 id $NEW_BY_ID_N）  ci-local rc=$ci_rc"
