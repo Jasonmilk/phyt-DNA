@@ -13,6 +13,7 @@
 | **"一条闸门怎么会变成恒红装饰品（V=0）？"** —— 真实案例：`check` 只断言文件名 ⇒ 恒真 ⇒ 恒红；以及怎么诊断 | `docs/DNA-GATE-DIAGNOSIS.md` |
 | **"名目有没有被表达？表达带 97% 的第一次实测读数是多少？"** —— 十基因近 3 圈带差分收据数（首演校准，活跃率 0.0%）+ 可复现校准器 | `docs/observations/expression-band-2026-10-24.md` · `docs/observations/expression-band.sh` |
 | **"账本怎么会读不出来？按行读为什么会读错？"** —— 实测 334 行 / 1069 条记录 ⇒ 不是 JSONL；以及"声明代替检查"长在闸门自己身上（只查编码、不查解析） | `docs/FINDING-2026-10-09-ledger-is-not-jsonl.md` |
+| **"推进这件事还有没有一条可被忽略的可选档？"** —— `stance: optional`：可弃用、不读也合规；只指向 helix-mind 侧三个入口，不改任何判据 | `docs/OPTIONAL-STANCE.md` |
 
 ## 根目录受管文档（按问题取用 · 索引门要求"存在就必须有人读"）
 
