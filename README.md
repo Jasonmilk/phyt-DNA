@@ -443,7 +443,7 @@ Evolution goes by **diff, not rewrite** — and the debt column hides nothing.
 
 - Docs by question: [`docs/INDEX.md`](docs/INDEX.md) · gates: [`decisions/INDEX.md`](decisions/INDEX.md)
 - The full protection spec: [`docs/PROTECTION.md`](docs/PROTECTION.md)
-- Cross-repo register: `helix-mind/docs/helixECO/KNOWN_ISSUES.md` · ecosystem entry point: `helix-mind/docs/helixECO/handoff/HANDOFF.md`
+- Cross-repo register: `helix-mind/docs/helixECO/register/KNOWN_ISSUES.md` · ecosystem entry point: `helix-mind/docs/helixECO/handoff/HANDOFF.md`
 
 ## Governed documents at the root
 
